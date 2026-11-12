@@ -1,0 +1,34 @@
+# Scraper Shield: An Adaptive, Circumvention-Resistant Bot Defense for Public and University Libraries
+
+- **Status**: EXPLORING (promoted 2026-11-12: evidence density — source HN post alone carries 137pts/61cmt, already exceeding the ≥100-combined-engagement-points promotion bar)
+- **Date**: 2026-11-12
+- **Topic**: Applied AI for underserved domains
+- **Source**: research/2026-11-12-applied-ai-for-underserved-domains.md · P8
+- **Maturity verdict**: PARTIAL — deployed mitigation exists (Anubis, MIT-licensed proof-of-work reverse proxy, adopted by Duke University Libraries since mid-2025 and OAPEN/DOAB; Cloudflare's AI Labyrinth/bot management; UNC Chapel Hill's AI-based firewall) but Codeberg reported in Aug 2025 that "many AI scraper bots had learned how to solve the Anubis challenges," and the CBC story plus coverage from cybernews.com, 404media.co, and americanlibrariesmagazine.org show outages and 2B+ monthly bot hits still occurring at libraries like Marmot as of Nov 2026 despite mitigations being in place.
+- **Format**: BOTH
+
+## The Gap
+A Hacker News story ("University libraries are being swarmed by AI bots, putting public access at risk," cbc.ca, 137pts/61cmt, 2026-11-06) frames this as an active, unresolved harm to public-access infrastructure that underserved populations rely on for free information access. Existing defenses are real but documented as already being circumvented — Codeberg's Aug 2025 report found many scraper bots had learned to solve Anubis's proof-of-work challenge — leaving the named institutions (Marmot, UNC, UDSpace) still fighting outages in real time.
+
+## The Project
+An open-source defense layer built on top of (not replacing) existing tools like Anubis, treating bot-challenge circumvention as an ongoing arms race rather than a one-time deploy. Core loop: (1) behavioral fingerprinting layered on top of proof-of-work challenges — request timing, header/entropy patterns, JS-execution fidelity — to catch bots that have already learned to solve the static challenge; (2) a shared, cross-institution threat-intelligence feed, since library IT teams are typically one or two people and pooling observed bypass patterns across institutions beats each library independently rediscovering the same bypass; (3) a tunable "degrade gracefully" mode so legitimate low-bandwidth or screen-reader patrons are never blocked by an over-aggressive defense — directly protecting the "public access" half of the problem the story is about.
+
+## Tangible Impact
+**Population**: patrons who rely on public and university libraries as a primary or only point of free internet/digital-resource access — roughly 2.5 million Americans without home broadband use public library terminals as their main connection (per Pew/FCC-adjacent library-usage surveys; libraries remain a key digital-equity access point per ALA's own reporting) — plus students at under-resourced universities whose library IT teams, like Marmot's small multi-library consortium named in the coverage, lack the budget of a large CDN-backed institution.
+**Mechanism**: as bot traffic degrades library site/catalog availability, the patrons hit hardest are the ones with no alternative — someone with home broadband just switches services; someone relying solely on the library doesn't. A defense that actually holds against circumvention, instead of repeating the current Anubis-bypass arms race, keeps that access reliable, and the graceful-degradation mode specifically prevents the defense itself from becoming a new accessibility barrier.
+**Measure**: (1) legitimate-patron page-load success rate and latency during active bot-swarm periods, before vs. after deployment; (2) bot-traffic volume successfully blocked/throttled against baseline, targeting a measurable cut into the "2B+ monthly hits" figure reported at Marmot; (3) false-positive rate against known assistive-technology/screen-reader traffic patterns.
+
+## Why Now
+The CBC story and its 61-comment HN discussion (Nov 6, 2026) just made this a visible, named crisis; Codeberg's documented Anubis bypass (Aug 2025) proves the current leading open-source mitigation has a known, dated expiry, creating real urgency for a next layer rather than waiting for another institution to get hit; small library IT teams (UNC, UDSpace, Marmot) are already independently reacting ad hoc — exactly the fragmentation this project consolidates.
+
+## Skill Angle
+Trigger: a library IT staffer — often a team of one or two, per the coverage — needs to assess their current exposure and defense posture. Inputs: current traffic/log samples (or just a description of their stack — Anubis? Cloudflare? nothing?) and any recent outage incidents. The skill reviews the inputs against known circumvention patterns (the Codeberg bypass report, documented crawler behaviors) and produces a prioritized, concrete recommendation — what to add, in what order, with expected effort — as a one-time posture audit a resource-strapped team can act on immediately, distinct from the project's maintained defense software and shared threat feed.
+
+## MVP Sketch
+Fork/extend Anubis with one additional behavioral signal (e.g. JS-execution timing fidelity, effective against naive bypass bots), stand up a small shared threat-intel endpoint (even a simple shared blocklist repo other libraries can pull from), and pilot it on one small library/consortium site for 30 days, measuring bot-block rate and legitimate-patron false-positive rate. 2-4 weeks, 1-2 people with access to one willing pilot library — Marmot or a similar small consortium is a plausible first contact given they're already named and struggling.
+
+## Risks & Open Questions
+- Bot defense is inherently an arms race — any specific technique added here will eventually be circumvented too; the real differentiator has to be the update cadence/shared threat-intel model, not a one-time clever trick, or it repeats Anubis's own trajectory.
+- Legitimate-but-unusual traffic (screen readers, older browsers, aggressive-but-human power users) risks false positives that would make the "protect public access" thesis backfire if not tuned carefully.
+- Small library IT teams may lack capacity to adopt and maintain even an open-source tool without a hosted/managed option — adoption by the population this is meant to help may require more than a self-hosted release.
+- Strongest reason this might already be solved: Cloudflare's AI Labyrinth and enterprise bot-management products already do sophisticated behavioral detection — if those are affordable/accessible to small libraries (unclear from the digest), a from-scratch open alternative may be solving a cost problem, not a capability problem; worth checking Cloudflare's nonprofit/library pricing before building.
