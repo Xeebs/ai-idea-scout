@@ -16,3 +16,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-12 | lossless-context-state-manager | Context as diffable, restorable commits instead of irreversible lossy compaction | Context engineering & memory | no |
 | 2026-11-12 | mcp-skill-trust-attestation-layer | A layered allow/warn/block policy gateway that vets MCP servers and skills together before an agent loads them, with an auditable decision ledger | Tool use & MCP ecosystem | no |
 | 2026-11-12 | voice-architecture-decision-benchmark-harness | Runs a team's own call scenarios through both voice architectures instead of another ad hoc weeks-long bake-off | Voice & multimodal agents | no |
+| 2026-11-12 | multiparty-addressee-detection-voice-coworker | Decides whether a speaking meeting-bot was actually addressed on a 3+ person call, the admitted-unsolved sub-problem vendors haven't cracked | Voice & multimodal agents | no |
