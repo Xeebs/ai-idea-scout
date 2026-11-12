@@ -1,6 +1,6 @@
 # ArchPick: A Shared Benchmark Harness for the Cascaded-vs-Speech-to-Speech Decision
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-12
 - **Topic**: Voice & multimodal agents
 - **Source**: research/2026-11-12-voice-multimodal-agents.md · P2
