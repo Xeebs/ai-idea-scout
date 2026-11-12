@@ -1,0 +1,29 @@
+In October alone, three unrelated solo developers independently decided to bury a small local model inside an app that had nothing to do with AI — and all three paid the same tax to do it. A Mac budgeting app that quietly runs its categorization model on-device. A screenshot renamer powered by Gemma. A Chrome extension that spots bills in your inbox using a model running entirely in WebGPU. None of them wanted to ship an "AI app." They wanted one narrow task to work offline, invisibly, as a feature — and every one of them hand-built the plumbing to make that happen from a blank page.
+
+## The Gap
+
+Small instruction-tuned models have crossed a real threshold: sub-4B, quantized, genuinely capable of doing one narrow job on a laptop or in a browser tab with no network call. That's new, and it's why three independent builders converged on the same shape of project inside a single 30-day window — "Pulse Local," a Mac budgeting app whose AI runs on-device (Show HN, 122 points, 71 comments, 2026-10-13); a Gemma-powered screenshot-renaming Mac app; and "NoAIBills," a Chrome extension that detects bills via a locally-run LLM through WebGPU and Transformers.js, now sitting at 63–66 installed users.
+
+What none of them had was a shared way to get there. Each rebuilt the same unglamorous plumbing from scratch: where to download the model so it isn't bloating the installer, how to check for updates without shipping a new binary, how to pick the right format (GGUF vs. MLX) for the target platform, how to keep the whole thing from ballooning memory in the main process. The generic pieces exist — Transformers.js with its WebGPU/WASM fallback, WebLLM/MLC-LLM, an experimental `@electron/llm` GGUF loader — but they're exactly that: generic, low-adoption, and in `@electron/llm`'s case, flagged by its own maintainers as unsafe for production. There is no "Electron for task-embedded local models" — no opinionated layer that assumes you want exactly one small model, invisibly, in exactly one app, and just handles the packaging and updates for you.
+
+## The Project
+
+The pitch here is deliberately narrow: not another inference engine, not a general local-AI SDK, but a thin, opinionated framework that wraps the inference engines that already exist and owns only the integration glue nobody else is shipping. Concretely, that means: downloading and caching the model into user-data on first run instead of bundling it into the installer; checksummed update checks so a model refresh doesn't require a new app release; a packaging template per target stack (Tauri or Electron for desktop, WebGPU for a Chrome extension); and sane default format selection (GGUF vs. MLX) based on the platform it's running on.
+
+In practice that's three pieces working together: a CLI scaffolder (`pocket-model-init <stack> <model>`) that generates the integration code for a given stack and model; a runtime shim that handles the first-run download and subsequent update checks; and a packaging script whose explicit job is making sure the model never ends up baked into the install image. None of this replaces llama.cpp, MLX, or Transformers.js — it sits on top of them, playing the role Electron played for web-tech desktop apps: not a new rendering engine, just the integration layer that made shipping on it tractable for one developer instead of a platform team.
+
+## Tangible Impact
+
+**Population**: Solo and small-team indie developers building a single narrow task (a utility, extension, or feature) who want one small local model as an invisible component rather than a general AI chat product. The digest's three independent Show-HN/IndieHackers instances inside one 30-day window, against the broader cadence of "local AI feature" Show HN posts, suggest a population in the hundreds-to-low-thousands shipping this pattern per year — small enough to find via Show HN/IndieHackers/Chrome Web Store listings, but recurring.
+
+**Mechanism**: Removing the from-scratch engineering tax (model loading, packaging, update handling) that each of the three cited builders paid independently lets a developer go from "I want to add one local-AI feature" to a working, properly-packaged build in days instead of weeks, and avoids the installer-bloat failure mode of bundling the model directly into the install image.
+
+**Measure**: (1) time-to-first-working-integration for a new adopter vs. a hand-rolled baseline; (2) resulting installer size (model excluded vs. bundled); (3) number of independent adopters/forks within 90 days of release, as a proxy for whether it displaces ad hoc rebuilding.
+
+## Try It
+
+No companion skill exists yet for this idea in `skills/` — this one is still at the project-concept stage, not yet synthesized into a reusable prompt or runtime artifact. Check back on `ideas/embedded-model-packaging-framework.md` for the planned Skill Angle: a Claude Code skill that, given a stack (Tauri/Electron/Chrome extension), a model, and a narrow task, would generate the integration scaffold directly — model-loading code, first-run download logic, an update-check stub, and a packaging checklist.
+
+Worth saying plainly what the idea file itself flags: the evidence here is three instances in one month, not thirty, and the target stacks (Electron, Tauri, Swift, Chrome extensions) differ enough that "one framework" might really mean several thin, harder-to-maintain adapters. `@electron/llm`'s own maintainers already warn against in-main-process GGUF loading for production use — any serious attempt at this needs to move inference to a sidecar process rather than inherit that limitation. And a well-resourced project adjacent to Ollama or LangChain could ship this as a feature before an independent build gets traction, which is worth re-checking before anyone commits real engineering time to it.
+
+Surfaced from `research/2026-11-12-small-local-models-ii.md`, pattern `P2`.
