@@ -5,7 +5,7 @@
 - **Topic**: Tool use & MCP ecosystem
 - **Source**: research/2026-11-11-tool-use-mcp-ecosystem.md · P7
 - **Maturity verdict**: OPEN — GitHub searches ("MCP guardrail context", "MCP data leak guard", "MCP PII redaction proxy", "LLM tool call data leak prevention") returned zero relevant repos beyond the digest's own single find. No WebSearch evidence of a dedicated product or paper either. Genuine multi-channel search came up empty.
-- **Format**: BOTH
+- **Format**: PROJECT — downgraded from BOTH on 2026-11-12: skill-synthesizer found 6+ close public equivalents already auditing MCP tool manifests for leak/poisoning risk pre-connection (OWASP Secure Agent Playbook's "MCP Server Security Review" play, Agensi's tool-definition security gate, PolicyLayer's `mcp-precheck`, claudskills.com's `mcp-risk-review`, Invariant Labs' `mcp-scan` poisoning auditor, plus several GitHub static scanners) — NOVELTY_FAIL per `.claude/rules/skill-format.md`. The runtime in-flight shield project remains unaffected (separate OPEN verdict).
 
 ## The Gap
 
