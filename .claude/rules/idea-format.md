@@ -1,0 +1,43 @@
+# Idea File Format
+
+Every file in `ideas/` follows this template exactly. File name: `<kebab-case-slug>.md`.
+
+```markdown
+# <Project Title>
+
+- **Status**: PROPOSED | EXPLORING | PROTOTYPING | SHELVED
+- **Date**: YYYY-MM-DD
+- **Topic**: <rotation topic this came from>
+- **Source**: research/<digest-file>.md · <pattern ID, e.g. P3>
+- **Maturity verdict**: OPEN | PARTIAL (copy the gap-analyst's verdict note)
+- **Format**: PROJECT | SKILL | BOTH (see heuristic in `docs/METHODOLOGY.md`)
+
+## The Gap
+2–4 sentences: what the community signal showed, why nothing adequate exists today. Cite the evidence from the digest — who was asking for this and where.
+
+## The Project
+What gets built, concretely. Core loop, key components, and how the novel pattern is the centerpiece (not a feature bolted onto a generic app). 1–2 short paragraphs plus an optional component list.
+
+## Tangible Impact
+**Population**: the specific group of people affected, with a size estimate and a source for that estimate where possible.
+**Mechanism**: how this project changes their day, week, or outcomes — the causal chain, not a vibe.
+**Measure**: 2–3 metrics that would prove the impact is real (e.g., "median time to file an appeal drops from 3 weeks to 2 days", "clinic triage error rate on the eval set").
+
+## Why Now
+What in the last 30 days makes this newly feasible or newly urgent (model capability, API, cost curve, regulation, community momentum).
+
+## Skill Angle
+(Only if **Format** is SKILL or BOTH.) What a Claude Code skill version of this would actually do: the trigger moment, the inputs a user hands it, and the output. For BOTH, state clearly how the skill differs from the project (e.g., the skill is a design/review/adoption aid; the project is the runtime infrastructure). Omit this section entirely for PROJECT-only ideas.
+
+## MVP Sketch
+The smallest version that tests the core hypothesis: scope, rough stack, and the single experiment that validates or kills it. Target: buildable in 2–4 weeks by 1–2 people.
+
+## Risks & Open Questions
+3–5 bullets. Include the strongest reason this might already be solved or unworkable.
+```
+
+## Rules
+
+- The **Tangible Impact** section is mandatory and must name a specific population. "Developers" or "businesses" alone is too broad — narrow until you could find these people in a room.
+- Never overwrite an existing idea file. Supersede with a new file and cross-link in `ideas/INDEX.md`.
+- Keep ideas under ~120 lines. An idea file is a pitch, not a PRD.

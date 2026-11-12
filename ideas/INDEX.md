@@ -1,0 +1,11 @@
+# Idea Index
+
+Format: `- [<Title>](<file>.md) — <one-line hook> · <topic> · <date> · status: PROPOSED|EXPLORING|PROTOTYPING|PUBLISHED|SHELVED`
+
+- [Agent Execution-State Store ("Postgres for reasoning runs")](agent-execution-state-store.md) — Store agent runs as queryable, resumable branching-reasoning objects instead of Redis duct tape · Agentic AI & autonomous agents · 2026-06-10 · status: PROPOSED
+- [Agent Run VCR: Deterministic Replay & Diff for Agent Behavior](agent-run-replay-vcs.md) — Record agent executions as cassettes you can replay without live LLM calls, diff, and rewind · Agentic AI & autonomous agents · 2026-06-10 · status: PUBLISHED — [writeup](../published/agent-run-vcr.md) (promoted 2026-11-11: recurred independently in both cycle 1 and cycle 2 digests)
+- [Agent Change Feeds: a diffable, consent-based "RSS for agents"](agent-change-feed-standard.md) — A polling-friendly change-feed standard so agents fetch structured diffs instead of scraping HTML · Agentic AI & autonomous agents · 2026-06-10 · status: PROPOSED
+- [Handoff Envelope: a Typed Context Schema for Agent-to-Agent Handoffs](agent-handoff-context-schema.md) — A versioned, queryable schema for what one agent passes the next instead of a raw text dump · Multi-agent architectures · 2026-06-10 · status: PROPOSED
+- [Ask-First: an Evaluated When-to-Escalate Policy Engine for Agents](agent-escalation-policy-engine.md) — Scores proposed agent actions on ambiguity/reversibility/blast-radius to decide proceed/ask/refuse, with a labeled benchmark · Multi-agent architectures · 2026-06-10 · status: PROPOSED — skill: [`skills/agent-escalation-policy-engine/`](../skills/agent-escalation-policy-engine/)
+- [Coherent: a Cache-Coherence Layer for Concurrent Agent Shared State](agent-shared-state-coherence.md) — Versioned reads + invalidate-on-write so concurrent agents stop acting on stale context · Multi-agent architectures · 2026-06-10 · status: PROPOSED
+- [Handoff Firewall: Containing Prompt Injection That Rides Between Agents](cross-agent-injection-firewall.md) — Taint-propagation middleware tracking untrusted content provenance across agent-to-agent hops · Multi-agent architectures · 2026-06-10 · status: PROPOSED
