@@ -1,0 +1,250 @@
+:root {
+  --bg: #f5f5f7;
+  --card-bg: #ffffff;
+  --text: #1c1c1e;
+  --muted: #6e6e73;
+  --border: #e3e3e6;
+  --accent: #0a84ff;
+  --ok: #248a3d;
+  --warn: #b25000;
+  --error: #d70015;
+  --chip-bg: #eef2ff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0b0d;
+    --card-bg: #1a1a1d;
+    --text: #f2f2f3;
+    --muted: #9a9a9e;
+    --border: #2d2d30;
+    --accent: #409cff;
+    --ok: #34c759;
+    --warn: #ff9f0a;
+    --error: #ff453a;
+    --chip-bg: #1c2333;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+a { color: var(--accent); text-decoration: none; }
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 12px 16px 96px;
+}
+
+header.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px 10px;
+}
+
+header.topbar h1 {
+  font-size: 20px;
+  margin: 0 0 10px;
+}
+
+nav.tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+nav.tabs a {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--text);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+nav.tabs a.active {
+  background: var(--accent);
+  color: white;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.card h2 {
+  font-size: 15px;
+  margin: 0 0 8px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.track-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--chip-bg);
+}
+
+.badge.PROPOSED { background: #eef2ff; color: #3b4fd0; }
+.badge.EXPLORING { background: #fff4e5; color: #b25000; }
+.badge.PROTOTYPING { background: #e8f8ec; color: #248a3d; }
+.badge.PUBLISHED { background: #e8f8ec; color: #248a3d; }
+.badge.SHELVED { background: #f1f1f3; color: #6e6e73; }
+.badge.PENDING_REVIEW { background: #fff4e5; color: #b25000; }
+.badge.APPROVED { background: #e8f8ec; color: #248a3d; }
+.badge.REJECTED { background: #fde8e8; color: #d70015; }
+.badge.LISTED { background: #e5f0ff; color: #0a4fb2; }
+.badge.HIGH { background: #e8f8ec; color: #248a3d; }
+.badge.MEDIUM { background: #fff4e5; color: #b25000; }
+.badge.LOW { background: #f1f1f3; color: #6e6e73; }
+
+@media (prefers-color-scheme: dark) {
+  .badge.PROPOSED { background: #1c2333; color: #8fa6ff; }
+  .badge.EXPLORING { background: #2e2310; color: #ffb454; }
+  .badge.PROTOTYPING, .badge.PUBLISHED { background: #12271a; color: #4fd675; }
+  .badge.SHELVED { background: #222224; color: #9a9a9e; }
+  .badge.PENDING_REVIEW { background: #2e2310; color: #ffb454; }
+  .badge.APPROVED { background: #12271a; color: #4fd675; }
+  .badge.REJECTED { background: #341515; color: #ff8a80; }
+  .badge.LISTED { background: #112033; color: #7fb3ff; }
+  .badge.HIGH { background: #12271a; color: #4fd675; }
+  .badge.MEDIUM { background: #2e2310; color: #ffb454; }
+  .badge.LOW { background: #222224; color: #9a9a9e; }
+}
+
+.idea-item {
+  display: block;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.idea-item:last-child { border-bottom: none; }
+.idea-item .title { font-weight: 600; margin-bottom: 4px; }
+.idea-item .hook { color: var(--muted); font-size: 14px; margin-bottom: 6px; }
+.idea-item .meta { color: var(--muted); font-size: 12px; }
+
+.filters {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  margin-bottom: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+.filters a {
+  flex: 0 0 auto;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  font-size: 13px;
+  color: var(--text);
+}
+.filters a.active { background: var(--accent); color: white; }
+
+section.idea-section { margin: 16px 0; }
+section.idea-section h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin: 0 0 6px;
+}
+section.idea-section p { margin: 0 0 8px; line-height: 1.45; }
+section.idea-section ul { margin: 0 0 8px; padding-left: 20px; }
+
+.header-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.header-fields b { color: var(--text); }
+
+form.inline { margin-top: 8px; }
+
+select, textarea, input[type=text] {
+  width: 100%;
+  font-size: 16px; /* avoid iOS zoom-on-focus */
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+  margin-bottom: 8px;
+}
+textarea { min-height: 70px; resize: vertical; }
+
+button, .btn {
+  font-size: 16px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+button.secondary, .btn.secondary {
+  background: var(--chip-bg);
+  color: var(--text);
+}
+button.danger { background: var(--error); }
+button.success { background: var(--ok); }
+
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.flash {
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+.flash.ok { background: #e8f8ec; color: #1f6f32; }
+.flash.warn { background: #fff4e5; color: #8a5300; }
+.flash.error { background: #fde8e8; color: #a3000f; }
+@media (prefers-color-scheme: dark) {
+  .flash.ok { background: #12271a; color: #4fd675; }
+  .flash.warn { background: #2e2310; color: #ffb454; }
+  .flash.error { background: #341515; color: #ff8a80; }
+}
+
+.empty { color: var(--muted); padding: 20px 0; text-align: center; }
+
+.feedback-entry { padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+.feedback-entry .stamp { color: var(--muted); font-size: 12px; }
+
+.candidate-box {
+  background: var(--chip-bg);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 8px 0;
+  font-size: 13px;
+  white-space: pre-wrap;
+}

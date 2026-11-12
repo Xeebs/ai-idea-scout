@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Skills{% endblock %}
+{% block content %}
+
+<h2 style="margin:4px 0 10px;">Skills</h2>
+
+{% for key, label in labels.items() %}
+<div class="card">
+  <h2>{{ label }}</h2>
+  {% if not skills[key] %}
+    <div class="empty">No skills written yet.</div>
+  {% endif %}
+  {% for s in skills[key] %}
+    <div class="idea-item">
+      <div class="title">{{ s.slug }}</div>
+      <div class="hook">{{ s.description }}</div>
+    </div>
+  {% endfor %}
+</div>
+{% endfor %}
+
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ label }} Ideas{% endblock %}
+{% block content %}
+
+<h2 style="margin:4px 0 10px;">{{ label }} Ideas</h2>
+
+<div class="filters">
+  <a href="{{ url_for('ideas_list', track=track) }}" class="{{ 'active' if not status_filter }}">All</a>
+  {% for s in statuses %}
+    <a href="{{ url_for('ideas_list', track=track, status=s) }}" class="{{ 'active' if status_filter == s }}">{{ s }}</a>
+  {% endfor %}
+</div>
+
+<div class="card">
+  {% if not ideas %}
+    <div class="empty">No ideas yet.</div>
+  {% endif %}
+  {% for idea in ideas %}
+    {% if idea.unparsed %}
+      <div class="idea-item"><span class="meta">{{ idea.raw }}</span></div>
+    {% else %}
+      <a class="idea-item" href="{{ url_for('idea_detail', track=track, slug=idea.slug) }}">
+        <div class="title">{{ idea.title }}</div>
+        <div class="hook">{{ idea.hook }}</div>
+        <div class="meta">
+          <span class="badge {{ idea.status }}">{{ idea.status }}</span>
+          {% if idea.fit %}<span class="badge {{ idea.fit }}">fit: {{ idea.fit }}</span>{% endif %}
+          · {{ idea.topic }} · {{ idea.date }}
+        </div>
+      </a>
+    {% endif %}
+  {% endfor %}
+</div>
+
+{% endblock %}

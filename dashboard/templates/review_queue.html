@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Review Queue{% endblock %}
+{% block content %}
+
+<h2 style="margin:4px 0 10px;">Agensi.io Review Queue</h2>
+
+{% if not rows %}
+  <div class="card"><div class="empty">Nothing packaged yet.</div></div>
+{% endif %}
+
+{% for row in rows %}
+<div class="card">
+  <div class="track-row">
+    <strong>{{ row.title }}</strong>
+    <span class="badge {{ row.status_key }}">{{ row.status }}</span>
+  </div>
+  <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">{{ row.slug }} · {{ row.price }} · {{ row.date }}</div>
+
+  {% if row.candidate.listing %}
+    <div class="candidate-box">{{ row.candidate.listing }}</div>
+  {% endif %}
+  <div style="font-size:12px;color:var(--muted);">
+    Zip: {{ row.candidate.zip_path }} {{ '(present)' if row.candidate.zip_exists else '(missing!)' }}
+  </div>
+
+  {% if row.status == 'PENDING_REVIEW' %}
+  <div class="btn-row" style="margin-top:10px;">
+    <form method="post" action="{{ url_for('review_decision', slug=row.slug) }}">
+      <input type="hidden" name="decision" value="approve">
+      <button type="submit" class="success">Approve</button>
+    </form>
+    <form method="post" action="{{ url_for('review_decision', slug=row.slug) }}" style="flex:1;">
+      <input type="hidden" name="decision" value="reject">
+      <input type="text" name="reason" placeholder="Reason (optional)">
+      <button type="submit" class="danger">Reject</button>
+    </form>
+  </div>
+  {% elif row.status == 'APPROVED' %}
+  <form method="post" action="{{ url_for('review_listed', slug=row.slug) }}" class="inline">
+    <input type="text" name="url" placeholder="Live Agensi.io URL, once listed">
+    <button type="submit">Mark listed</button>
+  </form>
+  {% endif %}
+</div>
+{% endfor %}
+
+{% endblock %}

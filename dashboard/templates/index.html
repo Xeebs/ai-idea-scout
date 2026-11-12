@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — AI Idea Scout{% endblock %}
+{% block content %}
+
+{% if pending_review > 0 %}
+<div class="card">
+  <a href="{{ url_for('review_queue') }}">
+    <strong>{{ pending_review }}</strong> listing candidate{{ 's' if pending_review != 1 }} waiting for your review →
+  </a>
+</div>
+{% endif %}
+
+{% for key, t in tracks.items() %}
+<div class="card">
+  <h2>{{ t.label }}</h2>
+  <div class="track-row">
+    <span>Cycle {{ t.state.cycle if t.state.cycle is not none else '—' }}</span>
+    <span class="badge">{{ t.state.current_phase }}</span>
+  </div>
+  <div class="track-row">
+    <span>{{ t.state.active_topic or 'Idle' }}</span>
+  </div>
+  <div style="margin: 8px 0; font-size: 13px; color: var(--muted);">
+    Last run: {{ t.state.last_run or 'never' }}
+  </div>
+
+  <div class="btn-row" style="margin-bottom: 10px;">
+    {% for status, count in t.counts.items() %}
+      <a class="btn secondary" style="font-size:13px;padding:6px 10px;" href="{{ url_for('ideas_list', track=key, status=status) }}">{{ status }} · {{ count }}</a>
+    {% endfor %}
+  </div>
+
+  {% if t.changelog %}
+  <h3 style="font-size:12px;text-transform:uppercase;color:var(--muted);margin:10px 0 4px;">Recent activity</h3>
+  {% for line in t.changelog %}
+    <div style="font-size:13px;padding:4px 0;border-bottom:1px solid var(--border);">{{ line[2:] }}</div>
+  {% endfor %}
+  {% endif %}
+
+  <div style="margin-top:10px;">
+    <a class="btn" href="{{ url_for('ideas_list', track=key) }}">View all {{ t.total_ideas }} ideas →</a>
+  </div>
+</div>
+{% endfor %}
+
+{% endblock %}

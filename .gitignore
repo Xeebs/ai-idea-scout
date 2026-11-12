@@ -1,5 +1,7 @@
 logs/*.log
 .DS_Store
+__pycache__/
+*.pyc
 
 # Private marketplace content — own nested git repo, own private remote.
 # Never committed here even though this line is technically redundant with

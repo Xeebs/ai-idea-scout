@@ -105,3 +105,7 @@ Continuity is a cron job, not a session you keep open:
 ```
 
 Each firing is self-contained: it holds a lock file for the duration (so a long cycle never overlaps the next hour's trigger), runs both tracks' full cycles in parallel, and exits. Logs land in `logs/heartbeat-<date>.log` (rotated after 30 days) and `logs/cron.log`.
+
+## Dashboard
+
+A local, mobile-friendly web app (`dashboard/`) to watch both tracks, change idea statuses, leave feedback the pipeline reads at the start of its next cycle, and approve/reject Agensi.io listing candidates — from an iPhone over the home LAN, no auth. Runs as a systemd user service; see `dashboard/README.md` for the URL and operational commands.

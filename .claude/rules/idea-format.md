@@ -35,10 +35,14 @@ The smallest version that tests the core hypothesis: scope, rough stack, and the
 
 ## Risks & Open Questions
 3–5 bullets. Include the strongest reason this might already be solved or unworkable.
+
+## Human Feedback
+(Optional, appears only once a human leaves a note via `dashboard/`.) Append-only, timestamped bullets: `- YYYY-MM-DD HH:MM — "<note>" (via dashboard)`. Never written by an agent, never removed by an agent — see `CLAUDE.md`'s "Human feedback always wins" rule.
 ```
 
 ## Rules
 
 - The **Tangible Impact** section is mandatory and must name a specific population. "Developers" or "businesses" alone is too broad — narrow until you could find these people in a room.
 - Never overwrite an existing idea file. Supersede with a new file and cross-link in `ideas/INDEX.md`.
-- Keep ideas under ~120 lines. An idea file is a pitch, not a PRD.
+- Keep ideas under ~120 lines (the optional **Human Feedback** section doesn't count against this — it's a human-maintained log, not part of the pitch).
+- Status changes outside the pipeline's own promotion logic (PROTOTYPING, SHELVED, or a human overriding PROPOSED/EXPLORING) are made by a human via `dashboard/`, by editing the `- **Status**:` line directly — never automatically reverted.

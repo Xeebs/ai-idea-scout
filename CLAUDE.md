@@ -9,7 +9,7 @@ AI Idea Scout is an autonomous research pipeline. Each cycle researches one topi
 
 The two tracks share no mutable files — INFRA never writes inside `marketplace-content/`, and MARKETPLACE never writes outside it (it only ever *reads* `docs/TOPICS.md` from the public repo, read-only, for topic rotation phrasing). This is what makes it safe to run them concurrently: there is nothing for them to race over or step on.
 
-This repo has no application code — the product is `ideas/`, `skills/`, `published/` (public) plus `marketplace-content/` (private, pushed separately).
+This repo has no application code except `dashboard/` — a small local Flask app (no auth, LAN-only) that lets a human browse both tracks, change idea statuses, leave feedback, and approve/reject Agensi listing candidates. See `dashboard/README.md`. The product is `ideas/`, `skills/`, `published/` (public) plus `marketplace-content/` (private, pushed separately).
 
 Public repo: `Xeebs/ai-idea-scout`. Private marketplace repo: `Xeebs/ai-idea-scout-marketplace`.
 
@@ -35,6 +35,8 @@ Each track manages its **own** resume/retry lifecycle independently via its own 
 Everything below reads and writes only within the public repo tree (never `marketplace-content/`).
 
 ### Phase 0 — Resume check
+
+**Feedback intake (every cycle, resumed or fresh)**: read `pipeline/feedback.md`. For any `[UNCONSUMED]` entry, treat its text as human steering for this cycle — fold it into the topic choice below (e.g. an ad-hoc topic it implies) and/or pass it into Phase 1/3's subagent prompts as "Additional human guidance this cycle: <text>". After Phase 6 completes, flip each entry you incorporated from `[UNCONSUMED]` to `[CONSUMED cycle <n>]` in place (never delete it). This is the dashboard's "steer the pipeline" box — if you skip this, it's just a diary nobody reads.
 
 Read `pipeline/state.json`. If `current_phase` is not `IDLE`, a previous INFRA cycle died mid-flight — resume from that phase with the recorded `active_topic`.
 
@@ -116,6 +118,8 @@ Write `state.json` with `current_phase: CLOSE_OUT`.
 Everything below reads and writes only within `marketplace-content/` (the private nested repo), except one read-only reference to the public repo's `docs/TOPICS.md`. **Never write, stage, commit, or push anything outside `marketplace-content/` from this protocol.**
 
 ### Phase 0 — Resume check
+
+**Feedback intake (every cycle, resumed or fresh)**: read `marketplace-content/feedback.md`. For any `[UNCONSUMED]` entry, treat its text as human steering for this cycle — fold it into the topic choice below and/or pass it into Phase 1/3's subagent prompts as "Additional human guidance this cycle: <text>". After Phase 6 completes, flip each entry you incorporated from `[UNCONSUMED]` to `[CONSUMED cycle <n>]` in place (never delete it).
 
 Read `marketplace-content/state.json`. If `current_phase` is not `IDLE`, a previous MARKETPLACE cycle died mid-flight — resume from that phase with the recorded `active_topic`.
 
@@ -203,5 +207,7 @@ Write `marketplace-content/state.json` with `current_phase: CLOSE_OUT`.
 - **The public/private boundary is load-bearing, not cosmetic.** Nothing produced by a MARKETPLACE-track agent may ever be written outside `marketplace-content/`, referenced from a file in the public tree, or staged/committed/pushed via the public repo's remote — and nothing INFRA produces belongs inside `marketplace-content/`. If you ever find content on the wrong side of that boundary, stop and flag it in the relevant session file rather than trying to silently clean it up mid-cycle.
 - **The two tracks run as independent, parallel subagents and must stay that way.** Neither reads the other's state file, queue, or INDEX; neither waits on the other. Don't reintroduce shared mutable state between them.
 - `marketplace-content/review-queue.md` is human-owned once a row exists: the pipeline only ever appends new `PENDING_REVIEW` rows, never edits an existing row's status. The pipeline never has, requests, or uses Agensi.io credentials, and never uploads or lists anything itself.
+- **Human feedback always wins.** Before any subagent reworks an *existing* idea file (a dedupe check in idea synthesis, skill synthesis, packaging), the orchestrator checks that idea file for a `## Human Feedback` section (written via `dashboard/`) and passes its content into that subagent's spawn prompt as context. A human's note on an idea is a steer, not a suggestion to weigh against other signal.
+- Idea statuses, review-queue decisions, and `## Human Feedback` sections are written by a human via `dashboard/`, mirroring how the orchestrator itself edits a status directly on promotion — never revert or "clean up" a human-made edit to any of these, even if it looks inconsistent with the pipeline's own judgment.
 - Keep subagent outputs on disk, not in conversation — the orchestrator only needs file paths and counts back from each agent.
 - Token efficiency: pipe long command output through `tail`, read only relevant file ranges, and keep session notes under 20 lines.

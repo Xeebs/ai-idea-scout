@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Feedback{% endblock %}
+{% block content %}
+
+<h2 style="margin:4px 0 10px;">Steer the pipeline</h2>
+<p style="color:var(--muted);font-size:14px;margin-top:0;">
+  These notes are read by the orchestrator before each cycle on the matching track and folded into that cycle's research/synthesis — not just stored.
+</p>
+
+{% for key, label in labels.items() %}
+<div class="card">
+  <h2>{{ label }}</h2>
+  <form method="post" action="{{ url_for('feedback_submit', track=key) }}" class="inline">
+    <textarea name="note" placeholder="e.g. Focus more on freelancer tools, fewer content-generation skills."></textarea>
+    <button type="submit">Send</button>
+  </form>
+
+  {% if entries[key] %}
+    <div style="margin-top:10px;">
+    {% for e in entries[key] %}
+      <div class="feedback-entry">
+        <span class="badge {{ 'APPROVED' if 'CONSUMED' in e.status else 'EXPLORING' }}">{{ e.status }}</span>
+        <span class="stamp">{{ e.stamp }}</span>
+        <div>{{ e.text }}</div>
+      </div>
+    {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">No feedback yet.</div>
+  {% endif %}
+</div>
+{% endfor %}
+
+{% endblock %}
