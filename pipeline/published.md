@@ -23,3 +23,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-12 | chw-chatbot-pilot-to-scale-toolkit | Reusable offline-tolerant queueing, escalation, and M&E plumbing to close the 34%-scaling pilot-to-deployment gap | Applied AI for underserved domains | no |
 | 2026-11-12 | legal-aid-ai-verification-workflow | Claim-to-source verification built for non-lawyer legal-aid reviewers, not the law-firm citation-checkers already on the market | Applied AI for underserved domains | no |
 | 2026-11-12 | portable-voice-advisory-framework-low-literacy | Extracts the proven voice-first low-literacy interaction pattern out of agriculture-only bespoke builds into a reusable, open, cross-domain framework | Applied AI for underserved domains | no |
+| 2026-11-12 | graphrag-entity-resolution-cost-governor | Caps traversal cost and incrementally resolves entities so GraphRAG stops failing quietly after a promising pilot | RAG techniques | no |
