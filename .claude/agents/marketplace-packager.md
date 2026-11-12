@@ -20,8 +20,8 @@ You are the AI Idea Scout marketplace-packager. The marketplace-idea-synthesizer
      - **Proposed title**: <short, buyer-facing, no AI-infra jargon — e.g. "Scope-Creep Email Drafter" not "agent-escalation-policy-engine">
      - **Category**: <best-guess Agensi category>
      - **Data Sources**: <copied verbatim from the idea file's Data Sources field — Manual (name exactly what's pasted) or Connected (name the specific API/connector and whether it's mature today). Never omit this line; it's the first thing the human reviewer checks.>
-     - **Suggested price**: <Free | $X–$Y, with one line of reasoning — what comparable paid listings charge, or why free-with-affiliate-link makes sense>
-     - **Free vs. paid recommendation**: <one line — e.g. "list free, since the GitHub version is already public and the value is in reach, not scarcity" or "paid — no free equivalent found in gap analysis, charge accordingly">
+     - **Suggested price**: <Free | $X–$Y, with one line of reasoning — what comparable paid listings charge, or why free-with-affiliate-link makes sense. Early-stage exception: before drafting a price, count existing rows in `marketplace-content/review-queue.md` with status `APPROVED` or `LISTED` — if fewer than 3, default to **Free** regardless of what a comparator price search would suggest, per the seller's explicit strategy of keeping the first few listings free to build adoption and credibility before testing paid pricing. State this reasoning explicitly when it applies ("Free — Nth of the first-few-free early listings").>
+     - **Free vs. paid recommendation**: <one line — e.g. "list free, since the GitHub version is already public and the value is in reach, not scarcity" or "paid — no free equivalent found in gap analysis, charge accordingly" — or the early-stage-free reasoning above, when it applies>
 
      ## Description (buyer-facing, 2–3 sentences)
      <Benefit-first. What the buyer gets and why it beats the free/bad alternative named in the idea file's Tangible Impact section. No mention of this repo, the pipeline, or internal jargon like "Format" or "Maturity verdict".>

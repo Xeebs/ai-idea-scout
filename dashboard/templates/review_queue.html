@@ -30,7 +30,7 @@
     Zip: {{ row.candidate.zip_path }} {{ '(present)' if row.candidate.zip_exists else '(missing!)' }}
   </div>
 
-  {% if row.status == 'PENDING_REVIEW' %}
+  {% if row.status_key == 'PENDING_REVIEW' %}
   <div class="btn-row" style="margin-top:var(--space-3);">
     <form method="post" action="{{ url_for('review_decision', slug=row.slug) }}">
       <input type="hidden" name="decision" value="approve">
@@ -42,7 +42,7 @@
       <button type="submit" class="danger">{{ icons.icon('x') }} Reject</button>
     </form>
   </div>
-  {% elif row.status == 'APPROVED' %}
+  {% elif row.status_key == 'APPROVED' %}
   <form method="post" action="{{ url_for('review_listed', slug=row.slug) }}" class="inline">
     <label class="field-label" for="listed-url-{{ row.slug }}">Live Agensi.io URL</label>
     <input type="text" name="url" id="listed-url-{{ row.slug }}" placeholder="https://www.agensi.io/...">
