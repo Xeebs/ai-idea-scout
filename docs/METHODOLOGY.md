@@ -33,6 +33,19 @@ Every surviving pattern gets a **Format** tag — PROJECT, SKILL, or BOTH — de
 
 When in doubt between PROJECT and BOTH, prefer BOTH — a skill companion is cheap to write and tests the idea's value before anyone commits to the infrastructure build.
 
+## Data Sources
+
+Every idea, on both tracks, carries a **Data Sources** header field (see `.claude/rules/idea-format.md`). This exists because a skill that only ever works on whatever the user manually pastes in is a weaker product than one that reaches into the buyer's actual data — and that difference is invisible unless it's called out explicitly and consistently. Two classifications:
+
+| Classification | Meaning | Required detail |
+|---|---|---|
+| **MANUAL** | The user types or pastes everything the skill operates on; no external data source is read. | Name exactly what gets pasted (e.g. "the client's message, pasted verbatim, plus 2-3 of the user's own past emails, pasted verbatim"). Vague "user input" is not acceptable. |
+| **CONNECTED** | The skill reads from a named external data source — an API, an MCP server/connector, a file the user uploads once and reuses, a platform the skill queries directly. | Name the specific source (e.g. "Gmail, via an MCP connector, to read the user's sent mail for voice-matching" or "Google Business Profile API, to pull existing hours/photos/reviews"), and state plainly whether a mature connector for it already exists (and where) or would need to be built as part of this idea. |
+
+**Before synthesizing an idea, actively consider whether a CONNECTED version is viable** — not just whichever version the raw digest signal happened to describe. A pattern that's only ever been discussed as "paste your X" doesn't mean a connected version is impossible; if a mature MCP connector or API for the relevant data already exists, synthesizing the CONNECTED version (or noting the MANUAL version as an MVP with a clearly-scoped CONNECTED upgrade path) is almost always the stronger idea. This directly reflects real reviewer feedback: a MANUAL-only skill that could plausibly have read the data itself instead reads as thin, even when the drafting logic itself is sound.
+
+This field is informational, not folded into the automated Marketplace Fit score — a human makes the final call on whether a MANUAL idea is still worth pursuing. It exists so that call can actually be made, instead of discovered only after a skill is built and packaged.
+
 ## Promotion & Publishing
 
 `ideas/INDEX.md` statuses now mean:

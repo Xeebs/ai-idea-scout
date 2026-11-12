@@ -28,7 +28,7 @@ description: One line — what it does and when Claude should reach for it.
 The exact trigger moment — what the user says or what state they're in when this skill applies.
 
 ## Inputs
-What the user needs to hand over for this to work (files, context, a specific question).
+What the user needs to hand over for this to work (files, context, a specific question). Open with one line restating the parent idea's **Data Sources** classification exactly: `**Data source**: Manual — <what gets pasted>` or `**Data source**: Connected — <named API/connector, and whether it's mature today>`. This is the single line a reviewer checks first; never omit it or soften it into vaguer prose.
 
 ## Procedure
 Step-by-step instructions Claude follows. Be concrete — this is the actual logic, not a summary of it.

@@ -1,22 +1,22 @@
 {% extends "base.html" %}
+{% import "_icons.html" as icons %}
 {% block title %}Feedback{% endblock %}
 {% block content %}
 
-<h2 style="margin:4px 0 10px;">Steer the pipeline</h2>
-<p style="color:var(--muted);font-size:14px;margin-top:0;">
-  These notes are read by the orchestrator before each cycle on the matching track and folded into that cycle's research/synthesis — not just stored.
-</p>
+<h2 class="page-title">{{ icons.icon('message') }} Steer the pipeline</h2>
+<p class="subtle-row" style="margin-top:-8px;">These notes are read by the orchestrator before each cycle on the matching track and folded into that cycle's research/synthesis — not just stored.</p>
 
 {% for key, label in labels.items() %}
 <div class="card">
-  <h2>{{ label }}</h2>
+  <h2 class="card-label">{{ icons.icon('lightbulb' if key == 'infra' else 'tag') }} {{ label }}</h2>
   <form method="post" action="{{ url_for('feedback_submit', track=key) }}" class="inline">
-    <textarea name="note" placeholder="e.g. Focus more on freelancer tools, fewer content-generation skills."></textarea>
-    <button type="submit">Send</button>
+    <label class="field-label" for="note-{{ key }}">New note</label>
+    <textarea name="note" id="note-{{ key }}" placeholder="e.g. Focus more on freelancer tools, fewer content-generation skills."></textarea>
+    <button type="submit">{{ icons.icon('check') }} Send</button>
   </form>
 
   {% if entries[key] %}
-    <div style="margin-top:10px;">
+    <div style="margin-top:var(--space-3);">
     {% for e in entries[key] %}
       <div class="feedback-entry">
         <span class="badge {{ 'APPROVED' if 'CONSUMED' in e.status else 'EXPLORING' }}">{{ e.status }}</span>

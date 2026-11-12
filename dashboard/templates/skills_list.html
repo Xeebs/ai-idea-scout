@@ -1,12 +1,13 @@
 {% extends "base.html" %}
+{% import "_icons.html" as icons %}
 {% block title %}Skills{% endblock %}
 {% block content %}
 
-<h2 style="margin:4px 0 10px;">Skills</h2>
+<h2 class="page-title">{{ icons.icon('wrench') }} Skills</h2>
 
 {% for key, label in labels.items() %}
 <div class="card">
-  <h2>{{ label }}</h2>
+  <h2 class="card-label">{{ icons.icon('lightbulb' if key == 'infra' else 'tag') }} {{ label }}</h2>
   {% if not skills[key] %}
     <div class="empty">No skills written yet.</div>
   {% endif %}

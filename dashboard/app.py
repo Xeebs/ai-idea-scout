@@ -19,11 +19,26 @@ app.secret_key = "ai-idea-scout-dashboard-local-only"  # no auth, LAN-only; just
 app.jinja_env.filters["mdlite"] = parsers.render_md_lite
 
 
+def _data_source_for(track, slug):
+    path = os.path.join(parsers.TRACKS[track]["ideas_dir"], f"{slug}.md")
+    idea = parsers.parse_idea_file(path)
+    if not idea:
+        return parsers.classify_data_source(None)
+    return parsers.classify_data_source(idea["header"].get("Data Sources"))
+
+
 def track_or_404(track):
     if track not in parsers.TRACKS:
         from flask import abort
         abort(404)
     return track
+
+
+@app.context_processor
+def inject_nav_counts():
+    rows = parsers.parse_review_queue()
+    pending = len([r for r in rows if r["status"] == "PENDING_REVIEW"])
+    return {"nav_pending_review": pending}
 
 
 @app.route("/")
@@ -56,6 +71,9 @@ def ideas_list(track):
     ideas = parsers.parse_index(track)
     if status_filter:
         ideas = [i for i in ideas if i.get("status") == status_filter]
+    for idea in ideas:
+        if not idea.get("unparsed"):
+            idea["ds_kind"], idea["ds_detail"] = _data_source_for(track, idea["slug"])
     return render_template(
         "ideas_list.html",
         track=track,
@@ -74,6 +92,7 @@ def idea_detail(track, slug):
     if idea is None:
         from flask import abort
         abort(404)
+    ds_kind, ds_detail = parsers.classify_data_source(idea["header"].get("Data Sources"))
     return render_template(
         "idea_detail.html",
         track=track,
@@ -81,6 +100,8 @@ def idea_detail(track, slug):
         slug=slug,
         idea=idea,
         statuses=parsers.STATUS_CHOICES,
+        ds_kind=ds_kind,
+        ds_detail=ds_detail,
     )
 
 
@@ -135,6 +156,7 @@ def review_queue():
     for row in rows:
         row["candidate"] = parsers.candidate_paths(row["slug"])
         row["status_key"] = row["status"].split(" ")[0].split("—")[0].strip()
+        row["ds_kind"], row["ds_detail"] = _data_source_for("marketplace", row["slug"])
     return render_template("review_queue.html", rows=rows)
 
 

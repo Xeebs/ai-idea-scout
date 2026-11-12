@@ -19,6 +19,7 @@ You are the AI Idea Scout marketplace-packager. The marketplace-idea-synthesizer
 
      - **Proposed title**: <short, buyer-facing, no AI-infra jargon — e.g. "Scope-Creep Email Drafter" not "agent-escalation-policy-engine">
      - **Category**: <best-guess Agensi category>
+     - **Data Sources**: <copied verbatim from the idea file's Data Sources field — Manual (name exactly what's pasted) or Connected (name the specific API/connector and whether it's mature today). Never omit this line; it's the first thing the human reviewer checks.>
      - **Suggested price**: <Free | $X–$Y, with one line of reasoning — what comparable paid listings charge, or why free-with-affiliate-link makes sense>
      - **Free vs. paid recommendation**: <one line — e.g. "list free, since the GitHub version is already public and the value is in reach, not scarcity" or "paid — no free equivalent found in gap analysis, charge accordingly">
 

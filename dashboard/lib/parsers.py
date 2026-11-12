@@ -338,6 +338,21 @@ def list_skills(track):
     return out
 
 
+def classify_data_source(value):
+    """Split a Data Sources header value into (kind, detail) for badge
+    rendering. kind is 'connected', 'manual', or 'unspecified' (older ideas
+    written before this field existed)."""
+    if not value:
+        return "unspecified", None
+    v = value.strip()
+    upper = v.upper()
+    if upper.startswith("CONNECTED"):
+        return "connected", v[len("CONNECTED"):].lstrip(" :—-").strip() or None
+    if upper.startswith("MANUAL"):
+        return "manual", v[len("MANUAL"):].lstrip(" :—-").strip() or None
+    return "unspecified", v
+
+
 def render_md_lite(text):
     """Minimal, dependency-free markdown-ish rendering for idea/skill bodies:
     HTML-escapes first, then handles **bold**, `code`, '- ' bullet lists, and

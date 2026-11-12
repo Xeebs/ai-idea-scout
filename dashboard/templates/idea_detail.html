@@ -1,26 +1,54 @@
 {% extends "base.html" %}
+{% import "_icons.html" as icons %}
 {% block title %}{{ idea.title }}{% endblock %}
 {% block content %}
 
-<a href="{{ url_for('ideas_list', track=track) }}" style="font-size:14px;">&larr; {{ label }} Ideas</a>
+<a href="{{ url_for('ideas_list', track=track) }}" class="back-link">{{ icons.icon('chevron-right') }} {{ label }} Ideas</a>
 
-<h2 style="margin:10px 0;">{{ idea.title }}</h2>
+<h2 class="page-title" style="margin-top:var(--space-3);">{{ idea.title }}</h2>
+
+{% if ds_kind == 'connected' %}
+<div class="data-source-banner connected">
+  {{ icons.icon('plug') }}
+  <div>
+    <div class="ds-title">Connected data source</div>
+    <div class="ds-detail">{{ ds_detail or "Reaches into a named external source instead of relying on manual paste." }}</div>
+  </div>
+</div>
+{% elif ds_kind == 'manual' %}
+<div class="data-source-banner manual">
+  {{ icons.icon('pencil') }}
+  <div>
+    <div class="ds-title">Manual input only</div>
+    <div class="ds-detail">{{ ds_detail or "The user pastes everything this skill works from — no external data source is read." }}</div>
+  </div>
+</div>
+{% else %}
+<div class="data-source-banner unspecified">
+  {{ icons.icon('pencil') }}
+  <div>
+    <div class="ds-title">Data source not specified</div>
+    <div class="ds-detail">Written before the Data Sources field existed, or missing it — worth checking the idea's Inputs/Skill Angle section directly.</div>
+  </div>
+</div>
+{% endif %}
 
 <div class="header-fields">
   {% for key, value in idea.header.items() %}
-    <span><b>{{ key }}:</b> {{ value }}</span>
+    {% if key != 'Data Sources' %}<span><b>{{ key }}:</b> {{ value }}</span>{% endif %}
   {% endfor %}
 </div>
 
 <div class="card">
-  <h2>Change status</h2>
+  <h2 class="card-label">Change status</h2>
   <form class="inline" method="post" action="{{ url_for('idea_status', track=track, slug=slug) }}">
-    <select name="status">
+    <label class="field-label" for="status-select">Status</label>
+    <select name="status" id="status-select">
       {% for s in statuses %}
         <option value="{{ s }}" {{ 'selected' if idea.header.get('Status') == s }}>{{ s }}</option>
       {% endfor %}
     </select>
-    <button type="submit">Save status</button>
+    <button type="submit">{{ icons.icon('check') }} Save status</button>
   </form>
 </div>
 
@@ -34,15 +62,16 @@
 {% endfor %}
 
 <div class="card">
-  <h2>Human Feedback</h2>
+  <h2 class="card-label">{{ icons.icon('message') }} Human Feedback</h2>
   {% if idea.sections.get('Human Feedback') %}
     {{ idea.sections.get('Human Feedback') | mdlite | safe }}
   {% else %}
     <div class="empty">No feedback left yet.</div>
   {% endif %}
   <form class="inline" method="post" action="{{ url_for('idea_feedback', track=track, slug=slug) }}">
-    <textarea name="note" placeholder="Leave feedback or redirection for the pipeline — it gets read before this idea is worked on again."></textarea>
-    <button type="submit">Add feedback</button>
+    <label class="field-label" for="feedback-note">Leave feedback or redirection</label>
+    <textarea name="note" id="feedback-note" placeholder="The orchestrator reads this before this idea is worked on again."></textarea>
+    <button type="submit">{{ icons.icon('check') }} Add feedback</button>
   </form>
 </div>
 

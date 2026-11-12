@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% import "_icons.html" as icons %}
 {% block title %}{{ label }} Ideas{% endblock %}
 {% block content %}
 
-<h2 style="margin:4px 0 10px;">{{ label }} Ideas</h2>
+<h2 class="page-title">{{ icons.icon('lightbulb' if track == 'infra' else 'tag') }} {{ label }} Ideas</h2>
 
 <div class="filters">
   <a href="{{ url_for('ideas_list', track=track) }}" class="{{ 'active' if not status_filter }}">All</a>
@@ -25,7 +26,14 @@
         <div class="meta">
           <span class="badge {{ idea.status }}">{{ idea.status }}</span>
           {% if idea.fit %}<span class="badge {{ idea.fit }}">fit: {{ idea.fit }}</span>{% endif %}
-          · {{ idea.topic }} · {{ idea.date }}
+          {% if idea.ds_kind == 'connected' %}
+            <span class="badge connected">{{ icons.icon('plug') }} connected</span>
+          {% elif idea.ds_kind == 'manual' %}
+            <span class="badge manual">{{ icons.icon('pencil') }} manual</span>
+          {% else %}
+            <span class="badge unspecified">data source n/a</span>
+          {% endif %}
+          <span>&middot; {{ idea.topic }} &middot; {{ idea.date }}</span>
         </div>
       </a>
     {% endif %}

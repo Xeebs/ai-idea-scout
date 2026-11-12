@@ -7,3 +7,9 @@ __pycache__/
 # Never committed here even though this line is technically redundant with
 # the nested .git boundary; kept as defense-in-depth per CLAUDE.md Phase 6a.
 marketplace-content/
+
+# Installed Claude Code skills (via `npx skills add`) — a reproducible
+# third-party dependency, not project code. Restore with
+# `cd dashboard && npx skills experimental_install`. skills-lock.json stays
+# tracked so that restore is exact.
+dashboard/.claude/skills/

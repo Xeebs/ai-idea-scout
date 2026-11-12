@@ -44,11 +44,44 @@ show `Linger=yes` so it keeps running even without an active login session.
   section in the idea file — the orchestrator reads this before reworking
   that idea again).
 - **Review Queue** (`/review`) — every packaged Agensi listing candidate,
-  with its drafted listing copy inline. Approve, reject (with a reason), or
+  with its **Data Sources** classification (Manual vs. Connected) shown up
+  front, its drafted listing copy inline. Approve, reject (with a reason), or
   mark listed (with the live URL) once you've actually uploaded it.
 - **Feedback** (`/feedback`) — a global "steer the pipeline" note per track,
   read by the orchestrator at the start of every cycle.
 - **Skills** / **Published** — read-only listings.
+
+## Data Sources visibility
+
+Every idea (see `.claude/rules/idea-format.md`) now carries a **Data Sources**
+header field — Manual (names exactly what the user pastes) or Connected
+(names the specific API/MCP connector it reads from, and whether that
+connector already exists maturely). This exists because real review-queue
+rejections pointed at exactly this: a skill that makes the user paste data
+it could instead read from Gmail or a Google Business Profile reads as thin
+even when the drafting logic is good. The idea list, idea detail page, and
+review queue all surface it as a colored banner/badge (a plug icon for
+Connected, a pencil icon for Manual) so it's visible before you have to dig
+into prose. Ideas written before this field existed show "data source n/a"
+rather than a misleading default.
+
+## Design system
+
+Redesigned using the `nextlevelbuilder/ui-ux-pro-max-skill` Claude Code
+skill (installed via `npx skills add` into `dashboard/.claude/skills/`,
+gitignored — restore with `cd dashboard && npx skills experimental_install`
+using the tracked `skills-lock.json`). Its `--design-system "productivity
+workflow review approval tool"` query returned: Flat Design style, a
+teal/orange palette (verified against WCAG AA independently of the tool's
+own figures — see the comment at the top of `static/style.css`), and Plus
+Jakarta Sans typography. Icons are hand-authored inline SVG (not emoji,
+not an external icon font/CDN) so the dashboard never shows a blank glyph
+if the LAN has no internet — the skill's own pre-delivery checklist flags
+emoji-as-icon and font-dependent rendering as exactly the kind of thing
+that makes an interface look unpolished. Touch targets are ≥44px, focus
+rings are visible, `prefers-reduced-motion` is respected, and dark mode is
+a separately-verified palette (not an inverted light palette) per the
+skill's `color-dark-mode` rule.
 
 ## How writes get committed
 

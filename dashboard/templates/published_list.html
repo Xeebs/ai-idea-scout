@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% import "_icons.html" as icons %}
 {% block title %}Published{% endblock %}
 {% block content %}
 
-<h2 style="margin:4px 0 10px;">Published (public writeups)</h2>
+<h2 class="page-title">{{ icons.icon('megaphone') }} Published (public writeups)</h2>
 
 <div class="card">
   {% if not items %}

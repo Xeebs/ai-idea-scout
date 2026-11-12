@@ -12,6 +12,7 @@ This template is shared by both tracks. INFRA-track ideas live in `ideas/<kebab-
 - **Maturity verdict**: OPEN | PARTIAL (copy the gap-analyst's verdict note)
 - **Format**: PROJECT | SKILL | BOTH (see heuristic in `docs/METHODOLOGY.md`)
 - **Marketplace Fit**: LOW | MEDIUM | HIGH (MARKETPLACE track only — omit this line entirely on INFRA-track ideas in `ideas/`. See the rubric in `docs/METHODOLOGY.md`. Only HIGH ideas with Format SKILL/BOTH and a written `marketplace-content/skills/<slug>/` get packaged for the marketplace review queue.)
+- **Data Sources**: MANUAL | CONNECTED — mandatory on both tracks. See the classification and required detail format in `docs/METHODOLOGY.md`'s "Data Sources" section. This is the single most load-bearing field for a human reviewing the idea: it's the first thing that decides whether a skill is a thin paste-and-prompt wrapper or something that actually reaches into the buyer's real data.
 
 ## The Gap
 2–4 sentences: what the community signal showed, why nothing adequate exists today. Cite the evidence from the digest — who was asking for this and where.
@@ -46,3 +47,4 @@ The smallest version that tests the core hypothesis: scope, rough stack, and the
 - Never overwrite an existing idea file. Supersede with a new file and cross-link in `ideas/INDEX.md`.
 - Keep ideas under ~120 lines (the optional **Human Feedback** section doesn't count against this — it's a human-maintained log, not part of the pitch).
 - Status changes outside the pipeline's own promotion logic (PROTOTYPING, SHELVED, or a human overriding PROPOSED/EXPLORING) are made by a human via `dashboard/`, by editing the `- **Status**:` line directly — never automatically reverted.
+- **Data Sources** must be concrete, never a bare "MANUAL" or "CONNECTED" label with nothing after it — name exactly what the user pastes/uploads (MANUAL) or exactly which named data source/API/MCP connector it reaches into and whether that connector already exists and is mature (CONNECTED). The dashboard surfaces this field prominently so a human can judge it at a glance; a vague entry defeats the point.

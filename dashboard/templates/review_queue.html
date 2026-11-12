@@ -1,8 +1,9 @@
 {% extends "base.html" %}
+{% import "_icons.html" as icons %}
 {% block title %}Review Queue{% endblock %}
 {% block content %}
 
-<h2 style="margin:4px 0 10px;">Agensi.io Review Queue</h2>
+<h2 class="page-title">{{ icons.icon('clipboard-check') }} Agensi.io Review Queue</h2>
 
 {% if not rows %}
   <div class="card"><div class="empty">Nothing packaged yet.</div></div>
@@ -14,31 +15,38 @@
     <strong>{{ row.title }}</strong>
     <span class="badge {{ row.status_key }}">{{ row.status }}</span>
   </div>
-  <div style="font-size:13px;color:var(--muted);margin-bottom:8px;">{{ row.slug }} · {{ row.price }} · {{ row.date }}</div>
+  <div class="subtle-row">{{ row.slug }} &middot; {{ row.price }} &middot; {{ row.date }}</div>
+
+  {% if row.ds_kind == 'connected' %}
+    <div class="data-source-banner connected">{{ icons.icon('plug') }}<div><div class="ds-title">Connected</div><div class="ds-detail">{{ row.ds_detail }}</div></div></div>
+  {% elif row.ds_kind == 'manual' %}
+    <div class="data-source-banner manual">{{ icons.icon('pencil') }}<div><div class="ds-title">Manual input only</div><div class="ds-detail">{{ row.ds_detail }}</div></div></div>
+  {% endif %}
 
   {% if row.candidate.listing %}
     <div class="candidate-box">{{ row.candidate.listing }}</div>
   {% endif %}
-  <div style="font-size:12px;color:var(--muted);">
+  <div class="subtle-row">
     Zip: {{ row.candidate.zip_path }} {{ '(present)' if row.candidate.zip_exists else '(missing!)' }}
   </div>
 
   {% if row.status == 'PENDING_REVIEW' %}
-  <div class="btn-row" style="margin-top:10px;">
+  <div class="btn-row" style="margin-top:var(--space-3);">
     <form method="post" action="{{ url_for('review_decision', slug=row.slug) }}">
       <input type="hidden" name="decision" value="approve">
-      <button type="submit" class="success">Approve</button>
+      <button type="submit" class="success">{{ icons.icon('check') }} Approve</button>
     </form>
-    <form method="post" action="{{ url_for('review_decision', slug=row.slug) }}" style="flex:1;">
+    <form method="post" action="{{ url_for('review_decision', slug=row.slug) }}" class="grow">
       <input type="hidden" name="decision" value="reject">
-      <input type="text" name="reason" placeholder="Reason (optional)">
-      <button type="submit" class="danger">Reject</button>
+      <input type="text" name="reason" placeholder="Reason (optional)" style="margin-bottom:var(--space-2);">
+      <button type="submit" class="danger">{{ icons.icon('x') }} Reject</button>
     </form>
   </div>
   {% elif row.status == 'APPROVED' %}
   <form method="post" action="{{ url_for('review_listed', slug=row.slug) }}" class="inline">
-    <input type="text" name="url" placeholder="Live Agensi.io URL, once listed">
-    <button type="submit">Mark listed</button>
+    <label class="field-label" for="listed-url-{{ row.slug }}">Live Agensi.io URL</label>
+    <input type="text" name="url" id="listed-url-{{ row.slug }}" placeholder="https://www.agensi.io/...">
+    <button type="submit">{{ icons.icon('external-link') }} Mark listed</button>
   </form>
   {% endif %}
 </div>
