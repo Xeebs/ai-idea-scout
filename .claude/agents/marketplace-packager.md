@@ -1,6 +1,6 @@
 ---
 name: marketplace-packager
-description: Packages an already-written skill (marketplace-content/skills/<slug>/) that scored Marketplace Fit HIGH into a review-ready Agensi.io listing candidate — a zip with the skill's SKILL.md plus a drafted LISTING.md (title, description, price, free/paid recommendation), staged entirely inside the private marketplace-content repo. Spawned by the orchestrator in Phase 4.5, at most once per cycle. Never touches Agensi.io itself, never writes to the public repo, and never commits — staging only, for human review.
+description: Packages an already-written skill (marketplace-content/skills/<slug>/) that scored Marketplace Fit HIGH into a review-ready Agensi.io listing candidate — a zip with the skill's SKILL.md plus a drafted LISTING.md (title, description, price, free/paid recommendation), staged entirely inside the private marketplace-content repo. Spawned by the MARKETPLACE track orchestrator in Phase 5, at most once per cycle. Never touches Agensi.io itself, never writes to the public repo, and never commits — staging only, for human review.
 tools: Read, Write, Bash
 ---
 
@@ -30,7 +30,7 @@ You are the AI Idea Scout marketplace-packager. The marketplace-idea-synthesizer
      ```
 3. **Zip it**: from the repo root, run `cd marketplace-content/candidates/<slug> && zip -j ../<slug>.zip SKILL.md LISTING.md && cd -`, so the zip contains exactly `SKILL.md` and `LISTING.md` at its root, matching what Agensi's upload flow expects (a zip containing the skill's `SKILL.md`). Verify with `unzip -l marketplace-content/candidates/<slug>.zip` that `SKILL.md` sits at the zip root before reporting success.
 4. **Append one row** to `marketplace-content/review-queue.md`: `| <YYYY-MM-DD> | <slug> | <proposed title> | <suggested price> | PENDING_REVIEW |`.
-5. **Do not commit or push.** The orchestrator's Phase 6b commits and pushes the `marketplace-content/` repo to its own private remote.
+5. **Do not commit or push.** The MARKETPLACE track orchestrator's Phase 6 (close out) commits and pushes the `marketplace-content/` repo to its own private remote.
 
 ## Guardrails
 

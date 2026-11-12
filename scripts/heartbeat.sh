@@ -31,18 +31,9 @@ log "=== AI Idea Scout heartbeat cycle starting ==="
 
 cd "$REPO"
 
-PROMPT="Run exactly one AI Idea Scout pipeline cycle as defined in CLAUDE.md, end to end, then exit.
+PROMPT="Read CLAUDE.md's 'Orchestration' section and execute it exactly, for this single hourly firing: dispatch both the INFRA and MARKETPLACE track protocols as parallel subagents (per that section's instructions), wait for both to finish, then exit.
 
-Steps:
-1. Read pipeline/state.json first and resume from the recorded phase if mid-flight
-2. Phase 1: spawn trend-scout for the next topic
-3. Phase 2: spawn gap-analyst on the resulting digest
-4. Phase 3: spawn idea-synthesizer, then apply the promotion check (PROPOSED -> EXPLORING) directly to ideas/INDEX.md where it applies
-5. Phase 4: if any idea qualifies (Format SKILL/BOTH, no skills/<slug>/ yet), spawn skill-synthesizer for the oldest one
-6. Phase 5: if any idea is EXPLORING without a published/<slug>.md, spawn publisher
-7. Phase 6: close out — update queue.md, changelog.md, write the session note, reset state.json, and commit + push everything Phases 1-4 touched that the publisher did not already push
-
-This is a single invocation, not a long-lived loop -- do not self-pace or schedule a wake-up. Finish the full cycle through the Phase 6 git push, then stop. If genuinely blocked (rate limit, a subagent stuck), write the current phase to pipeline/state.json and exit; the next hourly firing resumes from there."
+This is a single invocation, not a long-lived loop -- do not self-pace or schedule a wake-up. Each track subagent manages its own resume/retry lifecycle against its own state file (pipeline/state.json for INFRA, marketplace-content/state.json for MARKETPLACE) and does its own git commit + push to its own remote; if one track gets genuinely blocked, let the other still finish and commit normally. Once both have reported back (or you've waited a reasonable time for each), exit."
 
 "$CLAUDE" \
     --dangerously-skip-permissions \

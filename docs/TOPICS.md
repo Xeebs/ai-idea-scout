@@ -21,7 +21,7 @@ Query the skill for *discovery*, not news: "new <topic> techniques people are bu
 
 ## Marketplace Rotation
 
-A second, independent rotation for the MARKETPLACE track (see `pipeline/queue-marketplace.md`), regenerated from this list the same way. Audience is Agensi.io's actual traffic — indie builders, freelancers, and small-business operators searching Google, not AI researchers browsing GitHub. Topics are chosen for broad, everyday recurring tasks with plausible willingness to pay, not technical novelty.
+A second, independent rotation for the MARKETPLACE track (see `marketplace-content/queue.md` — private repo), regenerated from this list the same way. This track runs every hour in parallel with INFRA, not alternating with it. Audience is Agensi.io's actual traffic — indie builders, freelancers, and small-business operators searching Google, not AI researchers browsing GitHub. Topics are chosen for broad, everyday recurring tasks with plausible willingness to pay, not technical novelty.
 
 1. **Content & copywriting** — product descriptions, ad copy, landing page headlines, cold outreach
 2. **Social media & marketing ops** — caption batches, content calendars, repurposing one piece across platforms

@@ -4,9 +4,11 @@ An autonomous research loop that scans the last 30 days of community discussion 
 
 Ideas that are also expressible as a repeatable, prompt-driven task get a real, dual-format Claude Code skill. Ideas that prove recurring or high-impact get promoted to a polished, published writeup.
 
-Two parallel tracks alternate every cycle:
+Two fully independent tracks run **every hour, in parallel** (via subagents, not alternating):
 - **INFRA** — AI-builder/agent-infra topics (agentic AI, multi-agent, RAG, MCP, evals, safety), aimed at technical adopters. Output lives in this repo (`research/`, `ideas/`, `skills/`, `published/`).
-- **MARKETPLACE** — broad indie-builder/small-business topics (copywriting, freelancing, productivity, SEO, etc.), scored for **Marketplace Fit** and, when HIGH, packaged as an Agensi.io listing draft (zip + price/description suggestion) awaiting human review — the pipeline never lists anything itself. **All of this track's output is private**: it lives in `marketplace-content/`, a separate nested git repo pushed to its own private GitHub remote, never to this public repo. See `marketplace-content/README.md` (not visible here if you're reading this on GitHub — it's local-only).
+- **MARKETPLACE** — broad indie-builder/small-business topics (copywriting, freelancing, productivity, SEO, etc.), scored for **Marketplace Fit** and, when HIGH, packaged as an Agensi.io listing draft (zip + price/description suggestion) awaiting human review — the pipeline never lists anything itself. **All of this track's output is private**: it lives in `marketplace-content/`, a separate nested git repo with its own state/queue/changelog, pushed to its own private GitHub remote, never to this public repo. See `marketplace-content/README.md` (not visible here if you're reading this on GitHub — it's local-only).
+
+The two tracks share no mutable files, so running them concurrently every hour is safe — there's nothing for them to race over.
 
 Runs continuously via an hourly cron heartbeat — no long-lived session required.
 
@@ -39,9 +41,9 @@ publisher agent          ← for the oldest EXPLORING idea without one yet,
 pipeline/state.json      ← cycle counter, topic cursor, dedupe ledger
 ```
 
-The diagram above is the INFRA track. The MARKETPLACE track mirrors it exactly (marketplace-trend-scout → marketplace-gap-analyst → marketplace-idea-synthesizer → marketplace-skill-synthesizer → marketplace-packager), with one difference: every step writes into the private `marketplace-content/` repo instead of the paths shown above, and there's an extra packaging step before anything would be "published" — except marketplace ideas are never published publicly at all.
+The diagram above is the INFRA track. The MARKETPLACE track mirrors it exactly (marketplace-trend-scout → marketplace-gap-analyst → marketplace-idea-synthesizer → marketplace-skill-synthesizer → marketplace-packager) against its own files inside the private `marketplace-content/` repo, with an extra packaging step and no publish step at all — marketplace ideas are never made public.
 
-Driven by `scripts/heartbeat.sh` on an hourly cron job — each firing runs exactly one full cycle end-to-end (including both git pushes, public and private) and exits. See `CLAUDE.md` for the full cycle protocol.
+Driven by `scripts/heartbeat.sh` on an hourly cron job — each firing spawns **both tracks as parallel subagents**, waits for both to finish their own full cycle end-to-end (including both git pushes, public and private), and exits. See `CLAUDE.md`'s "Orchestration" section for the dispatch, and the two Track Protocol sections for each track's own cycle.
 
 ## Directory structure
 
@@ -51,17 +53,17 @@ docs/
   TOPICS.md         Topic rotation list and rationale
   METHODOLOGY.md    Research quality bar, maturity rubric, skill-shaped heuristic,
                      promotion/publishing criteria
-pipeline/
-  state.json        Cycle counter, active_track, topic cursor, last run
-  queue.md          INFRA-track topic queue (rotation + ad-hoc additions)
-  queue-marketplace.md   MARKETPLACE-track topic queue
+pipeline/           INFRA-track only — the MARKETPLACE track has its own equivalent
+                     files inside marketplace-content/, never these.
+  state.json        Cycle counter, topic cursor, last run
+  queue.md          Topic queue (rotation + ad-hoc additions)
   changelog.md      One line per completed cycle
   published.md      Log of everything promoted to published/
   sessions/         Per-cycle orchestrator notes
 research/
-  YYYY-MM-DD-<topic>.md   Raw research digests from trend-scout or marketplace-trend-scout
+  YYYY-MM-DD-<topic>.md   Raw research digests from trend-scout (INFRA only)
 ideas/
-  INDEX.md          Index of all generated ideas, status, Format tag, and Track
+  INDEX.md          Index of all generated ideas, status, and Format tag (INFRA only)
   <idea-slug>.md    One file per project idea (see .claude/rules/idea-format.md)
 skills/
   <skill-slug>/     Dual-format Claude Code skill for ideas tagged SKILL/BOTH
@@ -71,11 +73,14 @@ skills/
 published/
   <idea-slug>.md    Polished public writeup for promoted ideas (see pipeline/published.md)
 marketplace-content/   PRIVATE — separate nested git repo, own remote, gitignored here.
-                        Mirrors research/ideas/skills above for the MARKETPLACE track, plus
+                        Full self-contained MARKETPLACE-track pipeline: its own
+                        state.json/queue.md/changelog.md/sessions/, plus
+                        research/ideas/skills/INDEX.md mirroring the above, plus
                         candidates/<slug>/ (packaged listing drafts) and review-queue.md
                         (human approval ledger). See marketplace-content/README.md.
 scripts/
-  heartbeat.sh      Cron entry point — one cycle per invocation
+  heartbeat.sh      Cron entry point — dispatches both tracks as parallel subagents
+                     every hourly firing
 .claude/
   agents/           trend-scout, gap-analyst, idea-synthesizer, skill-synthesizer,
                      publisher, and their marketplace-track siblings
@@ -99,4 +104,4 @@ Continuity is a cron job, not a session you keep open:
 0 * * * * /home/xhasan/my-projects/ai-idea-scout/scripts/heartbeat.sh >> /home/xhasan/my-projects/ai-idea-scout/logs/cron.log 2>&1
 ```
 
-Each firing is self-contained: it holds a lock file for the duration (so a long cycle never overlaps the next hour's trigger), runs one full pipeline cycle, and exits. Logs land in `logs/heartbeat-<date>.log` (rotated after 30 days) and `logs/cron.log`.
+Each firing is self-contained: it holds a lock file for the duration (so a long cycle never overlaps the next hour's trigger), runs both tracks' full cycles in parallel, and exits. Logs land in `logs/heartbeat-<date>.log` (rotated after 30 days) and `logs/cron.log`.
