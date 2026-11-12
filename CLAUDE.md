@@ -2,7 +2,7 @@
 
 AI Idea Scout is an autonomous research pipeline. Each cycle researches one topic for the freshest 30 days of community signal, identifies patterns that are **not yet fully implemented or tested** anywhere, and compiles them into real-world project ideas with a tangible-impact thesis. Ideas that are also expressible as a repeatable prompt-driven task get a real, dual-format Claude Code skill. Ideas that prove popular or impactful get a polished public writeup in `published/`.
 
-**Two fully independent tracks run every hour, in parallel, as separate subagents:**
+**Two fully independent tracks run continuously, back-to-back, in parallel, as separate subagents — not on an hourly schedule anymore:**
 
 - **INFRA** — AI-builder/agent-infra topics, the original scope. Entirely self-contained within this public repo: `pipeline/`, `research/`, `ideas/`, `skills/`, `published/`.
 - **MARKETPLACE** — broad indie-builder topics (see `docs/TOPICS.md` → "Marketplace Rotation"), scored for `Marketplace Fit` and packaged (when HIGH) as an Agensi.io listing draft awaiting human review. Entirely self-contained within `marketplace-content/` — a separate, private, nested git repo with its own remote, its own `pipeline/`-equivalent files (`state.json`, `queue.md`, `changelog.md`, `sessions/`), and its own commit/push. **Nothing produced by this track is ever committed or pushed to this public repo.**
@@ -15,11 +15,11 @@ Public repo: `Xeebs/ai-idea-scout`. Private marketplace repo: `Xeebs/ai-idea-sco
 
 ## Continuity
 
-This pipeline runs via an **hourly cron heartbeat** (`scripts/heartbeat.sh`), not a long-lived self-paced `/loop` session. Each firing invokes `claude --dangerously-skip-permissions` **once**, for a single top-level session whose entire job is the Orchestration step below — dispatch both tracks as parallel subagents, wait for both, exit. `heartbeat.sh` holds a lock file for the duration so an overrunning firing never overlaps the next hour's trigger.
+This pipeline runs via a **continuous loop** (`scripts/loop.sh`, run as the `ai-idea-scout-loop` systemd user service), not cron and not a long-lived self-paced `/loop` session inside one context window. Each firing of `scripts/heartbeat.sh` invokes `claude --dangerously-skip-permissions` **once**, for a single top-level session whose entire job is the Orchestration step below — dispatch both tracks as parallel subagents, wait for both, exit — then `loop.sh` immediately fires the next one (a short fixed pause, not an hour). `heartbeat.sh` still holds a lock file for the duration; under the loop alone firings are already serial, but the lock still protects against a stray manual/cron invocation overlapping one in progress.
 
-Each track manages its **own** resume/retry lifecycle independently via its own state file (`pipeline/state.json` for INFRA, `marketplace-content/state.json` for MARKETPLACE). If a track's subagent can't finish within an hour (rate limit, a stuck sub-subagent), it writes its current phase to its own state file and stops; the *other* track is unaffected and still completes and commits normally. The next hourly firing's subagent for the stalled track resumes from where it left off. Neither track should ever wait on, block, or need to know about the other.
+Each track manages its **own** resume/retry lifecycle independently via its own state file (`pipeline/state.json` for INFRA, `marketplace-content/state.json` for MARKETPLACE). If a track's subagent can't finish within one firing (rate limit, a stuck sub-subagent), it writes its current phase to its own state file and stops; the *other* track is unaffected and still completes and commits normally. The very next firing's subagent for the stalled track resumes from where it left off — with no hour-long wait, a stalled track picks back up within seconds of the previous firing ending. Neither track should ever wait on, block, or need to know about the other.
 
-## Orchestration (top-level session, every hourly firing)
+## Orchestration (top-level session, every firing)
 
 1. **Dispatch both track subagents in parallel** — one message, two delegations, neither waiting on the other:
    - **general-purpose subagent, "infra-cycle"**: `You are the AI Idea Scout INFRA track orchestrator. Read /home/xhasan/my-projects/ai-idea-scout/CLAUDE.md's "INFRA Track Protocol" section and execute it exactly, Phase 0 through Phase 6, end to end, including the git commit and push. This is a single invocation — do not self-pace or schedule a wake-up. If genuinely blocked, write the current phase to pipeline/state.json and stop; report what phase you stopped at.`

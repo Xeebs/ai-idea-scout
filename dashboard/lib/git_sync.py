@@ -1,10 +1,11 @@
-"""Commit + push a dashboard edit without racing the hourly heartbeat cycle.
+"""Commit + push a dashboard edit without racing the continuous pipeline loop.
 
-If the heartbeat lock is held, we back off rather than fight it for
-.git/index.lock -- the edit is already saved to disk, and the next cycle's
-own close-out sweep (which stages these same paths, or uses `git add -A`
-for marketplace-content) will carry it along, so nothing is ever lost,
-just possibly committed a little later than this request.
+If the heartbeat lock is held (a cycle is running right now -- the loop
+fires cycles back-to-back with no idle gap), we back off rather than fight
+it for .git/index.lock -- the edit is already saved to disk, and the next
+cycle's own close-out sweep (which stages these same paths, or uses
+`git add -A` for marketplace-content) will carry it along, so nothing is
+ever lost, just possibly committed a little later than this request.
 """
 import subprocess
 import time
@@ -33,7 +34,7 @@ def commit_and_push(repo_dir, paths, message):
         time.sleep(LOCK_POLL_INTERVAL)
         waited += LOCK_POLL_INTERVAL
     if _lock_held():
-        return False, "Saved locally. An hourly cycle is running right now, so this will be committed by its own close-out shortly rather than right now."
+        return False, "Saved locally. A pipeline cycle is running right now, so this will be committed by its own close-out shortly rather than right now."
 
     try:
         add = _run(["git", "add"] + list(paths), repo_dir)

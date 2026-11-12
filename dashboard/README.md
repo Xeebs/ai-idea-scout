@@ -55,8 +55,8 @@ show `Linger=yes` so it keeps running even without an active login session.
 Every write (status change, feedback, review decision) saves to disk
 immediately, then the app tries to `git commit` + `push` just that file —
 to the public repo for INFRA, to the private `marketplace-content` repo's
-own remote for MARKETPLACE. If an hourly cycle happens to be running right
-now, the app skips the push rather than fight it for `.git/index.lock` — the
+own remote for MARKETPLACE. If a pipeline cycle happens to be running right
+now (the loop fires them back-to-back continuously), the app skips the push rather than fight it for `.git/index.lock` — the
 edit is still saved, and that cycle's own close-out will carry it along
 within the hour. The flash message after each action tells you which
 happened.

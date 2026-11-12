@@ -10,7 +10,7 @@ Two fully independent tracks run **every hour, in parallel** (via subagents, not
 
 The two tracks share no mutable files, so running them concurrently every hour is safe — there's nothing for them to race over.
 
-Runs continuously via an hourly cron heartbeat — no long-lived session required.
+Runs continuously via a looping systemd service — no long-lived session required, and no hourly throttle: a new cycle fires immediately after the previous one finishes.
 
 ## How it works
 
@@ -43,7 +43,7 @@ pipeline/state.json      ← cycle counter, topic cursor, dedupe ledger
 
 The diagram above is the INFRA track. The MARKETPLACE track mirrors it exactly (marketplace-trend-scout → marketplace-gap-analyst → marketplace-idea-synthesizer → marketplace-skill-synthesizer → marketplace-packager) against its own files inside the private `marketplace-content/` repo, with an extra packaging step and no publish step at all — marketplace ideas are never made public.
 
-Driven by `scripts/heartbeat.sh` on an hourly cron job — each firing spawns **both tracks as parallel subagents**, waits for both to finish their own full cycle end-to-end (including both git pushes, public and private), and exits. See `CLAUDE.md`'s "Orchestration" section for the dispatch, and the two Track Protocol sections for each track's own cycle.
+Driven by `scripts/heartbeat.sh`, looped continuously by `scripts/loop.sh` (as the `ai-idea-scout-loop` systemd service) instead of an hourly cron trigger — each firing spawns **both tracks as parallel subagents**, waits for both to finish their own full cycle end-to-end (including both git pushes, public and private), and the loop immediately fires the next one. See `CLAUDE.md`'s "Orchestration" section for the dispatch, and the two Track Protocol sections for each track's own cycle.
 
 ## Directory structure
 
@@ -79,8 +79,9 @@ marketplace-content/   PRIVATE — separate nested git repo, own remote, gitigno
                         candidates/<slug>/ (packaged listing drafts) and review-queue.md
                         (human approval ledger). See marketplace-content/README.md.
 scripts/
-  heartbeat.sh      Cron entry point — dispatches both tracks as parallel subagents
-                     every hourly firing
+  heartbeat.sh      One firing — dispatches both tracks as parallel subagents, exits
+  loop.sh           Continuous driver — fires heartbeat.sh back-to-back forever
+                     (run as the ai-idea-scout-loop systemd service)
 .claude/
   agents/           trend-scout, gap-analyst, idea-synthesizer, skill-synthesizer,
                      publisher, and their marketplace-track siblings
@@ -98,13 +99,15 @@ scripts/
 
 ## Running it
 
-Continuity is a cron job, not a session you keep open:
+Continuity is a systemd user service running `scripts/loop.sh`, not a cron job and not a session you keep open:
 
-```
-0 * * * * /home/xhasan/my-projects/ai-idea-scout/scripts/heartbeat.sh >> /home/xhasan/my-projects/ai-idea-scout/logs/cron.log 2>&1
+```bash
+systemctl --user status ai-idea-scout-loop    # check it's running
+systemctl --user restart ai-idea-scout-loop   # after editing CLAUDE.md/agents
+journalctl --user -u ai-idea-scout-loop -f    # tail live output
 ```
 
-Each firing is self-contained: it holds a lock file for the duration (so a long cycle never overlaps the next hour's trigger), runs both tracks' full cycles in parallel, and exits. Logs land in `logs/heartbeat-<date>.log` (rotated after 30 days) and `logs/cron.log`.
+`loop.sh` fires `heartbeat.sh` and, as soon as it exits, fires it again — no hourly wait. Each firing is self-contained: it holds a lock file for the duration (so a long cycle can't overlap a second one), runs both tracks' full cycles in parallel, and exits; `loop.sh` then pauses briefly and fires the next one. Logs land in `logs/heartbeat-<date>.log` (rotated after 30 days) and `logs/cron.log` (kept as the log filename for continuity, though nothing here is triggered by cron anymore).
 
 ## Dashboard
 

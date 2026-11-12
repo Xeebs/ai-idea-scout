@@ -54,8 +54,8 @@ When in doubt between PROJECT and BOTH, prefer BOTH — a skill companion is che
 
 ## Cadence & convergence
 
-- One topic per cycle, fired hourly by `scripts/heartbeat.sh` (cron), full rotation ≈ 10 cycles.
-- Two consecutive zero-idea cycles → note it in `pipeline/sessions/` and review topic phrasing in `TOPICS.md` (the heartbeat keeps firing hourly regardless — there is no self-pacing to slow).
+- One topic per cycle, fired continuously back-to-back by `scripts/loop.sh` (no hourly throttle), full rotation ≈ 10 cycles.
+- Two consecutive zero-idea cycles → note it in `pipeline/sessions/` and review topic phrasing in `TOPICS.md` (the loop keeps firing regardless — there is no self-pacing to slow).
 - The ledger in `ideas/INDEX.md` is append-only; superseded ideas are cross-linked, never deleted, so the reasoning trail stays auditable.
 
 ## Marketplace track
