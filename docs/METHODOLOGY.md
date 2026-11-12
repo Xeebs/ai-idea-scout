@@ -57,3 +57,37 @@ When in doubt between PROJECT and BOTH, prefer BOTH — a skill companion is che
 - One topic per cycle, fired hourly by `scripts/heartbeat.sh` (cron), full rotation ≈ 10 cycles.
 - Two consecutive zero-idea cycles → note it in `pipeline/sessions/` and review topic phrasing in `TOPICS.md` (the heartbeat keeps firing hourly regardless — there is no self-pacing to slow).
 - The ledger in `ideas/INDEX.md` is append-only; superseded ideas are cross-linked, never deleted, so the reasoning trail stays auditable.
+
+## Marketplace track
+
+A second, parallel track aimed at Agensi.io's actual audience (indie builders and small-business operators searching Google) rather than the INFRA track's AI-builder niche. `pipeline/state.json`'s `active_track` alternates INFRA/MARKETPLACE strictly every completed cycle, so roughly half of all cycles run this track over time. It uses its own topic rotation (`docs/TOPICS.md` → "Marketplace Rotation") and queue (`pipeline/queue-marketplace.md`), and its own agents — `marketplace-trend-scout`, `marketplace-gap-analyst`, `marketplace-idea-synthesizer`, `marketplace-skill-synthesizer`, `marketplace-packager` — sibling rewrites of the INFRA agents with the same file-contract shapes but a buyer-facing rubric.
+
+**Everything this track produces lives in `marketplace-content/` — a separate, private, nested git repo with its own remote, never pushed to the public `ai-idea-scout` repo.** The orchestration logic described here (this doc, `CLAUDE.md`, the agent definitions themselves, `docs/TOPICS.md`) stays public — it's process, not sellable content. But the actual research digests, idea files, skills, and packaged listing candidates are the product being readied for sale, so they never touch the public repo. See `marketplace-content/README.md`.
+
+### Marketplace maturity rubric (marketplace-gap-analyst)
+
+| Verdict | Bar |
+|---------|-----|
+| SATURATED | ≥2 well-reviewed paid listings (prompt packs, GPTs, skills, Agensi itself) already cover the task well |
+| PARTIAL | Listings exist but are low-quality, generic, unreviewed, stale, or too narrow |
+| OPEN | Genuine search found no decent paid listing despite real demand signal |
+
+This mirrors the INFRA rubric's shape but checks paid-listing saturation (PromptBase, Gumroad, GPT store, Agensi, generic web search) instead of GitHub/papers — the right competitive set for something that will be sold, not open-sourced.
+
+### Marketplace Fit rubric (marketplace-idea-synthesizer)
+
+Every MARKETPLACE-track idea gets a **Marketplace Fit** rating, independent of the Format tag:
+
+| Rating | Bar |
+|---|---|
+| HIGH | Broad audience outside AI/agent builders; the task has real search/demand signal; resolves to one prompt-driven invocation (no persistent infra); a visible willingness-to-pay signal exists (people already pay for an adjacent or worse alternative) |
+| MEDIUM | Meets most of the above but audience is narrower, or demand signal is thin, or no direct pricing comparison was found |
+| LOW | Niche/AI-builder audience, or no willingness-to-pay signal — this idea probably belongs on the INFRA track instead |
+
+Only `Marketplace Fit: HIGH` ideas that are also `Format: SKILL` or `BOTH` and already have a `marketplace-content/skills/<slug>/` directory (written by `marketplace-skill-synthesizer`, Phase 4b) become candidates for packaging.
+
+### Packaging & human approval gate
+
+The `marketplace-packager` agent (Phase 4.5, at most once per cycle) turns a qualifying skill into `marketplace-content/candidates/<slug>/` (a copy of `SKILL.md` + a drafted `LISTING.md` with proposed title, category, price, and free/paid recommendation) and `marketplace-content/candidates/<slug>.zip`, then appends a `PENDING_REVIEW` row to `marketplace-content/review-queue.md`.
+
+**The pipeline stops there.** It has no Agensi.io credentials and never uploads, lists, or prices anything itself. `marketplace-content/review-queue.md` is human-owned exactly like `ideas/INDEX.md` statuses — the pipeline appends new `PENDING_REVIEW` rows but never advances a row to `APPROVED`, `REJECTED`, or `LISTED`; only a human does that, after actually reviewing the zip and completing the listing on agensi.io/sell. See `marketplace-content/README.md` for the human-side workflow.

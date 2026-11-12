@@ -1,2 +1,7 @@
 logs/*.log
 .DS_Store
+
+# Private marketplace content — own nested git repo, own private remote.
+# Never committed here even though this line is technically redundant with
+# the nested .git boundary; kept as defense-in-depth per CLAUDE.md Phase 6a.
+marketplace-content/

@@ -1,6 +1,6 @@
 # Idea File Format
 
-Every file in `ideas/` follows this template exactly. File name: `<kebab-case-slug>.md`.
+This template is shared by both tracks. INFRA-track ideas live in `ideas/<kebab-case-slug>.md` (public repo). MARKETPLACE-track ideas live in `marketplace-content/ideas/<kebab-case-slug>.md` (separate private repo — see `marketplace-content/README.md`) and carry one extra header field.
 
 ```markdown
 # <Project Title>
@@ -8,9 +8,10 @@ Every file in `ideas/` follows this template exactly. File name: `<kebab-case-sl
 - **Status**: PROPOSED | EXPLORING | PROTOTYPING | SHELVED
 - **Date**: YYYY-MM-DD
 - **Topic**: <rotation topic this came from>
-- **Source**: research/<digest-file>.md · <pattern ID, e.g. P3>
+- **Source**: research/<digest-file>.md · <pattern ID, e.g. P3> (MARKETPLACE track: `marketplace-content/research/<digest-file>.md`)
 - **Maturity verdict**: OPEN | PARTIAL (copy the gap-analyst's verdict note)
 - **Format**: PROJECT | SKILL | BOTH (see heuristic in `docs/METHODOLOGY.md`)
+- **Marketplace Fit**: LOW | MEDIUM | HIGH (MARKETPLACE track only — omit this line entirely on INFRA-track ideas in `ideas/`. See the rubric in `docs/METHODOLOGY.md`. Only HIGH ideas with Format SKILL/BOTH and a written `marketplace-content/skills/<slug>/` get packaged for the marketplace review queue.)
 
 ## The Gap
 2–4 sentences: what the community signal showed, why nothing adequate exists today. Cite the evidence from the digest — who was asking for this and where.
@@ -19,7 +20,7 @@ Every file in `ideas/` follows this template exactly. File name: `<kebab-case-sl
 What gets built, concretely. Core loop, key components, and how the novel pattern is the centerpiece (not a feature bolted onto a generic app). 1–2 short paragraphs plus an optional component list.
 
 ## Tangible Impact
-**Population**: the specific group of people affected, with a size estimate and a source for that estimate where possible.
+**Population**: the specific group of people affected, with a size estimate and a source for that estimate where possible. On the MARKETPLACE track this is the specific buyer type (e.g. "freelance copywriters doing cold outreach"), not an affected-population size estimate.
 **Mechanism**: how this project changes their day, week, or outcomes — the causal chain, not a vibe.
 **Measure**: 2–3 metrics that would prove the impact is real (e.g., "median time to file an appeal drops from 3 weeks to 2 days", "clinic triage error rate on the eval set").
 

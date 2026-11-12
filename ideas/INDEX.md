@@ -2,6 +2,8 @@
 
 Format: `- [<Title>](<file>.md) — <one-line hook> · <topic> · <date> · status: PROPOSED|EXPLORING|PROTOTYPING|PUBLISHED|SHELVED`
 
+This index is INFRA-track only. MARKETPLACE-track ideas have their own private index at `marketplace-content/INDEX.md` (separate repo — see `marketplace-content/README.md`).
+
 - [Agent Execution-State Store ("Postgres for reasoning runs")](agent-execution-state-store.md) — Store agent runs as queryable, resumable branching-reasoning objects instead of Redis duct tape · Agentic AI & autonomous agents · 2026-06-10 · status: PROPOSED
 - [Agent Run VCR: Deterministic Replay & Diff for Agent Behavior](agent-run-replay-vcs.md) — Record agent executions as cassettes you can replay without live LLM calls, diff, and rewind · Agentic AI & autonomous agents · 2026-06-10 · status: PUBLISHED — [writeup](../published/agent-run-vcr.md) (promoted 2026-11-11: recurred independently in both cycle 1 and cycle 2 digests)
 - [Agent Change Feeds: a diffable, consent-based "RSS for agents"](agent-change-feed-standard.md) — A polling-friendly change-feed standard so agents fetch structured diffs instead of scraping HTML · Agentic AI & autonomous agents · 2026-06-10 · status: PROPOSED
