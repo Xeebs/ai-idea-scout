@@ -1,7 +1,7 @@
 {
-  "cycle": 20,
-  "current_phase": "RESEARCH",
-  "active_track": "MARKETPLACE",
-  "active_topic": "Content & copywriting",
-  "last_run": "2026-11-12T17:30:00Z"
+  "cycle": 21,
+  "current_phase": "IDLE",
+  "active_track": "INFRA",
+  "active_topic": null,
+  "last_run": "2026-11-12T18:18:24Z"
 }

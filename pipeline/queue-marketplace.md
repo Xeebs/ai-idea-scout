@@ -8,7 +8,7 @@ Format: `- [STATUS] <topic>` — STATUS ∈ UNWORKED | IN_PROGRESS | DONE | FAIL
 
 ## Rotation — pass 1 (generated 2026-11-12)
 
-- [IN_PROGRESS] Content & copywriting
+- [DONE] Content & copywriting
 - [UNWORKED] Social media & marketing ops
 - [UNWORKED] Freelancing & client work
 - [UNWORKED] Resume & job search
