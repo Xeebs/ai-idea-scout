@@ -9,3 +9,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-12 | tiered-judge-calibration-pipeline | A three-tier deterministic+judge+human-gold pipeline that turns "how much do I trust this LLM judge" into a continuously measured number | LLM evaluation & observability | no |
 | 2026-11-12 | tiered-guardrail-severity-composer | A declarative severity-tier composer and benchmark so fail-open/fail-closed guardrail logic stops being hand-rolled and unvalidated | AI safety & guardrails in production | no |
 | 2026-11-12 | guardrail-accuracy-drift-monitor | Treats guardrail check accuracy itself as a monitored, drifting metric instead of discovering decay only after an incident | AI safety & guardrails in production | no |
+| 2026-11-12 | ai-merge-trust-label-framework | A shared GitHub Action for trust-label-gated AI PR merges instead of every team re-deriving the same bespoke script | AI safety & guardrails in production | no |
