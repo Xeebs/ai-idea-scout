@@ -14,3 +14,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-12 | voice-agent-speculative-tool-calling-middleware | Fires likely tool calls from partial transcripts to kill the multi-second dead-air gap in voice agents | Voice & multimodal agents | no |
 | 2026-11-12 | voice-interruption-classification-policy-engine | Classifies barge-ins as correction/backchannel/noise/DTMF/timeout/escalation instead of a binary stop-or-don't toggle | Voice & multimodal agents | no |
 | 2026-11-12 | lossless-context-state-manager | Context as diffable, restorable commits instead of irreversible lossy compaction | Context engineering & memory | no |
+| 2026-11-12 | mcp-skill-trust-attestation-layer | A layered allow/warn/block policy gateway that vets MCP servers and skills together before an agent loads them, with an auditable decision ledger | Tool use & MCP ecosystem | no |
