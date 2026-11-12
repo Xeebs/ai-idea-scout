@@ -1,0 +1,37 @@
+# Breaker: A Cost-Aware Circuit Breaker for Repeatedly-Failing Agent Tool Calls
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-12
+- **Topic**: Tool use & MCP ecosystem
+- **Source**: research/2026-11-12-tool-use-mcp-ecosystem-2.md · P7
+- **Maturity verdict**: PARTIAL — the practice is widely written about (a substack titled "The Agentic Circuit Breaker," Gravitee, FutureAGI, several dev.to walkthroughs) and OneUptime has a docs page for an "AI Agent Circuit Breaker," but that page is a DIY recipe stitching together existing budget/trace-monitor/workflow primitives plus a stop endpoint the team writes themselves — not a dedicated maintained product. GitHub turned up only brand-new, narrow point tools (devsoniclk/tripwire, created 2026-06; rejisterjack/fuse, created 2026-11-08), neither established.
+- **Format**: BOTH — the breaker is a persistent runtime middleware tracking sliding-window failure state across a live tool-call stream; auditing a team's past agent-run logs for wasted-cost failure loops is a separable one-shot task.
+- **Data Sources**: BOTH apply differently by half — the **project** (runtime breaker) is CONNECTED: it wraps the agent framework's or MCP client's live tool-call execution layer (request/response/error stream), a stable extension point in every major agent SDK and MCP client today, so no new connector needs to be built. The **skill** (log-audit companion) is MANUAL: the user pastes a batch of agent run logs/traces (tool name called, arguments, success/fail status, and cost-per-call if available) for the session(s) they want analyzed.
+
+## The Gap
+GitHub, `github/gh-aw-firewall` PR #11280, "fix: gate PR Sous Chef agent launches on trusted refresh" (2026-11-07): "29 of 35 inspected agent runs failed refreshing repeatedly selected PRs, spending ~10 AIC per run without producing value." The fix shipped was a narrow, ad hoc gate built inside one internal firewall tool in direct response to measured waste — not an adoption of any existing general-purpose agent-loop circuit-breaker pattern, because none exists as a maintained product. The closest public artifact (OneUptime's docs page) is explicitly a build-it-yourself recipe, not a drop-in tool.
+
+## The Project
+A framework-agnostic middleware that wraps tool-call execution for any agent loop and tracks a sliding-window failure signature per (tool, argument-shape, session) tuple. When a configurable repeated-failure threshold is crossed — identical-argument retries, semantically-similar-argument retries (e.g., re-selecting the same already-failed target under slightly different phrasing), or repeated identical error codes — the breaker trips: it pauses the loop, escalates to a human or a different recovery path, or aborts the run outright, before more API/compute cost is spent on a run with no realistic chance of succeeding. Unlike the ad hoc fixes found (gh-aw-firewall's one hard-coded "trusted refresh" precondition, onyx-dot-app's advisory-selection PRs), the detection strategies are pluggable and the cost saved by every trip is tracked explicitly, so teams can see the dollar value of the breaker, not just infer it.
+
+Components: a tool-call execution wrapper (drop-in for any agent SDK/MCP client), the sliding-window failure-signature tracker with three built-in detection strategies, a configurable trip action (pause/escalate/abort) with a pluggable escalation target, and a cost-saved ledger reporting prevented spend per tripped breaker event.
+
+## Tangible Impact
+**Population**: Engineering teams running agentic workflows in automated, metered contexts at real scale — CI/CD coding-agent pipelines (GitHub Actions-based agents, PR-review bots), scheduled batch agent jobs, and any team paying per-API-call or per-compute-unit for agent runs that can get stuck in a doomed retry loop. The source evidence's own measured case (gh-aw-firewall) shows 83% of inspected runs (29 of 35) hitting this exact waste pattern — a cohort that scales with the growing adoption of agentic CI tooling (Claude Code's GitHub Action, Codex, and similar).
+**Mechanism**: Today, an agent loop that hits a doomed-to-fail pattern (re-selecting the same already-failed target, retrying an unfixable error) keeps spending API/compute cost until it hits an unrelated timeout or budget ceiling, because nothing inspects the *shape* of repeated failure mid-run. A pluggable breaker halts the loop at the moment the failure signature repeats past threshold, converting open-ended wasted spend into a bounded, measured cost.
+**Measure**: (1) % reduction in wasted API/compute cost from repeated-failure loops on a team's own run history, replaying the gh-aw-firewall case's measured baseline (29/35 runs, ~10 AIC/run wasted) as a validation target. (2) Median time-to-trip — how much sooner the breaker halts a doomed loop compared to the loop's natural timeout or budget ceiling. (3) False-positive trip rate — legitimate retries incorrectly halted, which must stay low enough that teams trust the breaker rather than disabling it.
+
+## Why Now
+Agentic CI and batch-automation tooling went from experimental to default practice fast enough in 2026 that a major platform's own internal firewall tool had to ship an ad hoc, single-purpose gate in direct response to measured waste within the last 30 days, with the only public "solution" being a documented DIY recipe rather than anything a team can actually install.
+
+## Skill Angle
+Given a batch of pasted agent run logs/traces (tool calls, arguments, success/fail, and cost if available), identify repeated-failure loops matching the breaker's three detection strategies, quantify the wasted cost in that batch, and recommend starting threshold/window parameters for deploying the runtime breaker — a one-shot diagnostic a team runs on historical logs before committing to the live middleware.
+
+## MVP Sketch
+A Python/TypeScript middleware wrapping tool-call execution for one popular agent framework first (e.g., LangGraph or the Claude Agent SDK) plus direct MCP client interception as a second path, implementing the identical-argument and repeated-error-code detection strategies first (semantic-similarity detection as a stretch goal), with a pause-and-log trip action and a cost-saved ledger. Experiment: replay the gh-aw-firewall PR's described failure pattern (or a reconstructed equivalent) through the breaker and measure whether it trips before the full 29/35-failure-rate cost is incurred, versus running the same scenario unguarded. 3–4 weeks for 1–2 people.
+
+## Risks & Open Questions
+- Distinguishing "legitimate retry with a slightly different approach" from "doomed repeated failure" is a genuine judgment call — too aggressive a trip threshold halts recoverable work, too lenient defeats the purpose.
+- Cost-per-call visibility varies by provider and framework; the cost-saved ledger's accuracy depends on reliable per-call cost data being available at all, which not every setup has instrumented.
+- Agent frameworks could ship this as a built-in primitive (the onyx-dot-app PRs show one team already moving this direction internally), narrowing a standalone library's differentiation to cross-framework portability and the pluggable-detection-strategy design.
+- The semantically-similar-argument detection strategy (catching "same target, reworded") is the hardest to get right and the most valuable — if it can't be made reliable, the project degrades to the same narrow identical-argument gating the existing ad hoc fixes already do.

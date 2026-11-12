@@ -1,0 +1,37 @@
+# ToolFetch: A Generalized Selective-Retrieval Gateway for MCP Tool Definitions
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-12
+- **Topic**: Tool use & MCP ecosystem
+- **Source**: research/2026-11-12-tool-use-mcp-ecosystem-2.md · P4
+- **Maturity verdict**: PARTIAL — academic work with real benchmarks exists (RAG-MCP, arXiv 2505.03275, 43% selection accuracy vs. 13–18% baselines; ScaleMCP; Graph RAG-Tool Fusion) and a published npm package (KGT24k/mcp-tool-search, 7 stars, 85–96% token savings via lazy loading across 100+ MCP servers), but the GitHub-native implementations found (RajeshwariVelmurugan/MCP-Tool-Retrieval-Gateway, ZCEON/intelligent-mcp-tool-retrieval, NovoMCP/tool-search-eval) are all under two months old with 0 stars — narrow, unproven, not widely adopted. The one production-shaped precedent (schemagate, r/LangChain, 91% schema-token reduction) is scoped specifically to database schemas for text-to-SQL, not general MCP tool catalogs.
+- **Format**: BOTH — the retrieval gateway is a persistent proxy maintaining a live tool index; auditing an existing agent's connected tool manifest and recommending pruning is a separable one-shot task.
+- **Data Sources**: CONNECTED — reads directly from the MCP protocol's own standard `tools/list` endpoint across every MCP server the agent host connects to. This connector already exists maturely today — every MCP server implements `tools/list` as part of the base spec — so no new API needs to be built to read the data; the gap is entirely in the missing retrieval/indexing layer on top of it.
+
+## The Gap
+r/LangChain, "Text-to-SQL retriever for LangChain/LangGraph that cuts ~91% of schema tokens (#1 on BIRD Mini-Dev)" (2026-11-03): "Instead of pasting the whole schema into the prompt, it picks only the tables a question needs... on a 1,201-table test schema, one question went from 146,695 to 1,348 tokens." The builder scoped this specifically to database schemas. No equivalent "pick only the MCP tools this request needs" retrieval layer has shipped as a production-grade, widely-adopted tool, despite the identical token-bloat complaint applying directly to agents connected to many MCP servers at once — a setup now common given the MCP Registry's 20,000–30,000 listed servers.
+
+## The Project
+A proxy that sits between an agent host and every MCP server it's connected to, intercepting the full combined tool catalog and replacing the flat "paste every tool definition from every server into every turn" pattern with per-turn selective retrieval. On startup and whenever any connected server's `tools/list` changes, it builds a lightweight index (embeddings plus keyword/name matching) over every available tool's name, description, and schema. On each agent turn, it retrieves only the top-K tools relevant to the current user request or subtask and injects just those definitions into context — the same move RAG-MCP validated academically (43% selection accuracy vs. 13–18% for flat lists) but packaged as production middleware rather than a benchmark script.
+
+Components: an MCP-protocol-compliant tool-catalog aggregator (merges `tools/list` across all connected servers, tracks changes), the retrieval index (embedding model plus fallback keyword search for exact-name matches), a per-turn top-K selector with a configurable fallback ("none matched well enough — fall back to full catalog" so the agent never silently loses a tool it needs), and an instrumentation layer reporting tokens saved and selection accuracy per session.
+
+## Tangible Impact
+**Population**: Developers and teams running agents connected to many MCP servers simultaneously — the exact setup the MCP ecosystem is converging toward as the registry scales past 20,000 servers and power users commonly connect 5–15 servers (each exposing 10–50 tools) to a single agent session, pasting hundreds of tool definitions into every turn regardless of relevance.
+**Mechanism**: Today, every connected MCP server's full tool list goes into context on every turn, which both wastes tokens (cost, and context-window headroom that could hold task content instead) and actively degrades tool-selection accuracy — RAG-MCP's benchmark shows flat-list baselines choosing the right tool only 13–18% of the time versus 43% with retrieval. Selective retrieval fixes both the cost and the accuracy problem with the same mechanism.
+**Measure**: (1) Median tool-definition tokens injected per agent turn, before vs. after, across a fixed multi-server test fleet (target: order-of-magnitude reduction, consistent with schemagate's ~91% and KGT24k's 85–96% precedents). (2) Tool-selection accuracy (did the agent call the correct tool on first attempt) benchmarked against RAG-MCP's published baselines on a held-out task set. (3) Dollar cost per session attributable to tool-definition tokens, before vs. after.
+
+## Why Now
+The MCP Registry's scale (20,000–30,000 servers, Linux Foundation-governed) means "connected to many servers at once" is now the normal power-user setup rather than the exception, and the only validated precedent for cutting this exact token bloat (schemagate) is locked to database schemas — nobody has generalized the same retrieval move to the MCP tool catalog itself as a maintained, adopted product.
+
+## Skill Angle
+Given a snapshot of an agent's current connected-server tool manifest (via `tools/list` from each server, or pasted if the user can't query live), cluster the tools by function, flag near-duplicate or rarely-used tools across servers, and produce a recommended top-K retrieval configuration (which tools should always load, which should be retrieval-gated) — a one-shot audit a team can run before deciding whether to deploy the full gateway.
+
+## MVP Sketch
+A Python/TypeScript proxy implementing the MCP client-and-server protocol on both sides (so it's a drop-in man-in-the-middle for any host), backed by a small local embedding index (e.g., a lightweight sentence-transformer) over tool name/description/schema, with a hard fallback to full-catalog injection on low-confidence retrieval. Experiment: connect it to 5 real public MCP servers (GitHub, Slack, filesystem, a web-search server, a database server — roughly 50–100 tools combined) and run a task set through both the raw flat-catalog baseline and the retrieval gateway, measuring tokens and first-try tool-selection accuracy. 3–4 weeks for 1–2 people.
+
+## Risks & Open Questions
+- A false-negative retrieval miss (the right tool exists but isn't retrieved) is worse than token bloat — the fallback-to-full-catalog safety valve needs to trigger reliably enough that this never silently breaks a task.
+- MCP hosts (Claude Code, Cursor, etc.) could ship this natively as a built-in client feature, which would collapse a standalone gateway's differentiation to niche/legacy hosts only.
+- Embedding-based retrieval needs periodic re-indexing as servers add/remove tools; a stale index is a correctness bug, not just a staleness inconvenience.
+- The only validated numeric precedent (schemagate, RAG-MCP) comes from database-schema and academic-benchmark contexts respectively — real MCP tool descriptions in the wild are often vaguer and less structured than SQL schemas, so retrieval accuracy may not transfer cleanly without real-world testing.
