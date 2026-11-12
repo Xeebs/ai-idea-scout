@@ -13,3 +13,4 @@ One line per completed cycle: `- <date> · cycle <n> · <topic> · <x> patterns,
 - 2026-11-12 · cycle 8 · AI safety & guardrails in production · 8 patterns, 5 open/partial, 5 ideas (3 promoted to EXPLORING), skill written: rag-abstention-confidence-gate, published: tiered-guardrail-severity-composer
 - 2026-11-12 · cycle 9 · Voice & multimodal agents · 8 patterns, 4 open/partial, 4 ideas (4 promoted to EXPLORING), skill written: rag-sla-aware-query-planner, published: guardrail-accuracy-drift-monitor
 - 2026-11-12 · cycle 10 · Applied AI for underserved domains · 7 patterns, 7 open/partial, 6 ideas (5 promoted to EXPLORING), skill written: rag-agent-memory-leakage-benchmark, published: ai-merge-trust-label-framework
+- 2026-11-12 · cycle 11 · Agentic AI & autonomous agents · 8 patterns, 5 open/partial, 3 ideas (1 recurrence promoted to EXPLORING), skill written: graphrag-telemetry-error-taxonomy, published: agent-escalation-policy-engine
