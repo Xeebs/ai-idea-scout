@@ -11,3 +11,4 @@ One line per completed cycle: `- <date> · cycle <n> · <topic> · <x> patterns,
 - 2026-11-11 · cycle 6 · LLM evaluation & observability · 7 patterns, 6 open/partial, 5 ideas, skill written: rag-index-drift-watchdog, published: llm-span-cardinality-cost-governor
 - 2026-11-12 · cycle 7 · Small & local models · 9 patterns, 4 open/partial, 4 ideas, skill written: rag-claim-level-evidence-auditor, published: tiered-judge-calibration-pipeline
 - 2026-11-12 · cycle 8 · AI safety & guardrails in production · 8 patterns, 5 open/partial, 5 ideas (3 promoted to EXPLORING), skill written: rag-abstention-confidence-gate, published: tiered-guardrail-severity-composer
+- 2026-11-12 · cycle 9 · Voice & multimodal agents · 8 patterns, 4 open/partial, 4 ideas (4 promoted to EXPLORING), skill written: rag-sla-aware-query-planner, published: guardrail-accuracy-drift-monitor

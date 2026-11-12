@@ -1,0 +1,33 @@
+# Who's Talking To Me: Addressee Detection for Multi-Party AI Coworker Agents
+
+- **Status**: EXPLORING
+- **Date**: 2026-11-12
+- **Topic**: Voice & multimodal agents
+- **Source**: research/2026-11-12-voice-multimodal-agents.md · P7
+- **Maturity verdict**: PARTIAL (shipped products — MeetStream AI, Behalf.ai [hackathon-stage], Softcery/Pipecat+Attendee case study, VideoSDK's TurnV2 — attempt a speaking AI meeting participant, but the LiveKit/AssemblyAI case study on Boardy explicitly states one-on-one turn-taking is "largely solved" while multi-party turn-taking — deciding who among several humans the agent should respond to — remains the admitted unsolved core sub-problem, with avatar/voice latency still 1-3+ seconds)
+- **Format**: PROJECT
+
+## The Gap
+AI "coworker" agents are moving from silent note-takers to live speaking participants on calls — GitHub issue `anote-ai/Panacea#362` frames this explicitly: "A coworker that can only listen still needs you on the call. To run calls it has to talk." But every shipped or near-shipped implementation found (MeetStream AI, Behalf.ai, the Softcery/Pipecat+Attendee case study) is built and evaluated for one-on-one or loosely-moderated conversations. The LiveKit/AssemblyAI case study on Boardy is explicit that one-on-one turn-taking is solved while the harder problem — on a 3+ person call, deciding whether a human is addressing the AI participant or another human — is not. No open implementation or benchmark for this specific sub-problem exists; it's a named, admitted gap in a shipped-product's own case study, not just absent from discussion.
+
+## The Project
+A real-time addressee-detection module built to plug into existing voice-agent meeting-bot frameworks (the same Pipecat/LiveKit Agents stacks already used for one-on-one voice agents). On a multi-party call, it combines speaker diarization, lightweight linguistic cues (direct address — "Agent, can you pull up the Q3 numbers," names, imperative structure directed outward vs. a human-to-human remark), and conversational context (was the agent just asked a question it hasn't answered yet) to score whether the most recent utterance is addressed to the AI participant or to another human, and gates the agent's response accordingly. Because audio-only calls lack the gaze/body-language cues humans use for addressee detection in person, the system leans on linguistic and turn-context features plus an explicit low-cost fallback (a short wake-phrase or name-check) for the genuinely ambiguous cases, rather than trying to solve the full open problem with acoustic cues alone.
+
+Components: a speaker-diarization front end (off-the-shelf), an addressee classifier trained on multi-party meeting transcripts with addressee labels, a confidence-gated response policy (speak only above a threshold; otherwise stay silent and keep listening), and an evaluation benchmark built from labeled multi-party call recordings — the first reusable artifact for this specific sub-problem.
+
+## Tangible Impact
+**Population**: small and mid-size teams (sales, customer success, recruiting, consulting) who adopt AI coworker agents on multi-person calls — a fast-growing segment given that AI meeting-bot products (Otter, Fireflies, and the newer speaking-agent entrants named in the digest) are already standard tooling in these functions; within that population, the direct beneficiaries are the human participants on those calls, who currently experience the bot either staying silent when it should answer or, worse, interrupting a human-to-human exchange because it misreads who's being addressed.
+**Mechanism**: accurate addressee detection lets the agent participate only when actually spoken to, which removes the two failure modes that currently make speaking meeting-bots unusable in group settings — unwanted interruptions of human cross-talk, and missed responses when a human does address the bot but phrasing is ambiguous — directly determining whether teams keep the speaking feature enabled or revert to listen-only mode.
+**Measure**: addressee-classification precision/recall on a held-out labeled multi-party call corpus; rate of "unwanted interruption" events (agent speaks when a human was addressing another human) per call hour in a pilot deployment; rate of "missed address" events (a human asks the agent something and gets no response) per call hour, with a target of both staying low enough that pilot teams keep the speaking mode enabled after a trial period rather than disabling it.
+
+## Why Now
+Low-latency streaming diarization and small, cheap-to-run classifiers are now mature enough to run this scoring inline within a call's latency budget, and the demand signal is new: speaking AI coworker agents only started shipping broadly in the last few months (per the digest's shipped-product evidence), which is exactly why the multi-party sub-problem has only now surfaced as an admitted, named gap rather than a theoretical one.
+
+## MVP Sketch
+Build a diarization + linguistic-cue addressee classifier as a plugin for an existing Pipecat-based meeting-bot reference implementation; assemble or adapt a small labeled corpus of multi-party call recordings (3-4 participants plus one AI participant) with addressee annotations; evaluate classifier precision/recall and run a 2-week pilot with one real team using the agent in group calls, logging unwanted-interruption and missed-address rates. The single experiment: does confidence-gated addressee detection reduce unwanted-interruption events per call hour versus the naive baseline (agent responds to any sufficiently-confident "it sounds like a request" signal regardless of who's being addressed)?
+
+## Risks & Open Questions
+- This is the hardest of the four surviving patterns — the source case study itself calls multi-party turn-taking an open, unsolved problem, so the MVP may only achieve partial accuracy; the project should be scoped as "measurably better than the naive baseline," not "solved."
+- Labeled multi-party-call-with-addressee-annotation data is scarce; may require generating synthetic multi-party recordings or partnering with a team willing to share real (consented, anonymized) call data.
+- A conservative fallback (explicit wake-phrase) may be the only reliable mechanism for truly ambiguous cases, which could mean the "natural" version of this feature stays aspirational longer than the GitHub issue's framing suggests.
+- Overlapping speech in multi-party calls degrades diarization quality independent of addressee detection, compounding the error — the project's accuracy ceiling may be set by diarization quality on noisy calls rather than the classifier itself.

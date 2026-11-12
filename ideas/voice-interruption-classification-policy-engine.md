@@ -1,0 +1,34 @@
+# Barge Triage: A Six-Way Interruption Classification Engine for Voice Agents
+
+- **Status**: EXPLORING
+- **Date**: 2026-11-12
+- **Topic**: Voice & multimodal agents
+- **Source**: research/2026-11-12-voice-multimodal-agents.md · P3
+- **Maturity verdict**: PARTIAL (one directly relevant open artifact exists — a Hugging Face "bargein-classifier" model, bnovikov, distinguishing interruption from backchannel — but its own docs flag it English-only, trained on meeting audio rather than voice-agent audio, weakly supervised, and recommended only for shadow-mode deployment; no library implements the fuller 6-way classification [correction/backchannel/noise/DTMF/timeout/safety-escalation] described in the hamming.ai runbook, and current vendor docs, e.g. Smallest AI, still ship only a binary interruptibility toggle)
+- **Format**: BOTH
+
+## The Gap
+Every voice-agent framework today treats interruption as a single on/off switch: either the agent stops talking the instant it detects any sound, or it never stops. A practitioner runbook (hamming.ai) explicitly argues this should instead be a classification policy — distinguishing a true correction ("no, I meant Tuesday") from a backchannel ("mm-hm, go on"), background noise, a DTMF keypress, a silence timeout, or a safety escalation, and responding differently to each. PolyAI's engineering blog reports barge-in happens in roughly 1 in 5 calls and that mishandling it measurably lowers call-quality scores. The only open implementation found (a Hugging Face "bargein-classifier") only does a 2-way split and is explicitly not production-ready; every vendor's shipped product still exposes a binary toggle.
+
+## The Project
+A real-time inline classifier that sits in the audio pipeline between the VAD/ASR layer and the agent's dialogue manager. On every detected overlap or pause, it classifies the event into one of the six categories from partial-transcript content, prosody, and timing features, then emits a structured decision (stop-and-listen, continue-and-acknowledge, ignore-as-noise, route-to-DTMF-handler, treat-as-timeout, or escalate-to-human) that the calling application maps to its own dialogue logic. It ships as a model + rules-hybrid: a small fine-tuned classifier for the ambiguous cases (correction vs. backchannel) backed by deterministic rules for the unambiguous ones (DTMF tones, silence duration), plus a labeled evaluation corpus built from real voice-agent call recordings (not meeting audio, which is what the existing Hugging Face model was trained on and the reason it underperforms in this domain).
+
+## Tangible Impact
+**Population**: callers to AI voice agents in high-stakes, repeat-contact settings — telehealth triage lines, insurance/benefits intake, and crisis/non-emergency support lines — where PolyAI's reported 1-in-5 barge-in rate means a meaningful fraction of every single call involves an interruption event, and where Forrester's 2026 figure of voice AI handling ~19% of inbound contact-center volume means millions of these interactions already happen weekly. Within that population, older callers, non-native speakers, and people calling from noisy environments are disproportionately affected, since backchannel speech patterns and ambient noise are exactly the signals current binary toggles misclassify.
+**Mechanism**: correctly classifying "mm-hm" as backchannel instead of a stop-signal lets the agent keep explaining a benefits form instead of abruptly cutting off mid-sentence; correctly classifying a real correction lets the agent stop immediately instead of plowing through an outdated answer. Both failure directions currently erode trust and drive callers to request a human, so a reusable classifier reduces the call-quality penalty PolyAI already measures.
+**Measure**: call-quality/CSAT score delta on calls with at least one barge-in event, before vs. after deployment; false-stop rate (agent incorrectly halts on backchannel) and false-continue rate (agent incorrectly talks over a real correction) on a held-out labeled corpus; rate of calls escalated to a human after a misclassified interruption.
+
+## Why Now
+Streaming ASR with sub-200ms partial transcripts and cheap small-model inference make real-time multi-way classification computationally feasible inline in a call, which wasn't true when binary VAD-threshold toggles were designed. The hamming.ai runbook and PolyAI's public numbers are both from the last research cycle, and the existence of a narrow, explicitly-not-production-ready Hugging Face model confirms the community has started on this exact problem but no one has taken it past shadow-mode.
+
+## Skill Angle
+A companion skill, "interruption policy reviewer," takes a description of a team's voice-agent use case (industry, caller demographics, risk tolerance for cutting off a correction vs. talking over a backchannel) and produces a recommended per-category policy (e.g., "in a crisis line, bias toward always stopping on ambiguous events; in a sales line, bias toward continuing through backchannel") plus a checklist of what to log for later retraining. This is a one-shot design judgment distinct from the project: the skill helps a team decide their policy before they have the classifier running; the project is the live inline engine.
+
+## MVP Sketch
+Fine-tune a small classifier (distilled from a larger model or a lightweight prosody+text feature model) on a labeled corpus assembled from open call-center recordings plus synthetic interruption examples across the six categories; wire it as a Pipecat/LiveKit Agents plugin that intercepts overlap events and emits one of six decisions; validate against a held-out 100-call labeled set. The single experiment: does the 6-way classifier beat a binary VAD-threshold baseline on false-stop and false-continue rate by a meaningful margin on domain-matched (not meeting) audio?
+
+## Risks & Open Questions
+- Domain-matched labeled training data (real voice-agent calls, not meeting audio) is scarce and may require synthetic data generation or a data-sharing partnership with a vendor, which is the main feasibility risk.
+- Safety-escalation detection (e.g., a caller expressing distress) carries real consequences if missed or over-triggered — this category needs separate, more conservative validation than the others.
+- A vendor could ship this as a built-in feature before an open version matures, given how clearly PolyAI and hamming.ai have already named the gap publicly.
+- Prosody-based features may not generalize across languages/accents without per-locale tuning, limiting initial scope to English-language deployments (same limitation as the existing Hugging Face model).

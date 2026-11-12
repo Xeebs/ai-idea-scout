@@ -16,5 +16,5 @@ Format: `- [STATUS] <topic>` — STATUS ∈ UNWORKED | IN_PROGRESS | DONE | FAIL
 - [DONE] LLM evaluation & observability
 - [DONE] Small & local models
 - [DONE] AI safety & guardrails in production
-- [UNWORKED] Voice & multimodal agents
+- [DONE] Voice & multimodal agents
 - [UNWORKED] Applied AI for underserved domains
