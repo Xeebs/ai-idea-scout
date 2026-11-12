@@ -1,0 +1,35 @@
+# Open Oral: A Portable Voice-First Advisory Framework for Low-Literacy, Low-Resource-Language Users
+
+Every org that has tried to put a voice-first AI advisor in the hands of a low-literacy speaker has had to solve the same hard engineering problem from zero — and so far, every single one of them has solved it for exactly one domain and then stopped. Farmerline's Darli AI speaks to farmers in 27 languages. Microsoft's Project Gecko, built with Digital Green, does the same for agricultural extension work. GSMA's ToumAI and Wiseyak cohort projects follow the identical blueprint. All four are proof that the pattern works. None of them are something a maternal-health nonprofit or a civic-benefits office could pick up and use next week.
+
+## The Gap
+
+The pattern itself is not in dispute: voice in, voice out, local dialect, phrasing tuned for someone who can't read a screen full of menu options, and a fallback to a human when the system is out of its depth. Five-plus independent organizations have now built it, and every one of them built it for agriculture. A WEF piece cited in the research digest for this cycle makes the scale of what's missing concrete — mainstream chatbots cover roughly 100 of the world's 7,000-plus languages, leaving an enormous population of low-literacy, non-dominant-language speakers with no voice-first AI option outside of farming advice.
+
+This isn't a capability gap anymore. Open multilingual ASR/TTS models in the Whisper family (and newer open alternatives) plus cheap LLM-based response simplification have gotten good enough that the raw technical pieces aren't the bottleneck. What's missing is generalization: nobody has pulled the domain-agnostic interaction layer — turn-taking, dialect-aware ASR/TTS routing, low-literacy-appropriate phrasing, human-escalation hooks — out of these agriculture-specific builds and made it something a health or legal-aid org could configure with their own content instead of re-engineering from scratch.
+
+The one entity that comes closest is Sarvam AI, which already runs a proprietary LiveKit-based voice-agent pattern across government-services and agriculture verticals, and a 2026 arXiv paper (2603.05743) proposes a general oral-first multi-agent architecture — but it's been demonstrated only on Guaraní. Neither is an open, reusable framework a smaller org without Sarvam's engineering resources or a research team's backing can actually deploy. That's the specific, narrow claim here: not that nobody has thought about this, but that nobody has shipped it open and reusable.
+
+## The Project
+
+The idea is to split the problem the way the evidence says it's already splitting in practice, just never on purpose: a domain-agnostic interaction layer and a domain-specific knowledge layer, cleanly separated instead of fused together the way every existing bespoke build has fused them.
+
+The interaction layer handles the part that's actually hard and actually reusable — selecting an ASR/TTS pipeline for a target dialect, managing turn-taking over a voice call or voice-note interface, simplifying LLM responses into phrasing appropriate for a low-literacy listener, and escalating to a human when the system's confidence runs out. The knowledge layer is just the content: maternal-health guidance, civic-benefits information, basic legal process explanations — whatever the deploying org actually knows and wants to put in front of users.
+
+Concretely, an org building a voice advisory tool for, say, benefits information in a given dialect would configure the framework with their content and inherit the proven interaction pattern for free — the same ASR/TTS routing, conversational flow, and escalation hooks that Darli AI, Project Gecko, and ToumAI each built independently, without having to rebuild any of it. The bet is specific and testable: that the interaction layer really is domain-agnostic, not just domain-agnostic in theory. The MVP is designed explicitly to find out.
+
+## Tangible Impact
+
+**Population**: Low-literacy, non-dominant-language speakers outside agriculture who currently have no voice-first AI advisory option in domains like maternal health, civic benefits, or basic legal information — the WEF's ~7,000-language, ~100-language-coverage gap implies hundreds of millions of speakers of the thousands of uncovered languages, and the specific near-term beneficiaries are the health/civic/legal-aid orgs serving these populations who today can only point to agriculture examples as a proof of concept, not a tool they can use.
+
+**Mechanism**: Today, a health or civic-services org wanting to replicate what Darli AI does for farmers has to independently solve ASR/TTS pipeline selection, dialect handling, and low-literacy conversational design from zero, which is exactly why these tools remain agriculture-only. A reusable framework lowers that build cost enough that domains beyond agriculture become feasible for small orgs, not just Farmerline-scale operations.
+
+**Measure**: (1) number of distinct non-agriculture domains/orgs successfully deployed on the framework within a year; (2) task-completion rate (e.g., correctly understood health-guidance query, correctly completed benefits-info request) by low-literacy users compared against existing single-domain bespoke tools' published rates; (3) time-to-deploy for a new org/domain/language combination vs. the multi-month bespoke builds described in the digest.
+
+## Try It
+
+This one's tagged **Format: PROJECT** rather than SKILL — it's runtime infrastructure (an ASR/TTS pipeline, a conversational flow engine, an escalation hook), not a task a Claude Code skill or a pasted prompt can stand in for. There's no companion `skills/` folder for it, and that's the honest shape of this idea: someone has to actually build and deploy it.
+
+Worth being straight about the risks before anyone runs with this. ASR/TTS quality for genuinely low-resource dialects — not just "low-resource" languages that already have decent Whisper support — may still be too poor for a usable MVP, so dialect selection for a pilot matters more than almost anything else. It's also worth checking docs.sarvam.ai directly before building a parallel system: if Sarvam's pattern turns out to be licensable or accessible to smaller orgs, a competing open framework is only valuable where that access doesn't reach. And health-domain advisory carries real stakes that agriculture advice doesn't — wrong crop advice is a bad season; wrong health guidance is worse — which likely means borrowing the same deterministic safety-gating design discussed in the parallel CHW-triage work in this research cycle, rather than treating the two builds as fully unrelated. Finally, the entire premise — that the interaction layer is genuinely separable from the domain — is unproven until someone builds two real domains on the same core and checks whether the swap was clean. That two-domain test is the MVP's whole point, not an afterthought.
+
+Surfaced from `research/2026-11-12-applied-ai-for-underserved-domains.md`, pattern `P5`.
