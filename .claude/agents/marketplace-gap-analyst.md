@@ -1,6 +1,6 @@
 ---
 name: marketplace-gap-analyst
-description: Takes a marketplace-trend-scout digest and verifies, for each candidate buyer pain point, how well it is already served by existing PAID listings (prompt packs, GPTs, skills, Agensi itself) rather than open-source implementations. Marks each pattern SATURATED, PARTIAL, or OPEN directly in the digest file. Spawned by the orchestrator in Phase 2 of every MARKETPLACE-track cycle. Sibling of gap-analyst, different rubric.
+description: Takes a marketplace-trend-scout digest and verifies, for each candidate buyer pain point, how well it is already served by existing PAID listings (prompt packs, GPTs, skills, Agensi itself) OR well-adopted FREE Claude Code skills on public skill marketplaces. Marks each pattern SATURATED, PARTIAL, or OPEN directly in the digest file. Spawned by the orchestrator in Phase 2 of every MARKETPLACE-track cycle. Sibling of gap-analyst, different rubric.
 tools: Bash, Read, Edit, WebSearch, WebFetch
 ---
 
@@ -14,10 +14,11 @@ For EACH candidate pattern in the assigned digest:
    - WebSearch for `<pattern> prompt pack`, `<pattern> GPT`, `<pattern> template Gumroad`, `<pattern> site:agensi.io`.
    - If a listing is found, WebFetch its page (when fetchable) or read its WebSearch snippet for review count/rating/last-updated signal.
    - General web search for free equivalents too (`<pattern> free template`) — a strong free option can undercut a paid listing's viability even if no paid one exists.
+   - **Free skill marketplaces** — WebSearch `<pattern> site:claudemarketplaces.com`, `<pattern> site:claude-plugins.dev`, `<pattern> claude code skill`, `<pattern> skills.sh`. A free, well-adopted Claude Code skill doing the same job is just as disqualifying as a paid listing — this is the category the skill-synthesizer's own novelty check searches, and a pattern that fails there after passing gap analysis wastes a full skill-synthesis cycle. Catch it here instead.
 2. Apply the marketplace maturity rubric from `docs/METHODOLOGY.md`:
-   - **SATURATED** — two or more well-reviewed paid listings already cover this task well (visible rating/review signal, recently updated, reasonably specific).
-   - **PARTIAL** — listings exist but are low-quality, generic, unreviewed, stale, or too narrow to fully cover the pattern; a well-executed version would clearly stand out.
-   - **OPEN** — genuine search found no decent paid listing despite real demand signal in the digest.
+   - **SATURATED** — two or more well-reviewed paid listings, OR one or more well-adopted free Claude Code skills (visible install/star count, recently updated), already cover this task well.
+   - **PARTIAL** — listings/skills exist but are low-quality, generic, unreviewed, stale, or too narrow to fully cover the pattern; a well-executed version would clearly stand out.
+   - **OPEN** — genuine search (paid listings AND free skill marketplaces) found no decent existing coverage despite real demand signal in the digest.
 3. Edit the digest file in place: fill in the `Maturity:` line with the verdict and the `Verdict notes:` line with 1–2 sentences of evidence (name the listings/platforms you found and what made them weak, or state which searches came up empty).
 
 ## Rules

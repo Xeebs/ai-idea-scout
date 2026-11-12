@@ -68,11 +68,11 @@ A second, parallel track aimed at Agensi.io's actual audience (indie builders an
 
 | Verdict | Bar |
 |---------|-----|
-| SATURATED | ≥2 well-reviewed paid listings (prompt packs, GPTs, skills, Agensi itself) already cover the task well |
-| PARTIAL | Listings exist but are low-quality, generic, unreviewed, stale, or too narrow |
-| OPEN | Genuine search found no decent paid listing despite real demand signal |
+| SATURATED | ≥2 well-reviewed paid listings (prompt packs, GPTs, skills, Agensi itself), OR ≥1 well-adopted free Claude Code skill on a public skill marketplace, already cover the task well |
+| PARTIAL | Listings/skills exist but are low-quality, generic, unreviewed, stale, or too narrow |
+| OPEN | Genuine search — paid listings AND free skill marketplaces — found no decent existing coverage despite real demand signal |
 
-This mirrors the INFRA rubric's shape but checks paid-listing saturation (PromptBase, Gumroad, GPT store, Agensi, generic web search) instead of GitHub/papers — the right competitive set for something that will be sold, not open-sourced.
+This mirrors the INFRA rubric's shape but checks paid-listing saturation (PromptBase, Gumroad, GPT store, Agensi) *and* free skill-marketplace saturation (claudemarketplaces.com, claude-plugins.dev, skills.sh) instead of GitHub/papers — the right competitive set for something that will be sold, not open-sourced. The free-skill-marketplace check was added after cycle 20's test run: a HIGH-fit idea passed gap analysis only to hit `NOVELTY_FAIL` at skill-synthesis time against free competing skills gap-analyst hadn't checked for — catching that here instead avoids wasting a full skill-synthesis cycle.
 
 ### Marketplace Fit rubric (marketplace-idea-synthesizer)
 
