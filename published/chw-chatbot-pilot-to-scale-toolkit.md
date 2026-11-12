@@ -1,0 +1,29 @@
+# ScaleKit: Pilot-to-Scale Deployment Tooling for Frontline-Health WhatsApp/Telegram Bots
+
+A community health worker in a district with patchy signal sends a symptom update over WhatsApp to an AI triage bot. It works — it worked in the pilot, it worked in the demo, a paper even got written about it. Eighteen months later, the pilot is still the pilot. It never left the one district it started in. That's not a one-off story: a February 2026 ICTworks analysis puts a number on it — only 34% of CHW-facing AI chat initiatives show any sign of scaling past pilot phase, and a separate survey found 61% of health systems are "piloting" these tools while only one reports "meaningful integration" at a national level. The chatbot technique itself isn't the problem. What's missing is everything unglamorous between a working pilot and a program a health ministry can actually run.
+
+## The Gap
+
+The digest behind this idea turned up a consistent pattern across India, Pakistan, and beyond: ASHABot (documented in a CHI 2025/MSR arXiv paper, 2409.10913) is a real, LLM-powered WhatsApp chatbot that completed a genuine two-month field deployment with 20 ASHA community health workers — a working proof that experts-in-the-loop AI chat support helps. Dimagi's Open Chat Studio gives teams a general platform to build on. "Aarogya Saathi," a hobby project built on OpenClaw, delivers 24/7 Hindi-language first-aid guidance. The technique is proven, repeatedly, by independent teams.
+
+None of them scale. ASHABot remains a research pilot, not deployment-integration tooling. Aarogya Saathi requires a persistent server connection, which is exactly the thing CHW-serving regions don't reliably have. And the gap isn't abstract: it's the specific plumbing every team is quietly reinventing badly or skipping entirely — a queue that survives intermittent connectivity instead of dropping messages, a structured path for a flagged conversation to reach a human supervisor instead of looping or failing silently, and a monitoring-and-evaluation log mapped to the metrics a health ministry actually asks for. Notably, the money has already noticed: Turn.io's Anthropic-backed "Chat for Health Accelerator 2026" is explicitly funding reusable open-source scaling assets for exactly this problem — but cohort applications only opened in 2026, and nothing has shipped yet. There's a real window before one accelerator's proprietary toolkit becomes the default answer.
+
+## The Project
+
+ScaleKit is deployment and operations plumbing, not a new chatbot framework — it sits between whatever chatbot logic an org already has (built on any LLM or platform) and the WhatsApp Business API or Telegram Bot API. Four pieces do the actual work: a queue-and-retry layer that tolerates a CHW's intermittent connectivity without silently dropping messages; a structured human-escalation workflow that routes a flagged conversation to a supervisor's dashboard instead of failing invisibly; a built-in monitoring-and-evaluation event log that tracks the numbers health ministries actually report on — message volume, escalation rate, response latency, language mix; and a multi-tenant configuration system so one NGO running bots across several districts or languages isn't redeploying a bespoke stack per site.
+
+The bet is narrow on purpose: don't compete with Open Chat Studio or a custom LLM backend on conversational logic, just build the scaling layer that turns a validated pilot into something that survives contact with a second district.
+
+## Tangible Impact
+
+**Population**: CHW programs and the patients/communities they serve across the health systems the ICTworks/newsletter data describes as currently stuck in pilot — a conservative estimate from the WHO's ~3 million-strong global CHW workforce suggests tens of thousands of CHWs are actively using or piloting a messaging-based AI support tool today, per the volume of named pilots (ASHABot in India, Aarogya Saathi, Turn.io's accelerator cohort) in just this one digest cycle.
+**Mechanism**: A program that stalls at pilot because of connectivity drops, no escalation path, and no reportable M&E data never reaches the CHWs or patients outside the original pilot district. Reusable scaling plumbing removes the specific integration blockers the ICTworks piece names, letting a validated pilot bot extend to additional districts without a full re-engineering cycle each time.
+**Measure**: (1) percentage of pilot deployments using the toolkit that are still active and expanding (not just surviving) at 12 months, benchmarked against the 34% baseline; (2) median message-delivery success rate under intermittent connectivity vs. a non-queued baseline; (3) time for an org to add a second district/language deployment using the multi-tenant config vs. their prior from-scratch integration time.
+
+## Try It
+
+No companion Claude Code skill exists for this idea — it's tagged `Format: PROJECT` only. This is deployment infrastructure meant to run continuously in front of a live messaging API, not a one-shot, prompt-driven task a skill could usefully wrap. If that changes, it will live at `skills/chw-chatbot-pilot-to-scale-toolkit/`.
+
+Worth saying plainly: the biggest risk to this project isn't technical. Turn.io's accelerator may ship exactly this as an open asset within the next cycle or two, which would make an independent build redundant — anyone picking this up should check their output first. There's also a real chance Dimagi's Open Chat Studio or CommCare already has an unpublicized scaling layer covering this, and a real chance the actual bottleneck is organizational (funding cliffs after the pilot ends) rather than something software fixes at all. None of that makes the gap imaginary — it makes it worth two or three conversations with real program operators before writing code.
+
+Surfaced from `research/2026-11-12-applied-ai-for-underserved-domains.md`, pattern `P3`.
