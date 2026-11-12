@@ -35,7 +35,7 @@ Format: `- [STATUS] <topic>` — STATUS ∈ UNWORKED | IN_PROGRESS | DONE | FAIL
 ## Rotation — pass 3 (generated 2026-11-12)
 
 - [DONE] Agentic AI & autonomous agents
-- [UNWORKED] Multi-agent architectures
+- [DONE] Multi-agent architectures
 - [UNWORKED] RAG techniques
 - [UNWORKED] Context engineering & memory
 - [UNWORKED] Tool use & MCP ecosystem
