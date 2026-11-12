@@ -5,3 +5,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | Date | Slug | Hook | Topic | Has skill |
 |------|------|------|-------|-----------|
 | 2026-11-11 | agent-run-vcr | Deterministic record/diff/rewind for agent executions, framework-agnostic | Agentic AI & autonomous agents / Multi-agent architectures | no |
+| 2026-11-11 | llm-span-cardinality-cost-governor | Drop-in truncation/sampling/classification policy so full prompt-capture tracing stops blowing up the observability bill | LLM evaluation & observability | no |
