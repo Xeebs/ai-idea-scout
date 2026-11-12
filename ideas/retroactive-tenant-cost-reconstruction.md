@@ -1,0 +1,37 @@
+# Cost Forensics: Confidence-Scored Retroactive Per-Tenant LLM Cost Reconstruction
+
+- **Status**: EXPLORING (promoted 2026-11-12: evidence density — 2 independent practitioner guides, dev.to/void_stitch and particula.tech, each independently stating retroactive per-tenant cost reconstruction is impossible without prior tagging, clearing the ≥2-thread bar)
+- **Date**: 2026-11-12
+- **Topic**: LLM evaluation & observability
+- **Source**: research/2026-11-12-llm-evaluation-observability-ii.md · P4
+- **Maturity verdict**: OPEN — practitioner guides (dev.to/void_stitch, particula.tech) and GitHub search for "per-tenant cost attribution" / "LLM FinOps multi-tenant" returned only forward-looking instrumentation advice and 0-1-star reference repos; the stated consensus is flatly "you cannot retroactively split traces by tenant," with no tool found that attempts a best-effort backfill from already-untagged historical data.
+- **Format**: BOTH — a continuously-ingesting, confidence-tracked attribution pipeline is runtime infrastructure; a one-time "reconstruct last quarter's spend by tenant" forensic pass on a historical export is a separable analysis task.
+- **Data Sources**: CONNECTED — provider usage/billing APIs (OpenAI Usage API, Anthropic Admin/usage API — both mature, documented, existing today) for raw per-request cost and timestamp data, plus the team's existing observability backend (e.g., Langfuse, Datadog LLM Observability) via its API for request metadata (API keys, session IDs, timing) that was captured even when tenant_id specifically was not.
+
+## The Gap
+Multiple practitioner guides agree tenant-level cost attribution for multi-tenant LLM SaaS only works if tenant IDs were tagged on every call at instrumentation time, with one stating flatly "you cannot retroactively split traces by tenant" (dev.to/void_stitch, particula.tech). This framing treats missing tenant tagging as an unrecoverable dead end rather than a forensic problem — and the FinOps pain is real: a small fraction of tenants typically drives a disproportionate share of spend, a fact teams usually discover only after a cost spike forces them to look, by which point months of untagged history already exist.
+
+## The Project
+A forensic cost-reconstruction tool that ingests raw provider billing/usage records alongside whatever request metadata the team's existing observability stack already captured (API keys, session IDs, request timing, user-agent, source IP, endpoint patterns) even though tenant_id itself wasn't logged, and uses clustering/correlation heuristics — API-key-to-tenant mapping where keys are scoped per customer, session/timing correlation against known tenant activity windows, endpoint-pattern matching against known per-tenant integrations — to produce a confidence-scored (not falsely-precise) tenant cost breakdown for the untagged historical period.
+
+Components: billing/usage API ingesters; metadata correlator (API key, session, timing clustering); confidence-scoring model calibrated against any overlapping tagged period as ground truth; a reconstruction report distinguishing high-confidence (near-certain key-to-tenant mapping) from low-confidence (statistical inference only) attributed spend.
+
+## Tangible Impact
+**Population**: Platform/finance engineering teams at multi-tenant SaaS companies offering LLM-powered features who didn't instrument tenant_id from day one — realistically most early-stage AI SaaS startups, since tenant-level cost tracking is a known FinOps best practice teams adopt only after being burned, not before. A particularly acute case: companies approaching a board/investor review or a customer billback dispute who need a historical cost-per-customer number for a period that already passed.
+**Mechanism**: Today these teams face a binary choice when tenant_id wasn't tagged historically — either tell stakeholders "we genuinely cannot know" for that period, or spend weeks manually cross-referencing API keys and logs by hand for a rough, undocumented guess. A forensic reconstruction tool turns that into a structured, confidence-scored report produced in hours, with an honest accounting of which dollars are solidly attributed versus statistically inferred, rather than either a false "we have no idea" or a false-precision single number.
+**Measure**: (1) percentage of historical spend attributed at high confidence (clean API-key-to-tenant mapping) versus requiring statistical inference, on a pilot team's real billing export; (2) accuracy of the inferred (non-high-confidence) attribution when validated against a held-out period where tenant tagging actually existed, compared against the current alternative of zero attribution; (3) time to produce a usable historical cost-per-tenant report, dropping from "we can't do this" or weeks of manual cross-referencing to under a day.
+
+## Why Now
+Provider usage APIs (OpenAI, Anthropic) now expose granular, timestamped per-request cost data as a stable, documented feature, and observability backends (Langfuse, Datadog) retain rich request metadata by default even without custom tagging — the raw signal needed for correlation already exists and is accessible via mature APIs; what's missing is purely the correlation/confidence-scoring logic, not new capability.
+
+## Skill Angle
+Trigger: a team's finance or platform lead needs a tenant-level cost breakdown for a past period where tenant_id wasn't tagged, ahead of a billback dispute, board report, or margin analysis. Inputs: an exported billing/usage CSV from the LLM provider for the period in question, plus whatever request-metadata export the team's observability tool can produce (API keys, session IDs, timestamps). Output: a confidence-scored tenant cost breakdown report, explicit about which portions are near-certain versus inferred, with the correlation logic used for each tenant stated plainly. The skill is the one-time forensic pass on a specific historical period; the project is the pipeline that runs this continuously going forward while the team also fixes their instrumentation.
+
+## MVP Sketch
+A Python pipeline that pulls one pilot team's OpenAI/Anthropic usage export and their observability tool's request-metadata export for the same historical window, clusters requests by API-key-scope and timing correlation against known tenant activity, and outputs a confidence-tiered attribution report. Experiment: validate against a more recent period where the team *did* have tenant tagging — mask the tenant_id field, run the reconstruction blind, and measure how closely the inferred attribution matches the real tagged ground truth. 3-4 weeks, 1-2 people.
+
+## Risks & Open Questions
+- The strongest objection is the practitioner consensus itself — this may be genuinely unrecoverable in cases where API keys aren't tenant-scoped and sessions overlap heavily, meaning the tool's honest answer for some teams could be "low confidence across the board," limiting its value for those specific setups.
+- Confidence-scoring calibration quality is the whole product; a tool that reports false confidence is actively worse than the current honest "we don't know."
+- Access to raw billing/usage exports and observability metadata for a historical period may itself be a data-retention problem if the team's logs have already rolled off before anyone thinks to run this.
+- A well-resourced observability vendor (Datadog, Langfuse) could add this as a built-in forensic feature, though none has signaled doing so as of this search.

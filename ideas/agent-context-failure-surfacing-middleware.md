@@ -1,0 +1,37 @@
+# Tell the Model: A Cross-Framework Failure-Surfacing Middleware for Agent Tool/History/Attachment Fetches
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-12
+- **Topic**: LLM evaluation & observability
+- **Source**: research/2026-11-12-llm-evaluation-observability-ii.md · P5
+- **Maturity verdict**: PARTIAL — LangGraph's prebuilt `ToolNode` already catches tool-call exceptions and reports them back to the model as a message (a real, maintained framework feature), but a cited LangGraph GitHub issue reports this became disabled by default after v1.0.1, and it doesn't generalize to history-retrieval or attachment-fetch failures, which remain ad hoc per-project patches (mattermost-plugin-agents PR #1130; CrewAI's documented pattern is just "wrap in try/except and return text").
+- **Format**: BOTH — the middleware that intercepts and standardizes failure context across an agent's tool/history/attachment calls at runtime is infrastructure; a one-time "audit this agent's failure-handling paths" code review is a separable task.
+- **Data Sources**: CONNECTED — integrates directly with the host agent framework's own execution layer (LangGraph's `ToolNode`/graph execution hooks, CrewAI's tool-wrapper interface, or a custom agent loop's call sites) rather than a third-party API; it wraps the agent's existing tool-call, history-retrieval, and attachment-fetch call sites in place, which is a mature integration pattern for LangGraph specifically and would need thin adapters written for other frameworks as part of this project.
+
+## The Gap
+mattermost-plugin-agents PR #1130 ("Tell the model what happened when tools, history, or attachments fail," 2026-10-21) fixes "places where the LLM was not told what happened, so it answered from a wrong picture of the conversation" — a one-off, codebase-specific patch. LangGraph's `ToolNode` covers the narrower tool-call-exception slice of this as a real framework feature, but a cited GitHub issue reports it's inconsistently enabled (disabled by default after v1.0.1), and no framework surfaces history-retrieval or attachment-fetch failures the same structured way — those remain silent or handled by an ad hoc try/except that just returns generic text, leaving the model to answer from stale or incomplete context without knowing it.
+
+## The Project
+A cross-framework middleware that wraps an agent's tool calls, conversation-history retrieval, and attachment/file fetches at their call sites, catching failures (exceptions, timeouts, empty/partial results) and injecting a structured failure message into the model's context — what failed, why, and what the model should assume is missing — instead of either silently continuing or returning an opaque error string the model can't reason about. Ships as a thin adapter per framework (LangGraph first, since it has the closest existing primitive to extend) plus a framework-agnostic core schema for what a "failure signal" looks like.
+
+Components: a standardized failure-context schema (what failed, failure class, affected scope, suggested model behavior); per-framework adapters (LangGraph `ToolNode` extension first, then CrewAI/custom-loop wrappers); a test harness that injects synthetic tool/history/attachment failures and checks the model's response acknowledges the gap instead of fabricating an answer.
+
+## Tangible Impact
+**Population**: End users of production conversational/coding agent products (customer-support bots, coding assistants, internal knowledge agents) built on frameworks or custom loops where a tool-call, history-fetch, or attachment-retrieval failure currently goes unsurfaced — directly, the engineering teams building those agents (realistically teams building on LangGraph, CrewAI, or a custom loop, a population in the thousands per LangChain's 2024 survey finding ~51% of surveyed companies run agents in production); indirectly, the end users who currently receive a confidently wrong answer instead of an honest "I couldn't retrieve that."
+**Mechanism**: Today a failed tool call, history fetch, or attachment retrieval either silently vanishes (the model never knows) or returns generic error text the model can't act on, so the agent answers from a wrong or incomplete picture of the conversation — exactly the mattermost PR's stated bug. Structured failure-context injection turns that into a signal the model can reason about (retry, ask the user, or explicitly flag uncertainty), converting a silent wrong-answer failure mode into a visible, recoverable one.
+**Measure**: (1) rate of confidently-wrong responses on a synthetic failure-injection test set (tool timeout, empty history fetch, failed attachment download), before versus after the middleware, targeting a majority reduction; (2) rate at which the model correctly acknowledges a surfaced failure to the end user instead of fabricating an answer, on the same test set; (3) adoption measured as number of distinct call-site types (tool, history, attachment) a pilot team's agent covers with structured failure signals, from the current "tool calls only, inconsistently" baseline.
+
+## Why Now
+LangGraph already proved the narrower tool-call version of this pattern is both useful and technically straightforward within a mature, widely-used framework; the gap is purely that it's inconsistent and doesn't extend to history/attachment failures — a generalization effort, not a new capability.
+
+## Skill Angle
+Trigger: a team building a production agent wants to check whether their tool/history/attachment call sites currently surface failures to the model or silently swallow them. Inputs: the relevant section(s) of their agent code (tool-call wrappers, history-retrieval functions, attachment-fetch logic), pasted or pointed to by file path. Output: a code-level audit flagging each call site as "surfaces failure to model," "swallows silently," or "returns unstructured error text," with a suggested fix for each gap. The skill is the one-time audit a team runs before or instead of adopting the middleware; the project is the runtime wrapper that enforces structured failure-surfacing continuously as the agent runs.
+
+## MVP Sketch
+A LangGraph-first Python package extending `ToolNode`-style exception handling to history-retrieval and attachment-fetch call sites using the same injected-message pattern, with a documented failure-context schema. Experiment: build a synthetic test agent with deliberately injected tool/history/attachment failures, run it with and without the middleware, and measure whether the model's responses correctly acknowledge the failure instead of fabricating an answer. 3 weeks, 1-2 people.
+
+## Risks & Open Questions
+- LangGraph could re-enable and generalize its own `ToolNode` behavior to cover history/attachment failures natively, closing this gap from the framework side before a third-party middleware gains traction.
+- A structured failure message injected into context adds tokens on every call site, which needs to stay cheap enough not to offset the value for high-volume agents.
+- "What should the model assume is missing" is a judgment call per failure type that risks being wrong in ways that are themselves hard to detect — the synthetic test harness only catches failures the designer thought to inject.
+- CrewAI and custom-loop adapters require framework-specific integration work with no guarantee the same wrapper pattern transfers cleanly, meaning the MVP's LangGraph-only scope may not generalize as easily as hoped.
