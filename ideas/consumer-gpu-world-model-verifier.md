@@ -6,6 +6,7 @@
 - **Source**: research/2026-11-12-small-local-models.md · P8
 - **Maturity verdict**: PARTIAL — multiple well-resourced teams (Overworld, Skywork AI, InSpatio-WorldFM) are shipping real-time interactive world models with papers and HF releases, but none confirm RTX 3060-class performance specifically, none are independently evaluated, and none are integrated into mainstream local-inference tooling (Ollama/LM Studio-style ecosystems).
 - **Format**: BOTH
+- **Data Sources**: CONNECTED — web/GitHub/Hugging Face search for vendor-claimed hardware tiers and independent benchmark reports; a mature generic capability (standard search), not a bespoke API or MCP connector. (Backfilled 2026-11-12 — field was missing when this idea was first synthesized; derived from the skill-synthesizer's downstream classification.)
 
 ## The Gap
 Reddit r/LocalLLaMA, "I'm releasing a Local World Model Ive been building that turns images into interactive videos you control in real time. It works on RTX 3060, 4060 and anything above" (2026-11-11), is a solo builder's claim about entry-level consumer GPU support for an emerging generative category. The established competitors in this space (Overworld's Waypoint line, Skywork's Matrix-Game, InSpatio-WorldFM) target mid-to-high-end cards (RTX 3090–5090) and report their own benchmarks with no third-party verification — meaning anyone with a genuinely entry-level GPU has no trustworthy way to know which, if any, of these claims actually hold on their hardware before investing setup time.

@@ -6,6 +6,7 @@
 - **Source**: research/2026-11-12-ai-safety-and-guardrails-in-production.md · P1
 - **Maturity verdict**: PARTIAL — mature general-purpose guardrail toolkits exist (NeMo Guardrails 7.5k stars, Guardrails AI 7.6k stars, LLM Guard 3.2k stars) and a TrueFoundry gateway ships an "enforce but ignore on error" per-validator mode, but none exposes severity-tiered fail-open/fail-closed composition as a named, reusable feature — only cascading-latency and per-hook failure-mode guidance in vendor blogs.
 - **Format**: BOTH
+- **Data Sources**: MANUAL — user pastes/describes their own guardrail categories and current block/log behavior; no mature cross-vendor connector exists to read NeMo Guardrails/Guardrails AI/LLM Guard configs uniformly. (Backfilled 2026-11-12 — field was missing when this idea was first synthesized; derived from the skill-synthesizer's downstream classification.)
 
 ## The Gap
 Vendor engineering writeups (a GMI Cloud post on an 86M-param fast gate ahead of an 8B hazard classifier, an Openlayer how-to on layered enforcement) describe the tiered fail-open/fail-closed pattern as the emerging 2026 norm, and `opendatahub-io/opendatahub-tests` PR #2670 shows a live team refactoring their own NeMo Guardrails call-pattern tests to model it. But every description is a single vendor's blog post or one team's internal refactor — there is no shared benchmark or reusable library for deciding which severity tier fails open vs. closed, or for validating that the composition math is correct.
