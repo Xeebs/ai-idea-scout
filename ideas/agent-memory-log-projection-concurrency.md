@@ -1,0 +1,36 @@
+# Projection Lock: A Concurrency-Safe Event-Log-to-Memory Architecture for Agent Systems
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-12
+- **Topic**: Context engineering & memory
+- **Source**: research/2026-11-12-context-engineering-memory.md · P3
+- **Maturity verdict**: PARTIAL — confirmed active, non-converging design debate rather than a solved problem: arXiv 2604.20158 (Deterministic Projection Memory), arXiv 2605.21997 ("The Log is the Agent"/ActiveGraph), arXiv 2606.12329 (ProjectMem — open-source, local-first, append-only log with deterministic projections for coding agents), and IETF draft-infantado-agent-memory-architecture-00 (PAMSPEC) all propose different, non-converging event-log/projection splits, none cited as dominant. ProjectMem is real narrow open-source code addressing part of the gap, but no implementation resolves the concurrent-write/invalidation questions the OpenSearch ml-commons RFC #5185 still has open.
+- **Format**: BOTH — the derivation/invalidation runtime is persistent infrastructure; auditing a specific memory system's log/projection split for a named concurrency hole is a one-shot review task.
+
+## The Gap
+GitHub RFC "[RFC] OpenSearch Memory API: events and memories for AI agents" (opensearch-project/ml-commons #5185, 2026-11-04) has a reviewer call the event/memory split "the right model" while flagging unresolved concurrent extraction/retrieval concerns — the author replies that design changes are still pending. In the same window, at least four independently published architectures (a "raw ledger + derived views + policy layer" write-up, a SQLite retrieval-first design claiming 93% on LoCoMo by deferring filtering to query time, a Cloudflare-style read-time summary overlay, plus the arXiv/IETF items above) propose different answers to the same question — when does a raw interaction log get turned into "memory," and what happens when a reader sees a projection a concurrent writer has already invalidated — with no cited convergence.
+
+## The Project
+A reference agent-memory substrate that keeps the append-only interaction log as the only source of truth and treats every "memory" (summary, extracted fact, embedding) as a versioned, invalidatable projection built from it — never a second source of truth. Writers append events; a projection builder derives views either eagerly (write-time) or lazily (query-time, per a pluggable policy); every projection carries the log offset it was derived from, so a reader can detect staleness (the underlying log has advanced past the projection's offset) and either block, re-derive, or serve-stale-and-flag, under an explicit policy rather than silently returning an out-of-date fact. The concurrency contract — what a reader is guaranteed about projection freshness — is the centerpiece, not the extraction/summarization logic itself (which stays pluggable).
+
+Components: an append-only log store (file- or Postgres-backed); a projection-builder interface with write-time and query-time implementations; an offset-based staleness check exposed to callers; a conformance test suite that reproduces the concurrent-write/invalidation scenarios the OpenSearch RFC and the competing arXiv papers each describe, so any memory backend can be checked against the same scenarios.
+
+## Tangible Impact
+**Population**: Engineering teams building or integrating a custom agent-memory layer rather than using an off-the-shelf vendor as-is — specifically contributors to open agent-memory projects (the OpenSearch ml-commons RFC alone drew 5 reactions/5 comments from engineers actively designing this) and teams running multi-session or multi-agent systems where the same entity's memory is read and written concurrently (e.g., a coding agent fleet updating a shared "what we know about this repo" memory while another session reads it).
+**Mechanism**: Today, each team re-derives its own answer to "when do I extract, and what do I do when a reader's view is stale" from scratch, and the OpenSearch RFC shows even a standards-adjacent effort hasn't settled it; a reference substrate with an explicit, testable staleness contract turns a silent "reader acted on an outdated projection" bug into a detectable, policy-governed event, and gives downstream teams a conformance suite to check their own backend against instead of discovering gaps via production incidents.
+**Measure**: (1) Number of the conformance suite's concurrent-write/invalidation scenarios a given backend (OpenSearch's RFC implementation, ProjectMem, a custom mem0 wrapper) passes out of the box. (2) Rate of "agent acted on a since-invalidated projection" incidents in a pilot system, before vs. after adopting the staleness contract. (3) Added read/write latency from offset-tracking and staleness checks versus an ungoverned projection cache.
+
+## Why Now
+Five-plus independently published, non-converging architectures landed within the same month (an active OpenSearch RFC plus four arXiv/industry write-ups), meaning the design space is actively being fought over right now rather than settled — a reference implementation with a conformance suite can shape the convergence instead of arriving after one vendor's answer has already won by default.
+
+## Skill Angle
+Given a description of an existing agent-memory system's architecture (what gets logged, when derivation happens, how readers access projections), identify which of the conformance suite's concurrency scenarios it would fail — e.g., a reader getting a projection derived before a relevant write landed — and recommend the minimal change (offset-tagging, a staleness check, a policy choice) to close each hole. Useful as a standalone architecture review before a team commits to building or adopting the full substrate.
+
+## MVP Sketch
+A Postgres-backed append-only event table, a projection table keyed by (entity, as-of-offset), one write-time and one query-time projection builder for a toy "fact extraction" task, and a conformance test harness that spins up concurrent writers/readers and asserts no reader ever silently serves a projection staler than its declared policy allows. Experiment: run the harness against a naive mem0-style cache-without-offsets baseline and against the offset-tracked substrate, and count silent staleness violations in each. 3–4 weeks for 1–2 people.
+
+## Risks & Open Questions
+- The OpenSearch RFC or one of the four competing papers could converge to a de facto standard before an independent reference implementation gains any adoption — the strongest already-being-solved risk.
+- "Serve-stale-and-flag" may be the right default for most agent use cases, in which case the harder engineering (blocking, eager re-derivation) buys little in practice — needs validation against real workloads, not just the conformance suite.
+- Conformance-suite scenarios are only as good as how faithfully they capture real production concurrency patterns; a suite built from published papers' examples may miss the failure modes that actually hurt teams.
+- This is adjacent to but distinct from existing multi-agent cache-coherence work (e.g., MESI-style protocols for shared agent state) — the risk is building something that re-solves a problem the multi-agent-coherence literature already addresses at a different layer.

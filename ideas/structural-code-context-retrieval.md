@@ -5,7 +5,7 @@
 - **Topic**: Context engineering & memory
 - **Source**: research/2026-11-11-context-engineering-and-memory.md · P8
 - **Maturity verdict**: PARTIAL — active research and early tooling exists (CodeCompass, DyRetriever, GraphCodeAgent, commercial Codegraph), but Thoughtworks' Technology Radar (Nov 2026) places "graph-grounded codebase reasoning" in "Trial" status and notes research showing agents sometimes perform *worse* with graph context than plain grep/find. Real, contested gap, no dominant proven approach.
-- **Format**: BOTH — the persistent graph index/MCP server is runtime infrastructure; a one-shot blast-radius review of a specific change is a repeatable judgment task.
+- **Format**: PROJECT (was BOTH — downgraded 2026-11-12: skill-synthesizer NOVELTY_FAIL, blast-radius-PR-review skill angle is saturated by `tirth8205/code-review-graph`, 32.7k stars, actively maintained, plus `sverklo/sverklo` and `dancingteeth/unified-code-review`)
 
 ## The Gap
 r/ContextEngineering's "Have we become too dependent on text search for understanding code?" (2026-10-14) names a real limitation: a simple change can ripple through inherited methods, call chains, and cross-file dependencies that text search and embedding similarity don't surface, because they match tokens, not relationships. The gap-analyst confirmed active academic and early commercial attempts, but also found evidence the obvious fix (hand agents a dependency graph) doesn't reliably beat plain text search in practice — the problem is open precisely because the naive solution underperforms.

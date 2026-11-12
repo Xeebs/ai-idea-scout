@@ -1,0 +1,36 @@
+# Chain of Custody: A Decision-Provenance Trace for Agent Memory and Actions
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-12
+- **Topic**: Context engineering & memory
+- **Source**: research/2026-11-12-context-engineering-memory.md · P8
+- **Maturity verdict**: PARTIAL — GitHub search found three independent, fresh, low-adoption repos tackling provenance specifically: `openminion/sophiagraph` (6 stars, "durable agent memory, provenance, trust, namespaces"), `PSKK-Git/custody` (0 stars, hackathon project, "agent-memory provenance, blast radius, action gate"), `Mnemowall/mnemowall-sdk` (0 stars, created 2026-11-05, "provenance on every write"). All created/pushed within the last ~1–3 months with no meaningful adoption — demos/early SDKs, not established solutions, matching a Product Hunt vendor's ("PMB") own framing that provenance is the part "still missing" even among memory vendors.
+- **Format**: BOTH — the always-on provenance recorder is runtime infrastructure; reconstructing one incident's decision chain from existing logs is a one-shot forensic task.
+
+## The Gap
+A WebSearch-surfaced Product Hunt discussion around the "PMB — local-first memory for AI" launch names provenance — "who made each decision and based on what context" — as the part still missing across current memory tools, raised notably *by a maker actively shipping a competing memory product*, i.e. even vendors building in this space flag it as unsolved. The gap-analyst's GitHub search confirms only early, low-adoption, demo-stage attempts (sophiagraph, custody, mnemowall-sdk) exist; none is an established, adopted solution for tracing a later agent action or decision back to the specific memory writes, sessions, and context that produced it.
+
+## The Project
+A provenance-tagging wrapper that sits in front of an existing memory backend (mem0, Zep, Letta, or a custom store) and attaches a decision-context record to every write and every consequential action the agent takes from memory: which session produced the memory, which upstream context/tool-output it was derived from, and a confidence/source classification (verified source vs. model inference vs. untrusted tool output). On top of the write-time tagging sits a trace tool: given an agent action or a specific stored fact, reconstruct the chain of prior memory writes and sessions that led to it. This is distinct from an organization-wide access-control/governance layer (which decides *who may read* a memory) — the centerpiece here is reconstructing *how a given decision came to be*, usable by a single developer or small team debugging one agent, not an enterprise RBAC rollout.
+
+Components: a provenance-tagged write wrapper (session ID, source classification, upstream context pointer) around one or more memory backends; a trace/query tool ("show me the chain behind this action/fact"); an incident-report generator that turns a trace into a human-readable timeline; adapters for mem0 and Letta as the two most-adopted open memory backends.
+
+## Tangible Impact
+**Population**: Developers and small teams operating consequential autonomous agents — coding agents that merge PRs, support agents that take account actions, workflow-automation agents — who, after something goes wrong, need to answer "why did the agent do this, and what did it know at the time" using only what's already in memory, without the org-scale multi-tenant access-control apparatus a company-brain governance product assumes; this includes solo-maintained agents and small teams who would never adopt a full enterprise governance layer but still need post-incident answers.
+**Mechanism**: Today, when a consequential agent action traces back to a bad or outdated memory, reconstructing "which session/context produced this" means manually grepping logs or giving up and treating the action as unexplainable; a provenance trace turns that into a direct query — given the bad action or fact, walk back the chain of writes and sessions that produced it — cutting incident investigation from open-ended log archaeology to a bounded trace.
+**Measure**: (1) Median time to produce a complete decision-provenance chain for a flagged incident, versus manual log review, on a pilot set of real or simulated incidents. (2) Coverage: percentage of an agent's consequential actions for which a complete chain (session, source, context) can be reconstructed versus left as "unknown provenance." (3) Adoption: teams that can answer "why did it do this" within one query after adopting the wrapper, versus a stated baseline of "we couldn't tell" before.
+
+## Why Now
+Agents are increasingly taking consequential, hard-to-reverse actions (merges, account changes, outbound communications) based on memory accumulated over many sessions, and even vendors building memory products in the last 30 days are flagging decision provenance as the unresolved piece — while the only existing attempts are three demo-stage repos with no adoption, leaving the window open for a focused, adopted tool before one of them (or a larger vendor) claims the niche.
+
+## Skill Angle
+Given a flagged agent action or outcome and access to the agent's available logs/session history/memory store, reconstruct the decision-provenance chain by hand: which prior memory writes or sessions plausibly fed into the action, what source each fed-in fact had (verified, inferred, untrusted-tool-output), and where the chain is incomplete or unknowable from available logs. Produce a short incident timeline. Useful today as a one-off forensic exercise for any team debugging a single bad agent action, independent of adopting the always-on provenance wrapper.
+
+## MVP Sketch
+A thin provenance-tagging wrapper around one memory backend (mem0), stamping every write with session ID, source classification, and an upstream-context pointer, plus a CLI trace command that, given a memory key or logged action, walks the chain back to its originating writes and prints a timeline. Experiment: seed a simulated multi-session agent workflow with a deliberately injected bad fact, then measure whether the trace tool correctly identifies the originating session and source versus a baseline of manually grepping raw logs for the same answer. 2–3 weeks for 1–2 people.
+
+## Risks & Open Questions
+- Overlaps conceptually with the "Perimeter" org-governance idea already in the backlog (`org-memory-governance-layer.md`), which also tags writes with provenance — the differentiation (forensic trace for any team vs. access-control governance for multi-tenant orgs) must stay sharp, or this collapses into a feature of that project rather than standing alone.
+- Any of the three early repos (sophiagraph, custody, mnemowall-sdk) could mature and claim the niche before an independent build gains traction — the most direct already-building risk.
+- Provenance chains are only as complete as the underlying logs; agents that don't already log session/context boundaries give the trace tool nothing to reconstruct, limiting applicability to agents instrumented from the start.
+- It's unproven whether developers actually want a standalone trace tool versus just wanting better default logging from their memory vendor (mem0/Letta could close this gap by shipping provenance natively).
