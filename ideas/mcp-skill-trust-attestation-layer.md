@@ -5,7 +5,7 @@
 - **Topic**: Tool use & MCP ecosystem
 - **Source**: research/2026-11-11-tool-use-mcp-ecosystem.md · P2
 - **Maturity verdict**: PARTIAL — `stacklok/toolhive` (2,339★, updated within the last day) is a real maintained trust layer for MCP server image verification, but it doesn't cover agent skills together with MCP servers. Cloud Security Alliance (Sept 2026) still frames combined MCP/skill trust as unsolved; only early/vendor-stage competitors exist (Credence, askalf/truecopy, mcpskills server at 0★). One serious implementation exists but the broader "vet skills + MCP servers together" scope remains open.
-- **Format**: BOTH
+- **Format**: PROJECT — downgraded from BOTH on 2026-11-12: skill-synthesizer found 5+ actively maintained equivalents (Synvoya/codeinspectus, sidhpurwala-huzaifa/mcp-security-scanner, aws-samples/sample-mcp-security-scanner, vasikmansuri/agentconfig-doctor, DMontgomery40/mcp-security-scanner) already doing "vet this MCP server/config before install" checks wired into Claude Code and other agent workflows — NOVELTY_FAIL per `.claude/rules/skill-format.md`. The broader unified skill+MCP enforcement-gateway project remains distinct and unaffected.
 
 ## The Gap
 

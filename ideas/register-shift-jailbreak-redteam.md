@@ -1,6 +1,6 @@
 # Formal Cover: Register-Shift Jailbreak Red-Teaming & Detection
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-12
 - **Topic**: AI safety & guardrails in production
 - **Source**: research/2026-11-12-ai-safety-and-guardrails-in-production.md · P4
