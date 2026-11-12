@@ -6,6 +6,7 @@
 - **Source**: research/2026-11-12-rag-techniques.md · P5
 - **Maturity verdict**: PARTIAL — `gh search repos "GraphRAG"` confirms several maintained implementations exist (microsoft/graphrag, HKUDS/LightRAG, FalkorDB's GraphRAG SDK 1.0, neo4j-labs/llm-graph-builder), so the technology itself is not unimplemented. But WebSearch corroborates the specific failure modes: Atlan's 2026 guide rates GraphRAG production maturity "early-to-mid... limited enterprise tooling"; Gradient Flow's assessment finds production deployments with real business value rare, "most implementations remain experimental"; cost-blowup claims (one source: ~6,000x token cost vs. standard RAG) recur across independent blogs. No implementation specifically solving entity-resolution-at-scale or cost-control for production GraphRAG was found — existing frameworks are the thing people report failing with, not a fix for it.
 - **Format**: BOTH
+- **Data Sources**: MANUAL — the team describes/pastes their planned or piloted deployment parameters (GraphRAG framework, corpus size and growth rate, entity density, typical query hop depth) as prose/numbers; no external system is read. A CONNECTED upgrade — pulling real traversal-cost and entity-count telemetry directly from the team's running GraphRAG instance (microsoft/graphrag, LightRAG, FalkorDB) — is the natural v2, but none of those frameworks expose a standard cost/telemetry API today, so MANUAL is the honest classification for the MVP. (Backfilled 2026-11-12 — the field was missing from this idea's original synthesis.)
 
 ## The Gap
 

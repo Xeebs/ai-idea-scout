@@ -27,3 +27,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-12 | rag-knowledge-base-poisoning-scanner | Quarantines instruction-shaped adversarial documents before they reach the index, where only research prototypes and unreleased plans exist today | RAG techniques | no |
 | 2026-11-12 | embedded-model-packaging-framework | A reusable "Electron for task-embedded local models" so indie devs stop hand-rolling model loading/packaging/updates each time | Small & local models | no |
 | 2026-11-12 | affect-conditioned-voice-response-engine | Conditions voice-agent replies and TTS prosody on a continuous valence-arousal signal instead of a brittle discrete emotion taxonomy | Voice & multimodal agents | no |
+| 2026-11-12 | voice-agent-conversational-eval-framework | A consolidated, audio-native, calibrated-judge framework scoring full multi-turn calls instead of five more fragmented one-off benchmarks | Voice & multimodal agents | no |
