@@ -7,3 +7,4 @@ One line per completed cycle: `- <date> · cycle <n> · <topic> · <x> patterns,
 - 2026-06-10 · cycle 2 · Multi-agent architectures · 9 patterns, 6 open/partial, 4 ideas (closed out administratively 2026-11-11 — session died mid-SYNTHESIS, see session note)
 - 2026-11-11 · cycle 3 · RAG techniques · 10 patterns, 8 open/partial, 8 ideas, skill written: agent-handoff-context-schema, published: none
 - 2026-11-11 · cycle 4 · Context engineering & memory · 10 patterns, 7 open/partial, 6 ideas, skill written: cross-agent-injection-firewall, published: none
+- 2026-11-11 · cycle 5 · Tool use & MCP ecosystem · 8 patterns, 5 open/partial, 4 ideas, skill written: rag-chunk-quality-sentinel, published: none
