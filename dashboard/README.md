@@ -38,9 +38,13 @@ show `Linger=yes` so it keeps running even without an active login session.
 - **Dashboard** (`/`) — both tracks' current cycle/phase/topic, recent
   changelog activity, idea counts by status.
 - **Infra Ideas** / **Market Ideas** (`/ideas/<track>`) — browse, filter by
-  status, open any idea to read it in full.
+  status, open any idea to read it in full. Every `PROPOSED` idea gets a
+  one-tap **Quick-promote to EXPLORING** button right in the list, so you
+  don't have to open an idea just to bypass the automatic promotion bar
+  (recurrence, or evidence density) for one you already like.
 - Idea detail — change status (`PROPOSED`/`EXPLORING`/`PROTOTYPING`/
-  `SHELVED`), leave a feedback note (appended to a `## Human Feedback`
+  `SHELVED`), a one-tap promote button (same as the list, more prominent),
+  leave a feedback note (appended to a `## Human Feedback`
   section in the idea file — the orchestrator reads this before reworking
   that idea again).
 - **Review Queue** (`/review`) — every packaged Agensi listing candidate,

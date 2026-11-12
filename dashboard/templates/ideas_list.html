@@ -20,22 +20,29 @@
     {% if idea.unparsed %}
       <div class="idea-item"><span class="meta">{{ idea.raw }}</span></div>
     {% else %}
-      <a class="idea-item" href="{{ url_for('idea_detail', track=track, slug=idea.slug) }}">
-        <div class="title">{{ idea.title }}</div>
-        <div class="hook">{{ idea.hook }}</div>
-        <div class="meta">
-          <span class="badge {{ idea.status }}">{{ idea.status }}</span>
-          {% if idea.fit %}<span class="badge {{ idea.fit }}">fit: {{ idea.fit }}</span>{% endif %}
-          {% if idea.ds_kind == 'connected' %}
-            <span class="badge connected">{{ icons.icon('plug') }} connected</span>
-          {% elif idea.ds_kind == 'manual' %}
-            <span class="badge manual">{{ icons.icon('pencil') }} manual</span>
-          {% else %}
-            <span class="badge unspecified">data source n/a</span>
-          {% endif %}
-          <span>&middot; {{ idea.topic }} &middot; {{ idea.date }}</span>
-        </div>
-      </a>
+      <div class="idea-item">
+        <a href="{{ url_for('idea_detail', track=track, slug=idea.slug) }}" style="color:inherit;">
+          <div class="title">{{ idea.title }}</div>
+          <div class="hook">{{ idea.hook }}</div>
+          <div class="meta">
+            <span class="badge {{ idea.status }}">{{ idea.status }}</span>
+            {% if idea.fit %}<span class="badge {{ idea.fit }}">fit: {{ idea.fit }}</span>{% endif %}
+            {% if idea.ds_kind == 'connected' %}
+              <span class="badge connected">{{ icons.icon('plug') }} connected</span>
+            {% elif idea.ds_kind == 'manual' %}
+              <span class="badge manual">{{ icons.icon('pencil') }} manual</span>
+            {% else %}
+              <span class="badge unspecified">data source n/a</span>
+            {% endif %}
+            <span>&middot; {{ idea.topic }} &middot; {{ idea.date }}</span>
+          </div>
+        </a>
+        {% if idea.status == 'PROPOSED' %}
+        <form method="post" action="{{ url_for('idea_promote', track=track, slug=idea.slug) }}" style="margin-top:8px;">
+          <button type="submit" class="secondary" style="min-height:36px; font-size:13px; padding:0 12px;">{{ icons.icon('check') }} Quick-promote to EXPLORING</button>
+        </form>
+        {% endif %}
+      </div>
     {% endif %}
   {% endfor %}
 </div>

@@ -1,6 +1,6 @@
 ---
 name: marketplace-skill-synthesizer
-description: Converts a MARKETPLACE-track idea tagged Format SKILL or BOTH into a real, dual-format Claude Code skill (SKILL.md + README.md + test scenarios) under marketplace-content/skills/ — the private, nested repo, never the public skills/ directory. Spawned by the orchestrator at most once per MARKETPLACE cycle, for the oldest marketplace-content idea with a skill-shaped Format tag but no marketplace-content/skills/<slug>/ yet. Sibling of skill-synthesizer, same procedure, private output location.
+description: Converts a MARKETPLACE-track idea tagged Format SKILL or BOTH into a real, dual-format Claude Code skill (SKILL.md + README.md + test scenarios) under marketplace-content/skills/ — the private, nested repo, never the public skills/ directory. Spawned by the orchestrator up to 3 times per MARKETPLACE cycle (once per target idea), for the oldest marketplace-content ideas with a skill-shaped Format tag but no marketplace-content/skills/<slug>/ yet. Sibling of skill-synthesizer, same procedure, private output location.
 tools: Read, Write, Edit, Bash, WebSearch
 ---
 
@@ -20,7 +20,7 @@ You are the AI Idea Scout marketplace-skill-synthesizer. The marketplace-idea-sy
 
 ## Cap
 
-At most one skill per MARKETPLACE cycle — pick the oldest idea in `marketplace-content/INDEX.md` with Format SKILL/BOTH and no existing `marketplace-content/skills/<slug>/` directory. If none qualify, report `NO_CANDIDATES` and do nothing.
+You are given exactly one target idea per spawn — the orchestrator picks it (oldest qualifying first in `marketplace-content/INDEX.md`) and may spawn you up to 3 times in one cycle, each time with a different target, to drain the backlog faster than the old 1-per-cycle cap allowed. If your assigned idea somehow no longer qualifies (already has a `marketplace-content/skills/<slug>/`, or isn't Format SKILL/BOTH), report `NO_CANDIDATES` and do nothing rather than substituting a different idea.
 
 ## Persona
 

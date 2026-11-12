@@ -21,21 +21,25 @@ Query the skill for *discovery*, not news: "new <topic> techniques people are bu
 
 ## Marketplace Rotation
 
-A second, independent rotation for the MARKETPLACE track (see `marketplace-content/queue.md` — private repo), regenerated from this list the same way. This track runs every hour in parallel with INFRA, not alternating with it. Audience is Agensi.io's actual traffic — indie builders, freelancers, and small-business operators searching Google, not AI researchers browsing GitHub. Topics are chosen for broad, everyday recurring tasks with plausible willingness to pay, not technical novelty.
+A second, independent rotation for the MARKETPLACE track (see `marketplace-content/queue.md` — private repo), regenerated from this list the same way. This track runs continuously in parallel with INFRA, not alternating with it.
 
-1. **Content & copywriting** — product descriptions, ad copy, landing page headlines, cold outreach
-2. **Social media & marketing ops** — caption batches, content calendars, repurposing one piece across platforms
-3. **Freelancing & client work** — proposals, scope-creep emails, invoices, contracts, scope docs
-4. **Resume & job search** — tailoring resumes per posting, cover letters, interview prep, LinkedIn copy
-5. **Personal productivity & note-taking** — meeting notes to action items, daily planning, habit tracking prompts
-6. **Email & inbox triage** — drafting replies, summarizing threads, unsubscribing/cleanup workflows
-7. **Small-business & solo-preneur ops** — SOPs, onboarding docs, policy drafts, simple financial summaries
-8. **SEO & blogging** — outlines, meta descriptions, keyword-to-article briefs, content refreshes
-9. **No-code/indie-hacker launch tooling** — landing page copy, pricing page drafts, launch checklists, Show HN/Product Hunt posts
-10. **Creative writing & worldbuilding** — character bios, outline generators, critique/feedback passes
-11. **Personal finance & budgeting helpers** — expense categorization prompts, budget templates, negotiation scripts
-12. **Study & learning aids** — flashcard generation, exam-style question drafting, concept explainers
+**Audience, revised 2026-11-12**: not narrow professional verticals (freelancers, solo small-business owners, indie hackers) — those produced ideas too niche to sell, confirmed by two real review-queue rejections and direct user feedback. The actual target is **general, adept Claude/ChatGPT/Copilot power users** doing common, *recurring* tasks — a developer using Claude Code daily, a writer, a researcher, an analyst, a student. This was checked against real data, not assumed: a direct look at Agensi.io's own published "best skills" guide and marketplace listings found its most-installed skill by far is `code-reviewer` (447 installs, free), with the rest of its proven top sellers clustered in git/PR workflow, test generation, and security auditing — all daily-use developer skills, not one-off or vertical-specific tasks. Agensi's own stated reasoning: **skills that save recurring time outsell one-off-task skills by a wide margin.** That's the standard every topic below is now held to — not just "is there demand" but "is this something an adept user would reach for *repeatedly*."
+
+1. **Code review, git & PR workflow aids** — diff review, commit message generation, PR descriptions, pre-merge checklists. Confirmed highest-demand category on Agensi itself; the bar here is differentiation against `code-reviewer` and the "Code Review Bundle" (15 skills), not whether the category sells.
+2. **Testing, security & code-quality checks** — test generation, secret/leak scanning, refactoring aids — for everyday developers using Claude Code/Copilot, not for people building agent infrastructure (that's the INFRA track).
+3. **Prompt engineering & reusable prompt patterns** — structured prompting techniques, chain-of-thought templates, prompt libraries adept users build and reuse across tools.
+4. **Research & multi-document synthesis** — summarizing/synthesizing across multiple sources, "chat with my docs" style workflows, literature-review-shaped tasks.
+5. **Writing & editing for general use** — essay/report editing, tone and style matching, structural feedback — broadened from marketing-only copywriting to any adept writer.
+6. **Data, spreadsheet & SQL wrangling** — using AI to clean, transform, and analyze data in Excel/Sheets/CSV/SQL.
+7. **Meeting notes & action-item extraction** — transcript-to-summary, decision/action-item pull-out — broad professional use, not tied to one industry.
+8. **Personal knowledge management** — note organization, "second brain" workflows, linking/structuring a growing personal knowledge base with AI.
+9. **Everyday computer & browser automation** — a power user automating one repetitive task (not an agent framework — a single skill with a clear trigger and output).
+10. **Learning, explaining & studying** — concept breakdowns, study guides, exam-style practice — broadened from student-only framing to anyone learning something.
+11. **Resume, job search & career docs** — tailoring resumes, cover letters, interview prep — kept from the old rotation; genuinely broad appeal across virtually every adept AI user at some point, unlike the other dropped verticals.
+12. **Creative writing & worldbuilding** — character bios, outline generators, critique passes — kept; broad hobbyist appeal, not tied to a single profession.
+
+Dropped from the old rotation for being too narrow/vertical-specific (per direct user feedback): Social media & marketing ops, Freelancing & client work, Small-business & solo-preneur ops, SEO & blogging, No-code/indie-hacker launch tooling, Personal finance & budgeting helpers, Email & inbox triage, Content & copywriting (folded into the broader Writing & editing above).
 
 ## Phrasing guidance for the marketplace-trend-scout
 
-Query for *buyer pain and existing paid alternatives*, not community tech discussion: "best AI prompt for <topic>", "is there a GPT or skill that does <topic>", "I paid for <topic> template and it was bad", "<topic> AI tool reviews". The goal is demand + a visible quality gap in what's already for sale, not an unbuilt technique. If a topic repeatedly yields thin signal, note it in `pipeline/sessions/` and rephrase or replace it here.
+Query for *buyer pain and existing paid alternatives*, not community tech discussion: "best AI prompt for <topic>", "is there a GPT or skill that does <topic>", "I paid for <topic> template and it was bad", "<topic> AI tool reviews". **Also search X/Twitter explicitly** — trending AI-tool-usage discussion lives there more than anywhere else right now: `<topic> site:x.com`, `"<topic>" twitter AI prompt`, and general WebSearch for threads *about* X discussion (many individual posts aren't indexable, but viral ones get quoted/screenshotted elsewhere — treat those citations as evidence same as a Reddit/HN thread, same sourcing rules apply, never invent a thread you didn't actually find). The goal is demand + a visible quality gap in what's already for sale, *and* a bias toward tasks an adept user would do repeatedly, not once. If a topic repeatedly yields thin signal, note it in `pipeline/sessions/` and rephrase or replace it here.

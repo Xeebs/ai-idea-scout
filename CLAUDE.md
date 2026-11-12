@@ -5,7 +5,7 @@ AI Idea Scout is an autonomous research pipeline. Each cycle researches one topi
 **Two fully independent tracks run continuously, back-to-back, in parallel, as separate subagents — not on an hourly schedule anymore:**
 
 - **INFRA** — AI-builder/agent-infra topics, the original scope. Entirely self-contained within this public repo: `pipeline/`, `research/`, `ideas/`, `skills/`, `published/`.
-- **MARKETPLACE** — broad indie-builder topics (see `docs/TOPICS.md` → "Marketplace Rotation"), scored for `Marketplace Fit` and packaged (when HIGH) as an Agensi.io listing draft awaiting human review. Entirely self-contained within `marketplace-content/` — a separate, private, nested git repo with its own remote, its own `pipeline/`-equivalent files (`state.json`, `queue.md`, `changelog.md`, `sessions/`), and its own commit/push. **Nothing produced by this track is ever committed or pushed to this public repo.**
+- **MARKETPLACE** — topics common among general, adept Claude/ChatGPT/Copilot power users (see `docs/TOPICS.md` → "Marketplace Rotation"; not narrow professional verticals, not AI-infra builders), scored for `Marketplace Fit` and packaged (when HIGH or MEDIUM) as an Agensi.io listing draft awaiting human review. Entirely self-contained within `marketplace-content/` — a separate, private, nested git repo with its own remote, its own `pipeline/`-equivalent files (`state.json`, `queue.md`, `changelog.md`, `sessions/`), and its own commit/push. **Nothing produced by this track is ever committed or pushed to this public repo.**
 
 The two tracks share no mutable files — INFRA never writes inside `marketplace-content/`, and MARKETPLACE never writes outside it (it only ever *reads* `docs/TOPICS.md` from the public repo, read-only, for topic rotation phrasing). This is what makes it safe to run them concurrently: there is nothing for them to race over or step on.
 
@@ -72,17 +72,17 @@ If no patterns survived Phase 2, skip to Phase 6 (a cycle that produces zero ide
 
 The synthesizer writes one file per idea to `ideas/` following `.claude/rules/idea-format.md` — every idea MUST include a **Tangible Impact** section naming a specific population and the measurable change for them, and a **Format** tag (PROJECT/SKILL/BOTH per the heuristic in `docs/METHODOLOGY.md`) — and appends each to `ideas/INDEX.md`.
 
-**Promotion check (orchestrator, no subagent)**: for each new idea, and for each pattern the synthesizer reported as a skipped duplicate, check whether the gap now meets the promotion bar in `docs/METHODOLOGY.md` (recurrence across cycles, or evidence density ≥100 combined points or ≥3 independent threads). If so, edit that idea's status in `ideas/INDEX.md` directly from `PROPOSED` to `EXPLORING`, with a one-line reason noted later. Never touch a status a human has already changed manually.
+**Promotion check (orchestrator, no subagent)**: for each new idea, and for each pattern the synthesizer reported as a skipped duplicate, check whether the gap now meets the promotion bar in `docs/METHODOLOGY.md` (recurrence across cycles, or evidence density ≥50 combined points or ≥2 independent threads). If so, edit that idea's status in `ideas/INDEX.md` directly from `PROPOSED` to `EXPLORING`, with a one-line reason noted later. Never touch a status a human has already changed manually.
 
 Write `state.json` with `current_phase: SKILL_SYNTHESIS`.
 
 ### Phase 4 — Skill synthesis (delegate: skill-synthesizer, conditional)
 
-Scan `ideas/INDEX.md` for any idea (from this cycle or the backlog) tagged `Format: SKILL` or `Format: BOTH` that has no `skills/<slug>/` directory yet. If at least one exists, spawn:
+Scan `ideas/INDEX.md` for any idea (from this cycle or the backlog) tagged `Format: SKILL` or `Format: BOTH` that has no `skills/<slug>/` directory yet. Take up to the **oldest 3** qualifying ideas (fewer if fewer exist) and spawn one skill-synthesizer subagent per idea, in parallel (they write to disjoint `skills/<slug>/` directories, so there's nothing to race over):
 
 > You are the skill-synthesizer agent. Read `/home/xhasan/my-projects/ai-idea-scout/.claude/agents/skill-synthesizer.md` and follow it exactly. Target idea: `ideas/<file>`.
 
-Pick the **oldest** qualifying idea — at most one skill per cycle, to protect usage limits. If the synthesizer returns `NOVELTY_FAIL`, edit that idea's `Format` field to `PROJECT` and append a one-line note citing what was found. If `NO_CANDIDATES`, skip silently.
+Raised from the old 1-per-cycle cap to 3 — the backlog of skill-shaped ideas was growing faster than it drained. For each that returns `NOVELTY_FAIL`, edit that idea's `Format` field to `PROJECT` and append a one-line note citing what was found. `NO_CANDIDATES` overall → skip silently.
 
 Write `state.json` with `current_phase: PUBLISH`.
 
@@ -161,17 +161,17 @@ Write `marketplace-content/state.json` with `current_phase: SKILL_SYNTHESIS`.
 
 ### Phase 4 — Skill synthesis (delegate: marketplace-skill-synthesizer, conditional)
 
-Scan `marketplace-content/INDEX.md` for any idea tagged `Format: SKILL`/`BOTH` with no `marketplace-content/skills/<slug>/` yet. If at least one exists, spawn:
+Scan `marketplace-content/INDEX.md` for any idea tagged `Format: SKILL`/`BOTH` with no `marketplace-content/skills/<slug>/` yet. Take up to the **oldest 3** qualifying ideas and spawn one marketplace-skill-synthesizer subagent per idea, in parallel (disjoint output directories):
 
 > You are the marketplace-skill-synthesizer agent. Read `/home/xhasan/my-projects/ai-idea-scout/.claude/agents/marketplace-skill-synthesizer.md` and follow it exactly. Target idea: `marketplace-content/ideas/<file>`.
 
-Pick the oldest qualifying idea — at most one per cycle. `NOVELTY_FAIL` → edit `Format` to `PROJECT` with a one-line note. `NO_CANDIDATES` → skip silently.
+Raised from the old 1-per-cycle cap to 3, same reasoning as INFRA's Phase 4. For each `NOVELTY_FAIL` → edit `Format` to `PROJECT` with a one-line note. `NO_CANDIDATES` overall → skip silently.
 
 Write `marketplace-content/state.json` with `current_phase: PACKAGING`.
 
 ### Phase 5 — Packaging (delegate: marketplace-packager, conditional)
 
-Scan `marketplace-content/INDEX.md` for any idea with `Marketplace Fit: HIGH`, `Format: SKILL`/`BOTH`, an existing `marketplace-content/skills/<slug>/`, and no `marketplace-content/candidates/<slug>/` yet. If at least one exists, spawn:
+Scan `marketplace-content/INDEX.md` for any idea with `Marketplace Fit: HIGH` or `MEDIUM` (not `LOW`), `Format: SKILL`/`BOTH`, an existing `marketplace-content/skills/<slug>/`, and no `marketplace-content/candidates/<slug>/` yet. Loosened from HIGH-only: too few ideas were ever scoring HIGH for the review queue to get real throughput, and a human reviews every candidate before anything is ever listed anyway, so the cost of a MEDIUM-fit candidate turning out not to be worth listing is just a few minutes of the human's review time, not a bad listing going live. If at least one exists, spawn:
 
 > You are the marketplace-packager agent. Read `/home/xhasan/my-projects/ai-idea-scout/.claude/agents/marketplace-packager.md` and follow it exactly. Target idea: `marketplace-content/ideas/<file>`.
 

@@ -1,6 +1,6 @@
 ---
 name: marketplace-packager
-description: Packages an already-written skill (marketplace-content/skills/<slug>/) that scored Marketplace Fit HIGH into a review-ready Agensi.io listing candidate — a zip with the skill's SKILL.md plus a drafted LISTING.md (title, description, price, free/paid recommendation), staged entirely inside the private marketplace-content repo. Spawned by the MARKETPLACE track orchestrator in Phase 5, at most once per cycle. Never touches Agensi.io itself, never writes to the public repo, and never commits — staging only, for human review.
+description: Packages an already-written skill (marketplace-content/skills/<slug>/) that scored Marketplace Fit HIGH or MEDIUM into a review-ready Agensi.io listing candidate — a zip with the skill's SKILL.md plus a drafted LISTING.md (title, description, price, free/paid recommendation), staged entirely inside the private marketplace-content repo. Spawned by the MARKETPLACE track orchestrator in Phase 5, at most once per cycle. Never touches Agensi.io itself, never writes to the public repo, and never commits — staging only, for human review.
 tools: Read, Write, Bash
 ---
 
@@ -39,7 +39,7 @@ You are the AI Idea Scout marketplace-packager. The marketplace-idea-synthesizer
 - Never write, copy, or reference any file under the top-level (public) `ideas/`, `skills/`, or `research/` directories for marketplace work — everything lives under `marketplace-content/`.
 - Never invent a price without reasoning tied to something you actually found (a comparable listing's price, or an explicit "no comparable found" note) — an invented number undermines the human's trust in the draft.
 - Never overwrite an existing `marketplace-content/candidates/<slug>/` — if one already exists, report `ALREADY_PACKAGED` and do nothing.
-- If `marketplace-content/skills/<slug>/SKILL.md` is missing or the idea's Marketplace Fit isn't HIGH, report `NOT_READY` with the reason and do nothing.
+- If `marketplace-content/skills/<slug>/SKILL.md` is missing or the idea's Marketplace Fit is `LOW` (neither HIGH nor MEDIUM), report `NOT_READY` with the reason and do nothing.
 
 ## Report back
 

@@ -128,6 +128,24 @@ def idea_status(track, slug):
     return redirect(url_for("idea_detail", track=track, slug=slug))
 
 
+@app.route("/ideas/<track>/<slug>/promote", methods=["POST"])
+def idea_promote(track, slug):
+    track_or_404(track)
+    ok = parsers.update_idea_status(track, slug, "EXPLORING")
+    if not ok:
+        flash("Could not find that idea file.", "error")
+        return redirect(request.referrer or url_for("ideas_list", track=track))
+
+    cfg = parsers.TRACKS[track]
+    rel_idea = os.path.relpath(os.path.join(cfg["ideas_dir"], f"{slug}.md"), cfg["root"])
+    rel_index = os.path.relpath(cfg["index"], cfg["root"])
+    synced, detail = git_sync.commit_and_push(
+        cfg["root"], [rel_idea, rel_index], f"chore(dashboard): promote {slug} -> EXPLORING"
+    )
+    flash(f"Promoted to EXPLORING. {detail}", "ok" if synced else "warn")
+    return redirect(request.referrer or url_for("idea_detail", track=track, slug=slug))
+
+
 @app.route("/ideas/<track>/<slug>/feedback", methods=["POST"])
 def idea_feedback(track, slug):
     track_or_404(track)

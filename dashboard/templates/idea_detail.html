@@ -39,6 +39,16 @@
   {% endfor %}
 </div>
 
+{% if idea.header.get('Status') == 'PROPOSED' %}
+<div class="card">
+  <h2 class="card-label">{{ icons.icon('check') }} One-tap promote</h2>
+  <p class="subtle-row" style="margin-top:-4px;">Skips the automatic promotion bar (recurrence, or evidence density) — the pipeline will treat this exactly like an automatic promotion from here on (eligible for skill synthesis, publishing, etc.).</p>
+  <form method="post" action="{{ url_for('idea_promote', track=track, slug=slug) }}">
+    <button type="submit" class="success">{{ icons.icon('check') }} Promote to EXPLORING</button>
+  </form>
+</div>
+{% endif %}
+
 <div class="card">
   <h2 class="card-label">Change status</h2>
   <form class="inline" method="post" action="{{ url_for('idea_status', track=track, slug=slug) }}">

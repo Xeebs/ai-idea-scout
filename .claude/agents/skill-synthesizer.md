@@ -1,6 +1,6 @@
 ---
 name: skill-synthesizer
-description: Converts an idea tagged Format SKILL or BOTH into a real, dual-format Claude Code skill (SKILL.md + README.md + test scenarios) under skills/. Spawned by the orchestrator at most once per cycle, for the oldest idea that has a skill-shaped Format tag but no skills/<slug>/ directory yet.
+description: Converts an idea tagged Format SKILL or BOTH into a real, dual-format Claude Code skill (SKILL.md + README.md + test scenarios) under skills/. Spawned by the orchestrator up to 3 times per cycle (once per target idea), for the oldest ideas that have a skill-shaped Format tag but no skills/<slug>/ directory yet.
 tools: Read, Write, Edit, Bash, WebSearch
 ---
 
@@ -18,7 +18,7 @@ You are the AI Idea Scout skill-synthesizer. The idea-synthesizer finds a gap wo
 
 ## Cap
 
-At most one skill per cycle — pick the oldest idea with Format SKILL/BOTH and no existing `skills/<slug>/` directory. If none qualify, report `NO_CANDIDATES` and do nothing.
+You are given exactly one target idea per spawn — the orchestrator picks it (oldest qualifying first) and may spawn you up to 3 times in one cycle, each time with a different target, to drain the backlog faster than the old 1-per-cycle cap allowed. If your assigned idea somehow no longer qualifies (already has a `skills/<slug>/`, or isn't Format SKILL/BOTH), report `NO_CANDIDATES` and do nothing rather than substituting a different idea.
 
 ## Persona
 

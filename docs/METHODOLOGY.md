@@ -60,7 +60,7 @@ This field is informational, not folded into the automated Marketplace Fit score
 
 **Promotion criteria (PROPOSED → EXPLORING)** — any one is sufficient, applied by the orchestrator at the end of Phase 3 (no subagent needed, it's a direct INDEX.md edit with a one-line justification):
 1. **Recurrence** — the same gap surfaces in a second cycle (already-existing rule, now operationalized: the orchestrator checks the new digest's patterns against `ideas/INDEX.md` sources, same as the synthesizer's dedupe check, and bumps status instead of skipping if it finds a second independent occurrence).
-2. **Evidence density** — the pattern's cited evidence totals ≥100 combined engagement points/upvotes across sources, OR is independently raised in ≥3 separate threads/posts within the digest.
+2. **Evidence density** — the pattern's cited evidence totals ≥50 combined engagement points/upvotes across sources, OR is independently raised in ≥2 separate threads/posts within the digest. (Lowered from ≥100/≥3 — the original bar was clearing almost nothing: across 24 cycles, 68-84% of ideas never promoted past PROPOSED for lack of a second occurrence or enough density, not for lack of quality.)
 3. **Owner override** — you can hand-edit `ideas/INDEX.md` status at any time; the pipeline never overwrites a manual status change.
 
 **Publishing (EXPLORING → PUBLISHED)** — the `publisher` subagent, spawned at most once per cycle: picks the oldest EXPLORING idea without a `published/<slug>.md`, writes a polished public-facing writeup (expands "The Gap" and "The Project" with more color, links the source digest(s) and any companion skill), commits, pushes, logs to `pipeline/published.md`, and flips status to PUBLISHED.
@@ -73,7 +73,7 @@ This field is informational, not folded into the automated Marketplace Fit score
 
 ## Marketplace track
 
-A second track aimed at Agensi.io's actual audience (indie builders and small-business operators searching Google) rather than the INFRA track's AI-builder niche. It runs **every hour, in parallel with INFRA**, as a fully independent subagent with its own state file, queue, and git repo — see `CLAUDE.md`'s "Orchestration" section and "MARKETPLACE Track Protocol". It uses its own topic rotation (`docs/TOPICS.md` → "Marketplace Rotation") and queue (`marketplace-content/queue.md`), and its own agents — `marketplace-trend-scout`, `marketplace-gap-analyst`, `marketplace-idea-synthesizer`, `marketplace-skill-synthesizer`, `marketplace-packager` — sibling rewrites of the INFRA agents with the same file-contract shapes but a buyer-facing rubric.
+A second track aimed at general, adept Claude/ChatGPT/Copilot power users (including ordinary developers using AI pair-programming tools daily — confirmed by real Agensi.io data as the actual best-selling category) rather than the INFRA track's AI-infrastructure-builder niche or a narrow professional vertical. It runs **continuously, in parallel with INFRA**, as a fully independent subagent with its own state file, queue, and git repo — see `CLAUDE.md`'s "Orchestration" section and "MARKETPLACE Track Protocol". It uses its own topic rotation (`docs/TOPICS.md` → "Marketplace Rotation") and queue (`marketplace-content/queue.md`), and its own agents — `marketplace-trend-scout`, `marketplace-gap-analyst`, `marketplace-idea-synthesizer`, `marketplace-skill-synthesizer`, `marketplace-packager` — sibling rewrites of the INFRA agents with the same file-contract shapes but a buyer-facing rubric.
 
 **Everything this track produces lives in `marketplace-content/` — a separate, private, nested git repo with its own remote, never pushed to the public `ai-idea-scout` repo.** The orchestration logic described here (this doc, `CLAUDE.md`, the agent definitions themselves, `docs/TOPICS.md`) stays public — it's process, not sellable content. But the actual research digests, idea files, skills, and packaged listing candidates are the product being readied for sale, so they never touch the public repo. See `marketplace-content/README.md`.
 
@@ -89,15 +89,15 @@ This mirrors the INFRA rubric's shape but checks paid-listing saturation (Prompt
 
 ### Marketplace Fit rubric (marketplace-idea-synthesizer)
 
-Every MARKETPLACE-track idea gets a **Marketplace Fit** rating, independent of the Format tag:
+Every MARKETPLACE-track idea gets a **Marketplace Fit** rating, independent of the Format tag. **Revised 2026-11-12**: the audience bar is "general adept Claude/ChatGPT/Copilot power user" (including ordinary developers using AI pair-programming tools daily), not "anyone outside AI/agent builders" — the old framing was broad enough to let narrow professional-vertical ideas (freelancers, solo small-business owners) score HIGH, and real review-queue rejections showed those were too niche to sell. Recurring-use tasks are also now explicitly weighted over one-off tasks, per Agensi's own published data that recurring-utility skills (code review, git commits) vastly outsell one-off-task skills:
 
 | Rating | Bar |
 |---|---|
-| HIGH | Broad audience outside AI/agent builders; the task has real search/demand signal; resolves to one prompt-driven invocation (no persistent infra); a visible willingness-to-pay signal exists (people already pay for an adjacent or worse alternative) |
-| MEDIUM | Meets most of the above but audience is narrower, or demand signal is thin, or no direct pricing comparison was found |
+| HIGH | Broad adept-power-user audience (not a single professional vertical, not AI-infra builders); the task is something that user does *repeatedly*, not once; real search/demand signal; resolves to one prompt-driven invocation (no persistent infra); a visible willingness-to-pay signal exists (people already pay for an adjacent or worse alternative) |
+| MEDIUM | Meets most of the above but audience is a narrower professional vertical, or the task is closer to one-off than recurring, or demand signal is thinner, or no direct pricing comparison was found |
 | LOW | Niche/AI-builder audience, or no willingness-to-pay signal — this idea probably belongs on the INFRA track instead |
 
-Only `Marketplace Fit: HIGH` ideas that are also `Format: SKILL` or `BOTH` and already have a `marketplace-content/skills/<slug>/` directory (written by `marketplace-skill-synthesizer`, the MARKETPLACE track's own Phase 4) become candidates for packaging.
+`Marketplace Fit: HIGH` **or `MEDIUM`** ideas that are also `Format: SKILL` or `BOTH` and already have a `marketplace-content/skills/<slug>/` directory (written by `marketplace-skill-synthesizer`, the MARKETPLACE track's own Phase 4) become candidates for packaging — loosened from HIGH-only, since too few ideas were ever scoring HIGH for the review queue to get real throughput, and a human reviews every candidate before anything is ever listed anyway.
 
 ### Packaging & human approval gate
 
