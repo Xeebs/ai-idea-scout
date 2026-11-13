@@ -34,3 +34,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-12 | multiagent-code-review-cost-benchmark | An independent, re-runnable benchmark reporting tokens, latency, and defects together for multi-agent code review, where only vendor or single-team numbers exist today | Multi-agent architectures | yes |
 | 2026-11-12 | rag-abstention-confidence-gate | A calibrated sufficient-context check that returns "not found" instead of a brittle similarity threshold that hallucinates | RAG techniques | yes |
 | 2026-11-12 | mcp-tool-call-privacy-shield | Intercepts MCP tool call arguments and results to redact leaked secrets/PII before they cross a trust boundary | Tool use & MCP ecosystem | no |
+| 2026-11-13 | mcp-redirect-uri-trust-scanner | Closes the open-redirect phishing hole 96% of tested MCP servers still leave open, with a drop-in fix and a re-runnable public audit | Tool use & MCP ecosystem | yes |
