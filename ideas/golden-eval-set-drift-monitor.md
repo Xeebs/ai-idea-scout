@@ -1,6 +1,6 @@
 # Canary Set: Catching Golden Eval-Set Drift Before It Silently Breaks CI Gates
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED — [writeup](../published/golden-eval-set-drift-monitor.md) (promoted 2026-11-13 cycle 47: recurrence — same golden-dataset-decay/no-drift-triggered-refresh gap (P6 there) surfaced independently again as P2 in the 2026-11-13 digest)
 - **Date**: 2026-11-11
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-11-llm-evaluation-observability.md · P6

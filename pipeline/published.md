@@ -46,3 +46,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-13 | multi-agent-necessity-decision-checklist | A calibrated, scored rubric to stop teams defaulting to multi-agent when a single agent with tools would do | Multi-agent architectures | yes |
 | 2026-11-13 | rag-acl-enforcement-proxy | A retrieval-time ACL proxy that makes a revoked permission unenforceable on the very next query, not the next re-index | RAG techniques | no |
 | 2026-11-13 | rag-embedding-migration-manager | Shadow-indexes, validates, and auto-rolls-back an embedding-model swap instead of a bespoke, risky re-embed-and-cutover script | RAG techniques | no |
+| 2026-11-13 | golden-eval-set-drift-monitor | Nightly embedding-divergence check between the golden eval set and live production traffic, with candidate additions proposed automatically | LLM evaluation & observability | yes |
