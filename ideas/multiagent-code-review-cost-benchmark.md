@@ -1,6 +1,6 @@
 # ReviewMeter: An Independent Cost-vs-Defect Benchmark for Multi-Agent Code Review
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING (promoted 2026-11-12 cycle 32: recurrence — same multi-agent-code-review cost/value accounting gap resurfaced independently in a second research pass, research/2026-11-12-agentic-ai-autonomous-agents-iii.md P7)
 - **Date**: 2026-11-12
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-12-multi-agent-architectures.md · P5
