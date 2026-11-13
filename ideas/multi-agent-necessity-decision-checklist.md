@@ -1,6 +1,6 @@
 # Two Yeses: A Scored Decision Checklist for Multi-Agent vs. Single-Agent Architecture
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING (promoted 2026-11-13 cycle 43: recurrence — the complexity-gated single-vs-multi-agent decision gap (P8) surfaced independently in research/2026-11-13-multi-agent-architectures.md, a second cycle naming the same decision gap)
 - **Date**: 2026-11-12
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-12-multi-agent-architectures.md · P1

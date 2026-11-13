@@ -1,6 +1,6 @@
 # Coherent: a Cache-Coherence Layer for Concurrent Agent Shared State
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING (promoted 2026-11-13 cycle 43: recurrence — the synchronization/ordering/conflict-merge gap (P6) surfaced independently in research/2026-11-13-multi-agent-architectures.md, a second cycle naming the same unresolved coherence problem)
 - **Date**: 2026-06-10
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-06-10-multi-agent-architectures.md · P5
