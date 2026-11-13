@@ -63,7 +63,7 @@ Format: `- [STATUS] <topic>` — STATUS ∈ UNWORKED | IN_PROGRESS | DONE | FAIL
 - [DONE] Agentic AI & autonomous agents
 - [DONE] Multi-agent architectures
 - [DONE] RAG techniques
-- [UNWORKED] Context engineering & memory
+- [DONE] Context engineering & memory
 - [UNWORKED] Tool use & MCP ecosystem
 - [UNWORKED] LLM evaluation & observability
 - [UNWORKED] Small & local models
