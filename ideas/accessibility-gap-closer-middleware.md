@@ -5,7 +5,7 @@
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-12-applied-ai-for-underserved-domains.md · P6
 - **Maturity verdict**: PARTIAL — WebSearch found shipped but narrow implementations limited to alt-text/images only (PhotoShelter's AI alt text, Accessibility Checker's AI remediation, Microsoft Office/Edge auto-captioning); no vendor-agnostic middleware that watches for new UI features and auto-generates the full missing accessibility layer (ARIA semantics, screen-reader structure, captions) was found, and Google Research's own blog frames "the accessibility gap" as a problem its Natively Adaptive Interfaces framework is only beginning to address.
-- **Format**: BOTH
+- **Format**: PROJECT — downgraded from BOTH on 2026-11-13: skill-synthesizer found the one-shot pasted-HTML/screenshot accessibility-review skill angle NOVELTY_FAIL — Anthropic's own `accessibility-review` skill plus published `a11y-audit`, `accessibility-auditing`, `accessibility-compliance`, and `web-accessibility-audit` skills already cover pre-release ARIA/accessibility review from pasted HTML. The live-DOM-watching, auto-patching middleware itself remains the PROJECT's differentiator and is unaffected.
 - **Data Sources**: CONNECTED — reads the target web application's live DOM via a browser-extension content script (Manifest V3, mature technology) using a MutationObserver to detect newly-rendered or changed UI elements in real time; no manual paste of HTML is required for the running middleware. (The companion skill version, described below, is MANUAL — a developer pastes a specific HTML/screenshot snippet for a one-time design review.)
 
 ## The Gap
