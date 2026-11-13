@@ -5,7 +5,7 @@
 - **Topic**: Tool use & MCP ecosystem
 - **Source**: research/2026-11-13-tool-use-mcp-ecosystem.md · P3
 - **Maturity verdict**: PARTIAL — GitHub search surfaces a genuinely crowded field already attacking this exact niche (CC-Switch/farion1231's cc-switch for Claude Code+Codex+OpenCode+Gemini CLI; heyitsjakub/KyttoMCP for Claude Desktop+Claude Code+Cursor+VS Code+Codex with health checks and tool-safety scanning; mcp-hub-tui), but every one checked via `gh api` is brand-new (created/pushed within days, 0 stars, 0 forks), with no evidence of adoption or maintenance. Real, actively-attempted gap; nothing has executed well yet.
-- **Format**: BOTH
+- **Format**: PROJECT — downgraded from BOTH on 2026-11-13: skill-synthesizer returned NOVELTY_FAIL, finding mature, well-adopted public equivalents (caliber-ai-org/ai-setup, 1,314 stars; tw93/waza, 7,583 stars; amtiYo/agents; hoangsonww/claude-code-agent-monitor; nicepkg/vsync; and others) already covering the cross-client MCP sync/manage skill angle. The maintained manifest/adapter/drift-detector PROJECT itself remains the differentiator and is unaffected.
 - **Data Sources**: CONNECTED — reads and writes each installed AI coding client's local MCP configuration file directly from disk: Claude Code's `~/.claude.json` / project-level `.mcp.json`, Codex's `~/.codex/config.toml`, Cursor's `mcp.json`, and Gemini CLI's/OpenCode's native config files. No API or MCP connector is required — these are plain, already-present local files in documented locations; direct filesystem read/write *is* the connector here, and it's mature today (every cited competing attempt already does this).
 
 ## The Gap
