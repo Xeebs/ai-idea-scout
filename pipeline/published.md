@@ -37,3 +37,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-13 | mcp-redirect-uri-trust-scanner | Closes the open-redirect phishing hole 96% of tested MCP servers still leave open, with a drop-in fix and a re-runnable public audit | Tool use & MCP ecosystem | yes |
 | 2026-11-13 | agent-trace-baseline-regression-detector | Diffs production-trace metrics against a release baseline to catch quiet agent degradation that never crashes | LLM evaluation & observability | no |
 | 2026-11-13 | crisis-hotline-interpretation-triage-router | Risk-scores MT output to decide pass-through vs. human-interpreter escalation on crisis and volunteer hotlines | Applied AI for underserved domains | no |
+| 2026-11-13 | oral-tradition-language-voice-ai-toolkit | An independent voice-readiness scorecard holding a $1B language-AI coalition accountable to shipped ASR/TTS coverage, not just governance commitments | Applied AI for underserved domains | yes |
