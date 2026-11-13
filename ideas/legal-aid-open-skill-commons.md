@@ -5,7 +5,7 @@
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-12-applied-ai-for-underserved-domains.md · P7
 - **Maturity verdict**: PARTIAL — LawDroid's Legal Aid Plugin (May 2026, ~15 skills, open-source) is real and free, but one analysis flags open maintenance/security sustainability as an open question and it still requires a Claude subscription; Stanford Legal Design Lab's co-pilots are pre-release; Free Law Project offers infrastructure (CourtListener API) but not an AI copilot itself. No broad, multi-org-adopted, subscription-independent ecosystem was found — a single ~6-month-old entrant, not a mature commons.
-- **Format**: BOTH
+- **Format**: PROJECT (downgraded from BOTH on 2026-11-13: skill-synthesizer found 4+ close public equivalents — LawDroid's eligibility-screening/client-intake skills, Anthropic's own `claude-for-legal` client-intake skill, and skills-hub.ai/claudskills.com's `benefits-processing`/`legal-aid` skill listings — NOVELTY_FAIL per `.claude/rules/skill-format.md`. The idea's actual novel contribution — multi-org governance/subscription-independence — is organizational infrastructure, not a skill-shaped deliverable.)
 - **Data Sources**: MANUAL at MVP — a legal-aid intake worker pastes the client's intake answers and the relevant program's published eligibility rules (a benefits agency's PDF or statute text); CONNECTED upgrade path exists via the Free Law Project's CourtListener API (mature, free, already serving case-law/docket data to nonprofits) for skills that need case-law context beyond a bounded benefits-eligibility ruleset.
 
 ## The Gap

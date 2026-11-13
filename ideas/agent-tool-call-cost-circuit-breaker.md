@@ -1,6 +1,6 @@
 # Breaker: A Cost-Aware Circuit Breaker for Repeatedly-Failing Agent Tool Calls
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING (promoted 2026-11-13 cycle 52: recurrence — same runaway-loop circuit-breaker gap resurfaced independently as P1 in the 2026-11-13 digest, now corroborated by a cluster of ≥6 independent same-month indie repos (AgentBrake, agent-guard-mcp, loopguard/ai-loopguard, @monetisebg/circuit-breaker, NakshGuard, Agent Firewall) all attempting it unevaluated)
 - **Date**: 2026-11-12
 - **Topic**: Tool use & MCP ecosystem
 - **Source**: research/2026-11-12-tool-use-mcp-ecosystem-2.md · P7
