@@ -1,0 +1,37 @@
+# ToolCause: A Cross-Runtime Root-Cause Classifier for Small-Model Tool-Calling Failures
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-13
+- **Topic**: Small & local models
+- **Source**: research/2026-11-13-small-and-local-models.md · P2
+- **Maturity verdict**: PARTIAL — `Code-byte404/toolhound` exists (GitHub, classifies failures into template bug / parser gap / model format / model decision) but is MLX/Apple-Silicon-only, 7 stars, 1 fork, last pushed 2026-07-06 (~4 months stale). `SoHarshh/ToolFailBench` is an academic benchmark with a different taxonomy (skipped/ignored/fabricated/unnecessary), 3 stars, also stale since 2026-07-12. Both are narrow, unmaintained proofs of concept — the gap is real but nothing serious closes it across runtimes.
+- **Format**: BOTH
+- **Data Sources**: CONNECTED — the PROJECT wraps the local inference server's own already-mature, actively-maintained APIs (Ollama's REST API, llama.cpp's `server` HTTP API, vLLM's OpenAI-compatible endpoint) to capture, per tool-call request, the raw model completion, the exact chat template that was applied, and the tool schema that was sent — no manual export step. The companion SKILL (see Skill Angle) is a MANUAL fallback for a one-off paste when a user just wants a single failure diagnosed without installing the wrapper.
+
+## The Gap
+r/LocalLLM and dev.to posts surfaced in this digest independently flag the same problem: a small local model's tool-calling "accuracy" number collapses three distinct failure causes into one opaque score. One post traced a concrete example — Qwen2.5's chat template renders its tool-call example with doubled braces, which small models then copy literally, producing a failure that looks like a model defect but is actually a template bug. Each writeup (the r/LocalLLM post, a dev.to piece, and a personal blog "in the trenches with small llms") is a one-off, model-specific debugging post. `toolhound` proved the classification concept is buildable but stalled as a single-platform, single-author side project four months ago, and `ToolFailBench` is a benchmark, not a diagnostic tool a developer runs against their own failing call.
+
+## The Project
+A lightweight proxy/wrapper library that sits in front of Ollama, llama.cpp's server, and vLLM's OpenAI-compatible endpoint, intercepts every tool-calling request/response pair, and — on failure — classifies the cause into one of four buckets (chat-template rendering bug, parser/extraction gap, malformed-but-recoverable model output, or genuine model reasoning/argument-choice failure), citing the specific evidence (the raw string, the template fragment, the parser's failure point) rather than a bare label. Each classification ships with a suggested fix: patch the template, widen the parser's tolerance, or accept it's a model-capability ceiling and consider a different model/size.
+
+Core components: (1) a request/response capture shim per runtime (three thin adapters, not a rewrite of each server), (2) a rule-based + small-classifier-model triage layer trained on the four-bucket taxonomy, (3) a fix-suggestion library keyed to known template bugs across popular model families (Qwen, Llama, Mistral, Hermes tool-call formats), (4) a CLI/dashboard that turns a run's failures into a bucketed report instead of one accuracy percentage.
+
+## Tangible Impact
+**Population**: developers building agentic/tool-calling applications on small, open-weight local models (sub-8B, the class most prone to template/parser brittleness) across the three dominant self-hosted serving stacks — Ollama, llama.cpp, and vLLM. r/LocalLLaMA alone has 480k+ members, and Ollama reports hundreds of thousands of weekly active installs; a meaningful fraction of that community is building tool-using agents on exactly this class of model, per the digest's own corroborating threads.
+**Mechanism**: today, a developer who sees a tool call fail has to manually re-read the raw model output, the Jinja chat template, and the parser code to figure out which of three completely different fixes applies — a process each cited writeup turned into its own multi-paragraph blog post. ToolCause automates that triage into one classified report per failure, so the developer acts on the actual cause (patch a template, loosen a regex, or switch models) instead of guessing or assuming "the model is just bad at this."
+**Measure**: (1) median time from "tool call failed" to "root cause identified" — target: minutes, not the hours implied by the existing one-off debugging posts; (2) percentage of failures in a sampled corpus that are template/parser bugs vs. genuine model limitations, made visible and trackable per model/template pair instead of invisible; (3) adoption proxy — GitHub stars/installs crossing toolhound's stalled 7-star baseline within 3 months as a sign the gap was real.
+
+## Why Now
+Small local models are being pushed into agentic tool-calling roles faster than the tooling to debug them is maturing — this digest alone surfaced three independent complaint threads about exactly this gap inside a 30-day window, and the one prior attempt (toolhound) went stale right as the problem got more visible, leaving an open lane.
+
+## Skill Angle
+A Claude Code skill that takes a single failed tool-call trace — the raw model completion, the chat template used, the tool schema sent, and (if available) the parser error — pasted by the user, and returns a classified diagnosis (template bug / parser gap / malformed output / model decision failure) with a specific, actionable fix, without requiring the user to install or wire up the runtime-wrapper library at all. This differs from the PROJECT: the project is the always-on middleware that captures traces automatically across a running stack; the skill is a fast, zero-install, one-shot triage for a developer who just hit one failure and wants an answer right now.
+
+## MVP Sketch
+Scope: one adapter (Ollama, the most common hobbyist runtime) plus the four-bucket classifier and fix-suggestion library for the three most-downloaded tool-calling model families (Qwen2.5/3, Llama 3.x, Hermes). Stack: a thin Python proxy in front of Ollama's API, a rule-based classifier seeded with known template bugs (expandable with a small fine-tuned classifier later), a CLI report generator. Single validating experiment: run it against a labeled set of ~100 real failed tool calls (reproducing the digest's cited Qwen2.5 doubled-brace bug plus synthetic parser-gap and genuine-failure cases) and confirm ≥90% bucket-classification accuracy against human-labeled ground truth.
+
+## Risks & Open Questions
+- Chat-template bugs get patched upstream fast once noticed — the tool's value partly depends on staying current with template changes across model releases, requiring ongoing maintenance.
+- The four-bucket taxonomy may need to expand (e.g., multi-tool-call ordering failures) as more real-world traces are classified; risk of taxonomy drift undermining comparability over time.
+- `toolhound`'s existence means this isn't a from-scratch build — there's a real chance the strongest version of this is "revive and generalize toolhound" rather than a clean-room build; worth contacting the original author before starting.
+- Classifying "genuine model decision failure" accurately (vs. mislabeling a subtle parser edge case as a model failure) is the hardest bucket and the one most likely to need a trained classifier rather than rules alone.
