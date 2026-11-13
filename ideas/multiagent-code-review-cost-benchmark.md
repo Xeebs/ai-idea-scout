@@ -6,6 +6,7 @@
 - **Source**: research/2026-11-12-multi-agent-architectures.md · P5
 - **Maturity verdict**: PARTIAL — GitHub search surfaced PROrunner926/copilot-cache-scout (114 stars, explicitly benchmarking multi-agent code-review cost). WebSearch found a vendor benchmark (Qodo Code Review Benchmark, reporting recall/precision/cost) plus independent blog write-ups (Kilo, LeadDev, a Concordia University token-allocation study, hyrax.dev), but the search concluded no independent, standardized benchmark reports tokens, latency, and defects together — real but scattered, vendor-biased, or narrow evidence.
 - **Format**: BOTH
+- **Data Sources**: MANUAL — user pastes/links a sample of recent PR diffs (or a description of their review setup) for the quick skill-angle estimate; the full harness's "bring your own repo" mode would need CONNECTED access to a team's GitHub PR history (GitHub API/webhook), which is not wired up in the MVP and would be a build task.
 
 ## The Gap
 A Hacker News item ("What Claude Code's multi-agent code review costs and finds," quickchat.ai, 3pts/4 comments) is framed as one team's informal cost/benefit writeup, not a reusable benchmark other teams could run against their own repos. Vendor benchmarks (Qodo) report self-favorable numbers, and independent blog posts (Kilo, LeadDev, a Concordia token-allocation study) each measured something narrower on their own setup — no standardized, re-runnable, neutral benchmark exists that reports cost and defect-catch rate together.

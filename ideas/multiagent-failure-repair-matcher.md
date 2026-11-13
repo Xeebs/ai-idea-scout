@@ -5,7 +5,8 @@
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-12-multi-agent-architectures.md · P2
 - **Maturity verdict**: PARTIAL — ARIA (arXiv 2610.20780, github.com/LabRAI/ARIA) built a 3,953-pair verified-repair dataset from 24,000+ trajectories, but the repo has 1 star and was last pushed 2026-10-12 — a brand-new, unadopted research snapshot. Related datasets (AgentFail — 307 logs, StateMAS, SymFail) confirm an active research niche, but no tool built on top of any of them exists yet.
-- **Format**: BOTH
+- **Format**: PROJECT (skill angle dropped 2026-11-12: NOVELTY_FAIL — diagnose-and-repair for multi-agent traces is already covered by AI Agent Debugging & Repair Engineer on agensi.io, AI Orchestration Debugger on findskill.ai, "When Agents Fail" on skills.sh/ndpvt-web, plus adjacent triage-agent/langgraph-error-handling/error-analysis skills)
+- **Data Sources**: MANUAL — user pastes a failed multi-agent run's trace (tool calls, messages, error state) for the MVP's CLI matcher; a later always-on version would need CONNECTED ingestion adapters for OpenAI/Anthropic SDK call logs and LangGraph/CrewAI state dumps, which don't exist yet and would have to be built as part of this project.
 
 ## The Gap
 An October 2026 preprint, "ARIA," introduced a data-driven framework and dataset pairing failed multi-agent runs with verified repairs, explicitly positioned as an alternative to relying on ad hoc post-mortems per incident. It is reported purely as a fresh research artifact — no GitHub project or commercial offering built on the dataset appeared in either engine run, and the repo itself shows no adoption (1 star, one month old). The raw material for a repair-matching tool now exists for the first time, but nobody has built the living lookup service on top of it.
@@ -22,9 +23,6 @@ Components: trace ingestion adapters (OpenAI/Anthropic SDK call logs, LangGraph/
 
 ## Why Now
 ARIA just produced the first large-scale verified-repair dataset for exactly this problem within the last 30 days, but as a one-star, one-time research snapshot with zero lookup tooling built on it. The raw material exists for the first time; building the living, feedback-corrected tool on top of it is newly possible and currently unclaimed.
-
-## Skill Angle
-Given a single failed trace pasted in (tool calls, messages, error state), apply the extraction-and-matching pipeline against the static bundled corpus and return the best-matching repair suggestions with confidence scores — a one-shot diagnostic useful without the always-on, continuously-updated service running. The project differs by integrating into a team's observability pipeline continuously and growing the corpus via the feedback loop; the skill is a single-trace, on-demand lookup.
 
 ## MVP Sketch
 Load ARIA's public dataset, build an embedding-based nearest-neighbor matcher over failure descriptions, wrap it in a CLI that takes a trace file and returns the top-3 matching repairs with confidence scores. Experiment: run it against 10-15 real multi-agent failures from a pilot team or public GitHub issue reports; if matches are mostly irrelevant, the taxonomy granularity is wrong and the project should narrow scope or stop. 2-3 weeks, 1-2 people.
