@@ -6,6 +6,7 @@
 - **Source**: research/2026-11-12-agentic-ai-autonomous-agents-ii.md · P4
 - **Maturity verdict**: PARTIAL — plan-caching ideas exist in research (ReWOO, AgenticCache arXiv 2604.24039) and scattered single-vendor tools claiming large token-reduction numbers, but nothing is a single maintained, broadly-adopted framework, and one study (arXiv 2607.12161) warns token reduction doesn't reliably translate to cost reduction.
 - **Format**: BOTH
+- **Data Sources**: MANUAL — a team pastes/uploads a sample of their agent's execution trace logs; no mature connector exists for pulling live traces across arbitrary agent frameworks today, so both the skill's one-shot audit and the project's runtime cache ingest whatever trace export format the team already has. (Flagged during Phase 4 skill synthesis: this field was missing from the idea file entirely — backfilled here per `docs/METHODOLOGY.md`'s Data Sources requirement.)
 
 ## The Gap
 A 2026-11-11 r/aiagents post claiming "99% reduced token usage on repetitive tasks" via a "One-Time Reasoning Cost" architecture states plainly that "most standard AI agents re-reason every single step from scratch, wasting millions of tokens" on repeated multi-step workflows. The gap-analyst confirmed the underlying idea (cache a reasoning plan the first time a task-type recurs, reuse it after) is real but fragmented across one unverified self-reported tool and academic prototypes — no maintained open-source framework a team can actually adopt.

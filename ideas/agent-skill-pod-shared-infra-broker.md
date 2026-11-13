@@ -6,6 +6,7 @@
 - **Source**: research/2026-11-12-agentic-ai-autonomous-agents-ii.md · P3
 - **Maturity verdict**: PARTIAL — adjacent infra (Rivet agentOS, RunPod Instant Agents, tinycrab) cuts compute/runtime spin-up friction, and "skills over subagents" discourse is growing, but nothing targets the DB/server/OAuth/UI/messaging integration cost of standing up a dedicated bot per skill. No named product or framework claims to solve exactly this.
 - **Format**: BOTH
+- **Data Sources**: MANUAL — a team pastes the proposed capability's description, required OAuth scopes/tools, and the existing mega-agent's current tool/scope manifest; the skill scores fold-vs-split from that pasted input, since there's no mature connector that introspects an arbitrary agent framework's live tool/OAuth manifest today. (Flagged during Phase 4 skill synthesis: this field was missing from the idea file entirely — backfilled here per `docs/METHODOLOGY.md`'s Data Sources requirement.)
 
 ## The Gap
 A 2026-11-10 r/aiagents thread ("Why spinning up a new AI agent per skill beats the giant monolithic prompt") argues teams default to one mega-agent stuffed with every tool/guide/capability because standing up a dedicated per-skill bot is a heavy operation — a new database, server, OAuth flow, UI, and messaging wiring every single time. The post frames this as a reluctant default, not a solved problem, and the gap-analyst found compute-spin-up tools (fast containers, V8 isolates) but nothing addressing the *integration* cost specifically.
