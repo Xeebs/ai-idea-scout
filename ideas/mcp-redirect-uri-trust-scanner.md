@@ -6,6 +6,7 @@
 - **Source**: research/2026-11-12-tool-use-mcp-ecosystem.md · P3
 - **Maturity verdict**: PARTIAL — the MCP spec's 2026-07-28 revision hardened general redirect-URI validation (exact pre-registered-URI matching, localhost-redirect warnings via SEP-837, SSRF considerations for Client ID Metadata Documents), but the spec explicitly leaves "trust" undefined for self-hosted servers doing dynamic client registration from anonymous clients. A related Claude Code issue was closed "not planned." The blog author's own test of 119 live MCP servers found 114 (96%) still accept arbitrary redirect URIs — the spec-level fix exists, the practical implementation gap does not.
 - **Format**: BOTH
+- **Data Sources**: CONNECTED (for the public scanner) — probes live, registry-listed MCP servers' OAuth endpoints directly over the network (public authorization-flow behavior, no credentials required); the validation-middleware component is installed library code a server author adopts, not a data source. The Skill Angle is MANUAL — the user hands over the server's source repo or OAuth-related config/code for a one-time review.
 
 ## The Gap
 

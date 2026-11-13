@@ -5,7 +5,8 @@
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-12-llm-evaluation-observability.md · P1
 - **Maturity verdict**: PARTIAL — GitHub/web search found only narrow adjacent pieces, not an integrated solution: `mcp-eval` ships `doctor`/`validate` diagnostic commands for config/API-key setup, and Descope's agent-auth pattern returns an authorization link instead of throwing on a missing credential — but nothing combines capability discovery + actionable validation errors + credential bootstrapping specifically for LLM-judge eval creation. PostHog's own fixes remain ad hoc per-bug patches, confirming no general protocol exists yet.
-- **Format**: BOTH
+- **Format**: PROJECT — skill-synthesizer returned NOVELTY_FAIL 2026-11-13: Postman's official API Readiness Analyzer plus 4 other close public equivalents already cover the "review this API/MCP tool for agent-readiness" skill angle; the Setup Gate protocol/middleware itself remains the PROJECT's differentiator and is unaffected.
+- **Data Sources**: CONNECTED — wraps the eval platform's own existing eval-creation API/MCP server and provider-credential configuration directly; no new external data source, it sits in front of API calls the platform already handles.
 
 ## The Gap
 GitHub `PostHog/posthog` PR #128104 (2026-11-03): "Coding agents creating evals through MCP often try an enabled LLM judge in a project with no working AI provider key. The API rejects it, and the agent usually retries the same judge as a disabled draft without telling anyone." Companion PR #129079 (2026-11-04): "Agents call `llma-evaluation-run` with trace- and session-target evaluations, and the API rejects every call with `evaluation_target_mismatch`. This bucket holds most of the tool's validation errors over the last 14 days, across many users." Both are first-party bug-fix patches for a missing general capability — no eval platform has shipped a reusable agent-readable setup protocol.
