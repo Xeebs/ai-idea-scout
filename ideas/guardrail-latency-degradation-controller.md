@@ -6,6 +6,7 @@
 - **Source**: research/2026-11-12-ai-safety-and-guardrails-in-production-pass2.md · P5
 - **Maturity verdict**: PARTIAL — one vendor (Waxell) claims an alternative deterministic enforcement layer at ~0.045ms p95 versus "hundreds of milliseconds" for judge-based checks, and the broader detection/enforcement literature (Weaviate, Arize) implicitly recommends cheap deterministic checks in the hot path with LLM judges reserved for sampled/async review. These are single-vendor claims and general best-practice advice, not an independently evaluated, widely-adopted "graceful degradation under SLO" product.
 - **Format**: BOTH
+- **Data Sources**: MANUAL — user pastes/uploads their guardrail-check inventory (names, types, per-check latency, severity) and their latency SLO; no single named connector is mature across the varying guardrail stacks this would target. (Backfilled 2026-11-13 cycle 36 — this idea predates the mandatory Data Sources field; inferred from the Skill Angle section by the skill-synthesizer.)
 
 ## The Gap
 A futureagi.com glossary entry on LLM guardrails puts the pre- and post-processing guardrail latency budget at roughly 250-500ms p99, and states plainly that teams disable guardrails entirely once that budget is exceeded, rather than optimizing or shifting checks async. This is a binary on/off failure mode: a team either eats the full latency cost of every check or drops all guardrail coverage, with nothing in between documented as a shipped pattern.
