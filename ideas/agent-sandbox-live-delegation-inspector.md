@@ -1,0 +1,37 @@
+# Glass Box: Per-Agent Sandboxed Delegation With Live Step-In Inspection
+
+- **Status**: EXPLORING (promoted 2026-11-12: evidence density — ≥2 independent threads, the HN "I don't see any good orchestration system for AI agents" post plus the independently-published "Agent orchestrators are bad" blog and MindStudio's "biggest unsolved problem" framing, all naming the same per-agent sandbox + live step-in gap)
+- **Date**: 2026-11-12
+- **Topic**: Multi-agent architectures
+- **Source**: research/2026-11-12-multi-agent-architectures-iii.md · P2
+- **Maturity verdict**: PARTIAL — the gap-analyst found only component pieces (OpenClaw's per-agent sandbox-scope docs with override/inheritance rules; a Docker "Agent" `sub_agents` delegation config; Arcade's "Docker sandboxes aren't enough for agent safety" post; an OpenAI sandboxing guide warning against running the harness inside the sandbox) — no GitHub repo or product combines containerized per-agent isolation, live delegation, and step-in/inspect into one widely-adopted solution, matching the original HN poster's own framing.
+- **Format**: BOTH — the sandbox/delegation/inspect runtime is persistent infrastructure; auditing an existing multi-agent codebase's delegation points for where isolation and inspectability are missing is a separable one-shot task. See Skill Angle.
+- **Data Sources**: CONNECTED — reads/controls container lifecycle via the Docker Engine API (mature, widely used today) and reads an agent framework's own live tool-call/reasoning-trace stream (e.g., Claude Agent SDK hooks, OpenHands' event stream, both mature and documented) to drive the inspection view; no manual paste-in is needed, but no existing connector wires both together for a step-in control plane, so that glue is the new build.
+
+## The Gap
+A Hacker News poster ("I don't see any good orchestration system for AI agents," 2026-06) named the exact missing piece: per-agent containerized delegation where a human or parent agent can hand off a task to a sandboxed agent, then step in mid-run to inspect and redirect it, and said they knew of only partial pieces (Claude Code sandbox images, task-trigger libraries) with nothing combining them. The "Agent orchestrators are bad" blog post and MindStudio's framing of orchestration as "the biggest unsolved problem in the AI stack" corroborate that this remains an open, named ask rather than a solved category.
+
+## The Project
+A delegation runtime that gives each agent in a multi-agent system its own isolated container (one sandbox per agent, following OpenClaw's scoping model) with a control plane that lets a parent agent or human delegate a task, watch the sandboxed agent's live actions — shell commands, file writes, tool calls — in real time, and step in: pause, inspect current reasoning state and pending tool calls, then resume, redirect, or kill that one agent without tearing down the rest of the delegation chain. The live step-in/inspect capability, paired with per-agent isolation, is the centerpiece — isolation alone (several vendors ship this) and passive observability dashboards (several more ship this) both already exist; the combination that lets you actually intervene mid-run does not.
+
+Components: a per-agent container orchestrator (Docker lifecycle management per delegated agent); a live-attach protocol (pause/resume semantics plus a state snapshot of in-flight reasoning and queued tool calls); an inspection UI rendering the delegation tree with live action feed and file diffs per node; a delegation API parent agents call to hand off a task and later re-attach.
+
+## Tangible Impact
+**Population**: Developers and small teams running autonomous coding/ops agents in multi-step unattended sessions — the overnight-refactor-agent and on-call-remediation-agent use cases on frameworks like Claude Code subagents, OpenHands, or Devin-style delegation — the same population behind the HN poster's explicit "has anyone built" ask and the corroborating "biggest unsolved problem" framing from vendor blogs within the last 30 days.
+**Mechanism**: Today these teams face a binary choice — full autonomy with no visibility until the run finishes (risking a wasted session or a damaging action before anyone notices), or constant supervision that defeats the point of delegating in the first place. A per-agent sandbox with live step-in converts "kill the whole run and restart" into "pause the one misbehaving agent, see exactly what it was doing and why, and redirect it," containing a bad action to its own sandbox and salvaging the rest of the delegation chain's progress.
+**Measure**: (1) Time to detect and intervene in a misbehaving agent (minutes, versus "never, until the run finishes" today). (2) Fraction of sessions salvaged — continued after a targeted intervention — versus fully restarted, on a benchmark of injected-fault delegation scenarios. (3) Containment rate: in fault-injection tests, the fraction of a sandboxed agent's bad actions (e.g., attempted writes outside its scope) that never reach the host or sibling agents' sandboxes.
+
+## Why Now
+Per-agent container sandboxing primitives (OpenClaw's scope model, Docker's native agent delegation config) only matured in the last several months, and the explicit "has anyone built" ask plus multiple vendor posts calling orchestration unsolved landed within this digest's 30-day window — the component pieces now exist to combine; nobody has wired them into one control plane yet.
+
+## Skill Angle
+A "Delegation Isolation Audit" skill: given a description of a multi-agent system's current delegation setup (how tasks are handed off, whether/how agents are sandboxed today, what observability exists), identify every delegation point that lacks isolation, lacks a live inspection path, or both, and produce a prioritized retrofit list naming which hops are highest-risk to leave uncontained. This is a one-shot review distinct from the project, which is the actual always-on sandbox-and-inspect runtime.
+
+## MVP Sketch
+3–4 weeks, 1–2 people: build container-per-task lifecycle management wrapping Claude Code subagents or OpenHands on a single host, stream live tool-call/file-diff events to a minimal web UI, and implement pause/resume via a checkpoint-and-restart approach (true live-pause of an in-flight API call is likely infeasible in the MVP; checkpoint at the next tool-call boundary instead). Validate with a chaos scenario: inject a deliberately bad command into one sandboxed agent mid-run and measure whether an operator can detect, inspect, and redirect it before it affects the host or other agents.
+
+## Risks & Open Questions
+- Arcade, Docker, or OpenAI could ship this combination themselves — all three already published blog posts naming the exact gap, which is the strongest already-in-motion risk.
+- True live pause/resume mid-tool-call is hard for stateful agents (an in-flight API call or shell command can't always be safely frozen); the MVP may need to settle for "pause at the next checkpoint," which is weaker than the HN poster's ask.
+- One container per agent adds real infrastructure overhead at scale (dozens of concurrent sandboxes); needs validation that this stays practical beyond small delegation trees.
+- Different vendors' primitives (Docker's delegation config, OpenClaw's scoping, a given framework's event stream) may not compose as cleanly as their individual docs suggest — the HN poster's own framing ("I know of partial pieces") hints the integration work itself may be the hard part.
