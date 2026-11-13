@@ -1,6 +1,6 @@
 # Cache Guard: A Poisoning-Resistant, Self-Tuning Semantic Cache for RAG
 
-- **Status**: EXPLORING (promoted 2026-11-12: ≥2 independent sources — tianpan.co/Percona/DEV Community cost pieces plus NDSS 2026 (Wu et al.) demonstrating a 75% poisoned-hit rate against GPTCache)
+- **Status**: PUBLISHED — [writeup](../published/rag-poisoning-resistant-semantic-cache.md) (promoted 2026-11-12: ≥2 independent sources — tianpan.co/Percona/DEV Community cost pieces plus NDSS 2026 (Wu et al.) demonstrating a 75% poisoned-hit rate against GPTCache)
 - **Date**: 2026-11-12
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-12-rag-techniques-iii.md · P4
