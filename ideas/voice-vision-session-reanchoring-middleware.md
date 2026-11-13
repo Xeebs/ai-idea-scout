@@ -1,0 +1,37 @@
+# Re-Ground: A Periodic Visual Re-Anchoring Middleware for Long Voice+Vision Sessions
+
+- **Status**: EXPLORING
+- **Date**: 2026-11-13
+- **Topic**: Voice & multimodal agents
+- **Source**: research/2026-11-13-voice-multimodal-agents.md · P5
+- **Maturity verdict**: PARTIAL (active 2026 research directly targets this failure mode — ViSAGE's entity-anchoring reports 79.1% vs. 74.2%/61.8% baselines on Video-MME-long, plus LensWalk, VideoBrain, VideoExplorer, and APVR all do adaptive/query-driven re-sampling — but these are papers/research code, not production middleware wired into a live voice+vision agent's real-time 30-second-window session loop; no tooling applies periodic re-grounding specifically inside a running agent)
+- **Format**: BOTH
+- **Data Sources**: CONNECTED — the middleware reads the live video/screen-share frame stream directly from the voice+vision agent's own media pipeline (LiveKit's or Pipecat's video track ingestion, both mature, widely-used connectors for this exact data path) to decide when and what to re-sample; nothing is pasted by a user during operation. The video-ingestion connectors already exist; the re-anchoring/re-sampling scheduler is the new piece.
+
+## The Gap
+alexcloudstar.com's 2026 production write-up states plainly that continuous video/screen understanding in a multimodal agent "gets weaker in longer continuous sessions, especially after roughly 30 seconds" — a measured, named degradation window, not a vague complaint. Current academic mitigations (entity-anchoring, adaptive re-sampling, hierarchical retrieval) prove the fix pattern works in benchmark settings, but every one is evaluated offline against a fixed video corpus, not wired into a live, real-time agent loop that has to decide, turn by turn, whether and what to re-ground.
+
+## The Project
+A middleware scheduler that sits inside a voice+vision agent's session loop and periodically re-anchors the model's visual context — re-sampling key frames, re-injecting a lightweight entity/state summary (what's currently on screen, what's changed since the last anchor), and resetting the effective "clock" on context staleness — before the ~30-second degradation window the digest's evidence names is reached. It adapts the re-anchoring cadence to session activity (more frequent during fast on-screen change, less during a static view) rather than a fixed timer, borrowing the adaptive-re-sampling logic the cited research (LensWalk, VideoExplorer) already validated offline, but running it live, in-loop, during a real-time call.
+
+Components: a frame-change detector to drive adaptive cadence, a re-anchoring prompt/summary injector, a session-level "what's changed since last anchor" diff log for debugging, and an evaluation harness using real multi-minute screen-share+voice sessions to measure task accuracy before vs. after the 30-second mark, with and without re-anchoring.
+
+## Tangible Impact
+**Population**: users of voice-driven screen-sharing support, walkthrough, and accessibility agents whose sessions routinely run past 30 seconds — multi-step software troubleshooting calls, live tutoring/onboarding walkthroughs, and voice-first screen-reading assistance for blind and low-vision users (the same population named in this repo's published "Beyond the Pilot" voice-first browsing idea), all of which involve exactly the kind of extended, continuous visual engagement where this digest's cited degradation window becomes operationally relevant rather than a benchmark footnote.
+**Mechanism**: without re-anchoring, a session that starts accurate degrades silently past 30 seconds, so the agent starts giving instructions based on stale on-screen state — telling a user to click a button that's no longer there, or describing a screen that's already changed — which is indistinguishable to the user from the agent simply being wrong, driving repeated corrections, abandoned self-service sessions, or (for accessibility users with no independent way to verify the screen state themselves) real navigation errors.
+**Measure**: task accuracy on a fixed benchmark of real multi-minute screen-share sessions, measured in the pre-30s window vs. post-30s window, with and without re-anchoring; rate of user-initiated corrections ("that's not what's on my screen") per session length bucket; added latency per re-anchoring event (must stay inside the voice turn's latency budget to be viable).
+
+## Why Now
+Voice+vision agents that hold a session open and watch a screen or video continuously — rather than processing a single uploaded image — are now common enough in 2026 production deployments (per this digest's own P3 and P4 patterns describing the same builder population) that session-length degradation has gone from a research curiosity to a named, measured practitioner pain point. The academic groundwork (ViSAGE, LensWalk, APVR) that proves adaptive re-sampling works is fresh enough in 2026 that porting the technique into a live agent loop is a genuinely new engineering step, not a reimplementation of something already shipped.
+
+## Skill Angle
+A companion skill, "session-degradation risk reviewer," takes a description of an existing voice+vision agent's architecture (typical session length, what visual content it watches, how often the screen/scene changes) and estimates where in a session accuracy is most likely to degrade, recommending a re-anchoring cadence and what to include in each re-anchor (full re-sample vs. lightweight diff summary) before a team wires up the runtime middleware. This is the design judgment that precedes the build; the project is the live scheduler that executes it during real sessions.
+
+## MVP Sketch
+Build the re-anchoring scheduler as a LiveKit Agents plugin: a simple frame-diff-based change detector driving a variable re-anchoring timer (baseline: fixed 25-second cadence as a control condition against adaptive cadence), and a summary-injection step feeding a compact "what changed" note back into the model's context at each anchor. Assemble ~20 real screen-share+voice recordings running 60-90 seconds each with labeled ground truth at multiple timestamps. The single experiment: does task accuracy at the 45-60 second mark measurably improve with re-anchoring versus an unmitigated baseline, without blowing the per-turn latency budget?
+
+## Risks & Open Questions
+- Re-anchoring adds a non-trivial payload (a fresh frame sample plus a summary) to the model's context at each anchor point, which could itself reintroduce the vision-token cost blindspot this digest names as a separate pattern (P4) — the scheduler needs a cost-aware anchoring frequency, not a free-running timer.
+- If the underlying multimodal model's native context window or attention mechanism improves enough to not need this (a realistic near-term model-capability shift), the middleware's value window could close quickly — the MVP should be scoped to measure the gain against a *current-generation* model, not assume durability.
+- The 30-second figure comes from one practitioner's testing (alexcloudstar.com), not a peer-reviewed benchmark; the MVP's own evaluation harness is the first step toward independently confirming where the real degradation threshold sits for a given model/session type.
+- Adaptive cadence driven by frame-change detection could itself misfire on content that looks static but has changed meaningfully (e.g., small-text updates, the same precision-detail blind spot P3 names) — this middleware should compose with, not substitute for, a precision-routing layer.

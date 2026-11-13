@@ -5,7 +5,7 @@
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-12-agentic-ai-autonomous-agents-ii.md · P7
 - **Maturity verdict**: PARTIAL — academic self-testing memory-compression research exists (SelfMem arXiv 2607.03726, Agent Cognitive Compressor arXiv 2601.11653, AgentMemBench, DreamBench-SWE) but none is packaged as a deployable, drop-in self-checking protocol for a persistent multi-agent "staff"; the only real-world instance found is one solo operator's bespoke, untested-at-scale system.
-- **Format**: BOTH
+- **Format**: PROJECT — skill-synthesizer returned NOVELTY_FAIL 2026-11-13: 4 close, well-adopted public equivalents found doing the same probe-against-source/score-compressed-memory mechanic — `context-compression` skill in `muratcankoylan/Agent-Skills-for-Context-Engineering` (18,344 stars), `prune-agent-memory` in `pjt222/agent-almanac` (44 stars, actively maintained), `memory-integrity-checker` in `archieindian/openclaw-superpowers` (74 stars), and `memory-audit`/`memory-quality-auditor` in `oimiragieo/agent-studio` (45 stars) — so the skill angle is dropped; the remaining differentiator (automatic rollback to a versioned memory snapshot wired into a live long-running multi-agent system) is a project-level integration concern, not a standalone skill.
 
 ## The Gap
 A 2026-11-10 r/aiagents field report from a non-programmer running "a company staffed by two AI models" for three months describes a memory-compression protocol — designed by the agents themselves — that "makes compressed memory pass exams," and reports that this month the system's own self-check caught a failure for the first time. This surfaces a real gap: agents that compress memory are common, but agents that can *prove* their compression didn't silently lose something are not, and academic self-testing work hasn't reached a form any small operator could actually install.
@@ -22,9 +22,6 @@ Core components: a probe-question generator (templated against the pre-compressi
 
 ## Why Now
 The source field report shows this gap being hit in live, ongoing operation right now (a non-expert operator stumbled into needing exactly this and built a crude version themselves), while the academic building blocks (self-coverage testing, drift-judge evaluators) already exist and just need to be packaged into something installable rather than left as research code.
-
-## Skill Angle
-A companion skill, "Memory Audit Once," takes a snapshot of an agent's current compressed memory plus the original source material it was compressed from, generates a one-time exam, scores it, and reports which facts were lost or distorted — useful as a one-off health check or pre-adoption diligence step, distinct from the harness's job of running this continuously and automatically rolling back inside a live system.
 
 ## MVP Sketch
 Two to three weeks, one person: build the probe-generator and comparator against one memory-compression library (pick whichever the target early-adopter community already uses), wire in snapshot versioning with a simple rollback command, and validate by deliberately injecting three known types of compression-induced information loss (dropped fact, contradicted fact, merged-and-confused facts) and confirming the self-exam catches all three.
