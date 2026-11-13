@@ -1,0 +1,31 @@
+# Dream Pass: A Validated Offline Memory-Consolidation Service for Agents
+
+Every long-running coding agent has the same morning-after problem: it fixed a bug at 11pm last session, and by 9am today it's made the exact same mistake again. A major lab recently gave this failure mode a name and a headline number — and then almost nobody could check the number for themselves.
+
+## The Gap
+
+On 2026-11-06, Anthropic's "The Components of Agent Memory" described "dreaming": an agent reviewing its own prior-session logs between sessions, fixing hindsight-visible mistakes, judging what's worth keeping, and writing structured notes — explicitly distinct from in-context learning, compaction, or weight updates. The self-reported numbers were striking: Sonnet 4.6 "nearly doubled" its CL-Bench score, and a dreaming-built wiki took one test from 13% to 48%. But secondary coverage of the post flagged the obvious problem out loud — "I couldn't confirm elsewhere" — and a look at what actually exists in the wild backs that up. The handful of independent implementations found are a research prototype (`KasimVali2207/active-dreaming-memory`), a side feature buried in an indie Rust framework (`nexo-rs`'s scheduled MEMORY.md sweep), a background idle-triggered step in a Go package (`voocel/codebot`), a community skill, and two academic papers (Auto-Dreamer, arXiv 2605.20616; MindMemOS, arXiv 2608.12428). That's exactly the "demos, narrow, unevaluated" profile that keeps a pattern open rather than solved — a major lab described and benchmarked the mechanism in public, and the independent, portable, maintained version of it still doesn't exist.
+
+## The Project
+
+The idea is a standalone consolidation service that runs between agent sessions, regardless of what framework produced them. It reads the just-finished session's transcript, judges which facts, decisions, and corrected mistakes are actually worth keeping versus noise, and writes them as structured notes into the project's existing memory artifact — an AGENTS.md section, a linked wiki page — instead of appending another raw log dump that grows forever. The judgment step is the centerpiece: deciding salience, not just summarizing. And it's paired with something none of the existing attempts have — an independent evaluation harness that measures whether consolidated memory actually improves next-session task performance, rather than taking anyone's self-report (including Anthropic's own) on faith.
+
+Concretely, that's four pieces: a transcript-reader adapter per target framework (Claude Code session logs, a generic JSONL format for everything else); a salience-judging pass that keeps, discards, or flags-for-correction each candidate note with an explicit, inspectable rationale; a writer that merges new notes into the existing memory artifact with dedup and pruning so it doesn't just become the same bloat problem one level removed; and the evaluation harness itself, running the same multi-session task with and without dreaming enabled and scoring the delta.
+
+## Tangible Impact
+
+**Population**: Developers and small teams running long-horizon coding agents across multiple sessions on the same project (multi-day or multi-week feature work, the norm for any nontrivial agentic coding engagement) — a population directly overlapping with every Claude Code, Cursor, or custom-framework user whose agent currently starts each new session flat or relying on manual memory-file upkeep.
+**Mechanism**: Today, between-session continuity depends on either a flat, manually-maintained memory file (which degrades as it grows, per Anthropic's own framing) or nothing at all (the agent re-derives everything each session); an automated, validated consolidation pass means mistakes made and corrected in session N are actually retained and not repeated in session N+1, without the developer manually curating a growing memory file.
+**Measure**: (1) Rate of previously-corrected mistakes repeated in the next session, before versus after adopting the consolidation pass, on a pilot multi-session task set. (2) Independently reproduced task-performance delta (a CL-Bench-style eval run by someone other than Anthropic) comparing dreaming-enabled versus flat-memory baselines. (3) Memory-artifact size and noise over 10+ sessions (does consolidated memory stay bounded and useful, or bloat the way raw logs would).
+
+## Try It
+
+There's no companion Claude Code skill for this one, and that's worth saying plainly rather than skipping past: the skill-synthesizer looked for an on-demand version of this and found five or more close equivalents already doing that job — Anthropic's own native "Auto Dream" feature in Claude Code, plus published skills like `knowledge-dream`, `gavdalf/total-recall` (276 stars), `grandamenium/dream-skill`, and `openclaw-skills/agent-dream`. On-demand, single-session consolidation is already crowded. What none of those equivalents ship is the independent CL-Bench-style evaluation harness this idea centers on — so the open gap is specifically the validated, portable, scheduled *service*, not another chat-paste prompt. If you want to test the hypothesis yourself in the meantime, the MVP sketch in the idea file is a reasonable starting point: a CLI reading a Claude Code session transcript, a keep/discard/correct LLM pass with rationale, and a 3-5 task eval comparing dreaming-on versus flat-memory baselines.
+
+## The Honest Risk
+
+The idea file is upfront about the strongest reason this might not be worth building: Anthropic could simply ship "Dreaming" as a native, polished feature across its own agent products before an independent version gains any traction — which, given "Auto Dream" already exists as a Claude Code feature today, is not a hypothetical. There's also a real chance that reproducing CL-Bench-style gains independently just fails to replicate the headline numbers, which would be a smaller but still valuable result worth publishing honestly rather than another self-report. And salience judgment is itself an imperfect LLM task — a consolidation pass that keeps the wrong things or discards something important could leave an agent worse off than if it had no consolidation step at all.
+
+---
+
+Surfaced from `research/2026-11-12-context-engineering-memory-ii.md`, pattern `P6`.
