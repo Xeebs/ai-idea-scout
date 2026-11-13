@@ -1,6 +1,6 @@
 # Fresh Fence: A Continuous Jailbreak-Feed Retraining Loop for Guardrail Classifiers
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED — [writeup](../published/viral-jailbreak-continuous-retraining-loop.md) (promoted 2026-11-13 cycle 49: recurrence — same stale-corpus-freshness gap resurfaced independently as P8 in research/2026-11-13-ai-safety-guardrails-in-production.md)
 - **Date**: 2026-11-12
 - **Topic**: AI safety & guardrails in production
 - **Source**: research/2026-11-12-ai-safety-and-guardrails-in-production-pass2.md · P8
