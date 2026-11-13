@@ -1,0 +1,37 @@
+# Lean Log: A Minimal, Un-Acquirable Self-Hosted LLM Observability Library
+
+- **Status**: EXPLORING
+- **Date**: 2026-11-13
+- **Topic**: LLM evaluation & observability
+- **Source**: research/2026-11-13-llm-evaluation-observability.md · P7
+- **Maturity verdict**: PARTIAL — WebSearch found the DIY pattern recurring into 2026 (multiple dev.to posts, a local-first LangSmith alternative "logmera" with 37k downloads/zero marketing, an enterprise example of Mesa ripping out Sentry for a purpose-built tracer), but each is narrow/one-off with none a dominant adopted alternative, and 2026 acquisition churn (Helicone, Langfuse) is actively feeding distrust of vendor tools.
+- **Format**: BOTH — the logging library and local UI are persistent infrastructure a team runs; a one-time build-vs-buy assessment for a specific team's scale is a separable judgment task.
+- **Data Sources**: CONNECTED — wraps the team's own LLM API calls (OpenAI/Anthropic/etc. SDK) directly in-process to capture prompt, response, latency, and cost; this is a local instrumentation library, not a request to an external service, and the integration point (wrapping an SDK call) is mature and trivial today. The companion skill's build-vs-buy mode is MANUAL: the user pastes a description of their current stack, scale (requests/day), and team size.
+
+## The Gap
+WebSearch (run live this session, corroborating an April 2025 r/LLMDevs thread "Is anyone building LLM observability from scratch?") found the same build-vs-buy complaint recurring through 2026: multiple independent dev.to posts — "I built my own LLM observability tool, here's why and how," "I got tired of LLM observability tools getting acquired so I built one that can't be" — plus a named local-first alternative (logmera, 37k downloads, zero marketing) and an enterprise example of ripping out a general tool (Sentry) for a purpose-built tracer. This is corroborated freshly by two items elsewhere in this same digest: PostHog's team hit eval-sampling inefficiency as a fresh internal bug (P4) and kodus-ai hand-rolled a CI eval harness inside their own product (P5) — both well-resourced teams reinventing pieces of this stack rather than reusing an existing answer. None of the narrow DIY attempts is a maintained, dominant, self-hostable default — the volume and persistence of "I built my own" posts, compounded by real 2026 acquisition churn, confirms the underlying need stays unmet.
+
+## The Project
+A deliberately minimal, dependency-light, self-hostable LLM observability library scoped explicitly for solo developers and small teams — not a smaller version of an enterprise platform, but a different product with a stated, enforced scope contract: log prompt/response/latency/cost to local SQLite or Postgres, serve a lightweight local web UI, zero SaaS dependency, zero telemetry phone-home, packaged as a single importable module so there's nothing to "acquire out from under" a user — the whole point is that it stays forkable and works the same way whether or not anyone maintains it upstream. It differentiates from the existing narrow DIY attempts by being maintained with a published scope contract (explicitly refuses feature creep toward becoming another heavy platform) rather than one more abandoned side project.
+
+Components: SDK-call wrapper (OpenAI/Anthropic/etc.) capturing prompt, response, latency, cost, and errors; local storage backend (SQLite by default, Postgres optional); a minimal local web UI for browsing/filtering traces; an explicit, documented scope boundary distinguishing it from Langfuse/Helicone-class platforms.
+
+## Tangible Impact
+**Population**: Solo developers and small (under ~10-engineer) teams running LLM-backed side projects or early-stage products who today either skip observability entirely or hand-roll a throwaway logging script, because existing platforms (Langfuse, Helicone, LangSmith, Arize) are scoped for teams with dedicated ops/eval engineers and carry SaaS lock-in or acquisition risk. The recurring "I built my own because nothing fit" pattern across multiple independent 2025–2026 posts, plus the real 2026 Helicone/Langfuse acquisition churn cited in this digest, is the direct evidence this population exists and is currently unserved by a maintained default.
+**Mechanism**: Gives this population a maintained, zero-dependency, self-hosted option instead of a one-off script they alone maintain or a platform sized for a team they don't have — reducing how often a small team flies blind on LLM cost, latency, and failure rate because the "proper" tools felt like overkill to adopt.
+**Measure**: (1) time from install to viewing a first logged trace, target under 5 minutes; (2) 30-day retention — share of pilot users still using it rather than having abandoned back to no observability; (3) resource footprint (memory, deploy steps) measured against the named heavier platforms on the same workload.
+
+## Why Now
+The DIY pattern has now recurred across two separate years (April 2025 and multiple 2026 posts) with 2026 specifically adding acquisition churn (Helicone's maintenance-mode status post-Mintlify, Langfuse's ClickHouse acquisition) as fresh fuel for distrust of vendor tools — the motivating pain is getting worse, not settling, and the instrumentation primitives (SDK wrapping, local SQLite storage) have been trivial for years, so nothing here waits on new model capability.
+
+## Skill Angle
+Trigger: a small team is deciding whether to adopt a full observability platform, build their own from scratch (the pattern this idea documents), or use this lightweight library — before they've committed engineering time either way. Inputs: a description of their current LLM stack, request volume, and team size. Output: a build-vs-buy recommendation naming which option fits their scale, plus (if the lightweight library fits) a minimal instrumentation plan: which calls to wrap first and what to log. The skill is the decision aid that runs once per team's situation; the project is the library itself.
+
+## MVP Sketch
+A Python package wrapping an OpenAI-compatible client, logging each call to local SQLite with a Flask-based read-only UI for browsing recent traces by latency/cost/error. Experiment: have two early-stage side-project developers swap their current ad hoc print-statement logging for this library and confirm they can diagnose a real latency or cost spike using only the UI, with install-to-first-trace completed in under 5 minutes. 2–3 weeks, 1 person.
+
+## Risks & Open Questions
+- "Minimal" is a moving target — the same scope-creep pressure that pushed Langfuse/Helicone toward enterprise features will pull on this project too, and the published scope contract has to actually be enforced, not just stated at launch.
+- logmera (37k downloads, zero marketing) is already close to this positioning — differentiation needs to be concrete (published scope contract, explicit non-acquisition structure) or this becomes a fourth narrow attempt, not the dominant one.
+- A library with zero telemetry is, by design, hard to measure adoption for from the outside — the project's own success metrics depend on opt-in pilot relationships, not passive analytics.
+- Small teams with genuinely low request volume may be well served by just reading provider dashboards directly, narrowing the addressable population to those past that threshold but before justifying a full platform.

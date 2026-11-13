@@ -3,6 +3,7 @@
 One line per completed cycle: `- <date> · cycle <n> · <topic> · <x> patterns, <y> open/partial, <z> ideas`
 
 - 2026-06-10 · pipeline scaffolded, loop started
+- 2026-11-13 · cycle 37 · LLM evaluation & observability · 7 patterns found, 4 open/partial, 3 ideas (1 pattern was a recurrence-promoted duplicate), skills written: voice-agent-conversational-eval-framework, voice-first-blind-low-vision-browsing-agent, parallel-voice-agent-dispatch-middleware (backlog drain, oldest-3 cap), plus 2 backlog skills from a prior crashed firing (viral-jailbreak-continuous-retraining-loop, multimodal-voice-screen-precision-router) retroactively linked in INDEX.md, published: crisis-hotline-interpretation-triage-router
 - 2026-11-13 · cycle 36 · Tool use & MCP ecosystem · 8 patterns found, 2 open/partial, 1 idea, skills written: judge-to-blocking-latency-benchmark, guardrail-latency-degradation-controller, agent-tool-grant-admission-validator (backlog drain), published: mcp-redirect-uri-trust-scanner
 - 2026-06-10 · cycle 1 · Agentic AI & autonomous agents · 9 patterns, 3 open/partial, 3 ideas
 - 2026-06-10 · cycle 2 · Multi-agent architectures · 9 patterns, 6 open/partial, 4 ideas (closed out administratively 2026-11-11 — session died mid-SYNTHESIS, see session note)

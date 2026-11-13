@@ -1,6 +1,6 @@
 # Quiet Break: Post-Deploy Behavioral Regression Detection Without an LLM Judge
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING
 - **Date**: 2026-11-11
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-11-llm-evaluation-observability.md · P1
