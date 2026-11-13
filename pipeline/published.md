@@ -43,3 +43,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-13 | multiagent-majority-vote-verifier | Compares reasoning quality, not just vote count, so a well-reasoned minority can overturn a weakly-reasoned majority | Multi-agent architectures | yes |
 | 2026-11-13 | multiagent-runtime-peer-learning-board | A live, continuously-updated lesson store so one agent's mid-run fix stops being a mistake every teammate repeats separately | Multi-agent architectures | yes |
 | 2026-11-13 | agent-shared-state-coherence | A cache-coherence protocol for concurrent agents so nobody silently acts on stale shared state | Multi-agent architectures | no |
+| 2026-11-13 | multi-agent-necessity-decision-checklist | A calibrated, scored rubric to stop teams defaulting to multi-agent when a single agent with tools would do | Multi-agent architectures | yes |
