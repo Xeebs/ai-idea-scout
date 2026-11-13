@@ -1,6 +1,6 @@
 # Vector Bridge: A Zero-Downtime Embedding-Model Migration Manager
 
-- **Status**: EXPLORING (promoted 2026-11-12: ≥2 independent sources — tianpan.co's embedding-refresh series, DEV Community, Microsoft Azure AI Search vector-drift guidance — plus a cited 11% nDCG@10 regression case study)
+- **Status**: PUBLISHED — [writeup](../published/rag-embedding-migration-manager.md) (promoted 2026-11-12: ≥2 independent sources — tianpan.co's embedding-refresh series, DEV Community, Microsoft Azure AI Search vector-drift guidance — plus a cited 11% nDCG@10 regression case study)
 - **Date**: 2026-11-12
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-12-rag-techniques-iii.md · P2
