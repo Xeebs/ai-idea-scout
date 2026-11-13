@@ -1,6 +1,6 @@
 # Shade: An In-Flight Privacy Shield for MCP Tool Calls
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING (promoted 2026-11-13 cycle 35: recurrence — same `rohan-protocol/sdk` in-session MCP privacy-shield gap resurfaced independently as P8 in the 2026-11-12 "Context engineering & memory" digest)
 - **Date**: 2026-11-11
 - **Topic**: Tool use & MCP ecosystem
 - **Source**: research/2026-11-11-tool-use-mcp-ecosystem.md · P7
