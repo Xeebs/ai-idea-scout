@@ -1,0 +1,33 @@
+# Say I Don't Know: A Confidence-Gated Abstention Layer for RAG
+
+Ask a RAG system a question its own documents can't answer, and most of them won't tell you that. They'll hand the model five relevant-looking chunks anyway — because top-k retrieval always returns k chunks, whether or not any of them actually contain the answer — and the model will confidently generate a response built on context that doesn't support it. The standard fix, a similarity-score cutoff, is widely known to be brittle: tune it for one corpus and query style, and it breaks the moment either shifts. A researcher recently got frustrated enough with this exact failure to abandon the standard approach and build their own one-off system from scratch rather than adopt an existing component — because, as far as they could tell, there wasn't a good one to adopt.
+
+## The Gap
+
+The complaint that crystallized this gap came from r/Rag on 2026-11-09: "My RAG alternative says 'not found' instead of hallucinating." The poster laid out the mechanics plainly — "top-k always returns k chunks. If the answer isn't in the corpus, the model still gets relevant-looking context and answers confidently. Similarity thresholds help, but they're brittle across queries and corpora" — and had built a bespoke project (M.N.E.M.O.) to work around it, rather than reaching for something off the shelf.
+
+That complaint isn't an isolated hunch. Google Research published an ICLR 2025 paper on exactly this problem — "sufficient context," arXiv 2411.06037 — proposing a calibrated classifier that judges whether retrieved context actually contains enough information to answer a query, instead of a raw similarity score standing in as a proxy for "enough." The idea is academically validated. What doesn't exist is an open-source library that implements it as a drop-in retrieval-layer component. A GitHub search for "RAG abstain" turns up exactly three repos, all narrow and all with zero stars (MrMomoLegend/rag-abstain, egbunam05/rag-abstain, gangmin-park/aviation-rag-abstain) — evidence that people have poked at this idea, not that anyone has shipped it. That combination — a named, peer-reviewed solution and a string of abandoned one-off attempts to implement something like it — is what keeps this at PARTIAL rather than SATURATED or OPEN: the concept is proven, the packaging isn't.
+
+## The Project
+
+The fix is an abstention layer that sits between retrieval and generation, not inside either. Instead of a raw similarity threshold standing in for "do we have enough to answer this," a calibrated sufficiency classifier looks at the actual query and the actual retrieved passages and judges whether they're sufficient to answer that specific question — following the "sufficient context" framing from the ICLR paper rather than a distance metric that was never designed to measure sufficiency in the first place. When the answer is no, the system doesn't force the model to generate anyway; it returns a structured "not found" response, optionally with whatever partial findings it does have and a suggested next step (escalate to a human, broaden the search), instead of letting the model paper over the gap with fluent confidence.
+
+Three pieces make this adoptable rather than another bespoke hack: a sufficiency classifier that can run zero-shot or be trained per-corpus, a structured abstain-response schema so "not found" is a predictable, machine-readable output rather than ad hoc text, and a calibration toolkit that lets a team tune the abstain/answer tradeoff against their own eval set instead of guessing at a threshold the way the original poster had to.
+
+## Tangible Impact
+
+**Population**: End users of customer-facing RAG assistants where a confidently wrong answer causes real harm or lost trust — patients using hospital benefits/symptom-lookup chatbots, applicants using government-program eligibility assistants, students and employees using course- or policy-support tools. These deployments are expanding rapidly through 2025–2026; the dedicated ICLR 2025 paper on this exact failure mode signals it is recognized as a first-order RAG problem, not a niche edge case.
+**Mechanism**: Replacing a brittle similarity threshold with a calibrated sufficiency check reduces how often users receive a fluent, confident answer built on context that doesn't actually contain the answer — converting a silent wrong-answer failure into a visible "I don't have that, here's who to ask" handoff that preserves user trust and routes them correctly.
+**Measure**: abstention precision/recall against a labeled in-corpus/out-of-corpus eval set; hallucination rate on out-of-scope queries before/after deployment; user trust or task-success delta measured via pre/post pilot survey.
+
+## Try It
+
+A companion skill exists at [`skills/rag-abstention-confidence-gate/`](../skills/rag-abstention-confidence-gate/): *"Drafts a calibrated abstention policy for a RAG pipeline — a corpus-specific definition of 'sufficient context,' a labeled starter eval set of should-answer vs. should-abstain query/context pairs, and a structured 'not found' fallback schema. Use when a team's RAG system hallucinates on queries its corpus can't actually answer and they want a designed policy to evaluate before building a runtime classifier, not another brittle similarity-threshold guess."*
+
+This is deliberately a design aid, not the runtime layer itself — it's for the moment before a team commits engineering time to a sufficiency classifier, when they have a handful of real query + retrieved-context examples and want a reasoned policy to review and test against. To use it: paste the contents of `skills/rag-abstention-confidence-gate/README.md` into any AI chat tool along with your pipeline description and sample query/context pairs, or drop the whole `skills/rag-abstention-confidence-gate/` folder into `~/.claude/skills/` if you're working in Claude Code.
+
+Two honest caveats before adopting either the skill or the full runtime layer. First, an LLM-judge-based sufficiency classifier adds latency and cost to every query — it has to actually beat a tuned similarity threshold on both accuracy and cost to be worth the switch, not just be more principled in theory. Second, over-abstaining is its own failure mode: a system that says "not found" too readily is as useless as one that hallucinates, so any eval set built against this has to track false-abstain rate alongside false-answer rate, not just the latter. And it's worth asking directly why the three existing "RAG abstain" repos never gained traction before assuming the gap is purely a distribution problem rather than a design one.
+
+---
+
+Surfaced from `research/2026-11-11-rag-techniques.md`, pattern `P4`.

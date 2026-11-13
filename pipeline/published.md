@@ -32,3 +32,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-12 | voice-first-blind-low-vision-browsing-agent | Trust-gated voice web navigation past the pilot/prototype stage every existing attempt is stuck at | Voice & multimodal agents | no |
 | 2026-11-12 | agent-scoped-credential-broker | Issues short-lived, task-scoped credentials instead of agents inheriting a full-privilege key | Agentic AI & autonomous agents | yes |
 | 2026-11-12 | multiagent-code-review-cost-benchmark | An independent, re-runnable benchmark reporting tokens, latency, and defects together for multi-agent code review, where only vendor or single-team numbers exist today | Multi-agent architectures | yes |
+| 2026-11-12 | rag-abstention-confidence-gate | A calibrated sufficient-context check that returns "not found" instead of a brittle similarity threshold that hallucinates | RAG techniques | yes |
