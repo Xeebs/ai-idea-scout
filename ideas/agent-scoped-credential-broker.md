@@ -1,6 +1,6 @@
 # Scope: A Task-Scoped Credential Broker for AI Agents
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED — [writeup](../published/agent-scoped-credential-broker.md) (promoted 2026-11-12 cycle 32: recurrence — same Zalando "Agentic Identity Broker" Show HN gap resurfaced independently in a second research pass, research/2026-11-12-agentic-ai-autonomous-agents-iii.md P2)
 - **Date**: 2026-11-12
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-12-agentic-ai-autonomous-agents.md · P1

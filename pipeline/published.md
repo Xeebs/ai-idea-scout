@@ -30,3 +30,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-12 | voice-agent-conversational-eval-framework | A consolidated, audio-native, calibrated-judge framework scoring full multi-turn calls instead of five more fragmented one-off benchmarks | Voice & multimodal agents | no |
 | 2026-11-12 | speaker-identified-multimodal-voice-memory | Continuous, boundary-free per-speaker memory for shared voice devices instead of one blended profile | Voice & multimodal agents | no |
 | 2026-11-12 | voice-first-blind-low-vision-browsing-agent | Trust-gated voice web navigation past the pilot/prototype stage every existing attempt is stuck at | Voice & multimodal agents | no |
+| 2026-11-12 | agent-scoped-credential-broker | Issues short-lived, task-scoped credentials instead of agents inheriting a full-privilege key | Agentic AI & autonomous agents | yes |
