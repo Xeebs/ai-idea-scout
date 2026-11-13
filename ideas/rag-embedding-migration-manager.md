@@ -5,7 +5,7 @@
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-12-rag-techniques-iii.md · P2
 - **Maturity verdict**: PARTIAL — GitHub search for embedding migration/reindex tooling returned only 0-star repos (rbumg/reindexer, mgkgopikrishna/veccore, Hkayy47/alembicio). Only vendor-native narrow features exist (Weaviate's alias-based zero-downtime tutorial, Milvus/Zilliz column-based upgrade) plus one academic method (Drift-Adapter, EMNLP 2025) that is a technique, not a packaged tool. No standalone, vendor-agnostic migration manager was found.
-- **Format**: BOTH
+- **Format**: PROJECT — skill angle dropped 2026-11-13: skill-synthesizer found 4+ close public equivalents (qdrant-model-migration, cohere-migration-deep-dive, milvus-embedding-model-migration, embedshift), each already doing shadow-index/canary/rollback embedding migration for a specific vendor; the generic skill version did not differentiate clearly enough (NOVELTY_FAIL).
 - **Data Sources**: CONNECTED — the team's existing vector database (Pinecone, Weaviate, Qdrant, or Milvus, all with mature, actively-maintained APIs for aliasing/dual-indexing) and embedding provider APIs (OpenAI, Cohere, Voyage, or a self-hosted sentence-transformers endpoint) queried directly by the orchestrator to perform dual-writes and shadow-query comparisons; no manual data entry beyond initial configuration. The Skill Angle variant is MANUAL — the user pastes a short description of current index size, embedding model, vector DB, and query volume, since that planning conversation happens before any live connection is made.
 
 ## The Gap
