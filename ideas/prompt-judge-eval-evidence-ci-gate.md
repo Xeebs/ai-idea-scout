@@ -1,6 +1,6 @@
 # Eval Receipt: A Reusable CI Gate Requiring Before/After Eval Evidence on Prompt-Touching PRs
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING (promoted 2026-11-13 cycle 47: recurrence — same eval-as-CI-gate-built-ad-hoc-per-project gap (P3 there) surfaced independently again as P7 in the 2026-11-13 digest, citing a different example, kodustech/kodus-ai)
 - **Date**: 2026-11-12
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-12-llm-evaluation-observability-ii.md · P3

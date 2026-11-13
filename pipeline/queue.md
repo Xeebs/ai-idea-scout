@@ -65,7 +65,7 @@ Format: `- [STATUS] <topic>` — STATUS ∈ UNWORKED | IN_PROGRESS | DONE | FAIL
 - [DONE] RAG techniques
 - [DONE] Context engineering & memory
 - [DONE] Tool use & MCP ecosystem
-- [UNWORKED] LLM evaluation & observability
+- [DONE] LLM evaluation & observability
 - [UNWORKED] Small & local models
 - [UNWORKED] AI safety & guardrails in production
 - [UNWORKED] Voice & multimodal agents
