@@ -57,3 +57,16 @@ Format: `- [STATUS] <topic>` — STATUS ∈ UNWORKED | IN_PROGRESS | DONE | FAIL
 - [DONE] AI safety & guardrails in production
 - [DONE] Voice & multimodal agents
 - [DONE] Applied AI for underserved domains
+
+## Rotation — pass 5 (generated 2026-11-13)
+
+- [DONE] Agentic AI & autonomous agents
+- [UNWORKED] Multi-agent architectures
+- [UNWORKED] RAG techniques
+- [UNWORKED] Context engineering & memory
+- [UNWORKED] Tool use & MCP ecosystem
+- [UNWORKED] LLM evaluation & observability
+- [UNWORKED] Small & local models
+- [UNWORKED] AI safety & guardrails in production
+- [UNWORKED] Voice & multimodal agents
+- [UNWORKED] Applied AI for underserved domains
