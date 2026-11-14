@@ -1,6 +1,6 @@
 # Cumulative Intent: A Multi-Turn-Aware Guardrail Layer Against Gradual-Framing Jailbreaks
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 49: evidence density — 4 independent sources within the digest: Lasso Security 36% bypass report, aggregate-review 100% bypass findings, a Reddit-sourced 12-turn attack report, and two independent arXiv papers)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 49: evidence density — 4 independent sources within the digest: Lasso Security 36% bypass report, aggregate-review 100% bypass findings, a Reddit-sourced 12-turn attack report, and two independent arXiv papers)
 - **Date**: 2026-11-13
 - **Topic**: AI safety & guardrails in production
 - **Source**: research/2026-11-13-ai-safety-guardrails-in-production.md · P3
