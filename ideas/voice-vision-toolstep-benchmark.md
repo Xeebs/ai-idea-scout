@@ -1,0 +1,32 @@
+# VoiceStep: A Combined Voice+Vision+Tool-Use Multi-Step Benchmark Harness
+
+- **Status**: EXPLORING (promoted 2026-11-14 cycle 70: evidence density — ≥2 independent threads, Agent-X (ICLR 2026) and AgentVista independently document the same low multi-step-success/voice-underrepresentation gap, corroborated by OmniGAIA, MM-ToolSandbox, and TOBench)
+- **Date**: 2026-11-14
+- **Topic**: Voice & multimodal agents
+- **Source**: research/2026-11-14-voice-multimodal-agents.md · P9
+- **Maturity verdict**: PARTIAL — a wave of 2026 benchmarks (Agent-X, AgentVista, OmniGAIA, MM-ToolSandbox, TOBench) test vision+tool-use multi-step success and report <50% full-chain success rates, but none centers voice as a first-class evaluated modality alongside vision and tool use. Follow-up search found several voice-inclusive benchmarks addressing this directly (VoiceAssistant-Eval, MultiVox, MM-τ-p2, FOCAL), with MM-τ-p2's own authors stating existing voice benchmarks (VoiceAgentBench, FullDuplexBench, ServiceDuplexBench) are speech-only — so multiple research teams are actively closing this, but no benchmark yet unifies voice with vision+tool-use at production-relevant scale.
+- **Format**: PROJECT
+- **Data Sources**: CONNECTED — the harness drives the team's own agent under test directly through its existing voice/tool-calling SDK (OpenAI Realtime-compatible endpoints, LiveKit Agents, or Pipecat, all mature already-adopted interfaces) rather than asking the user to paste transcripts; it captures the agent's real-time voice input/output and tool calls during each scripted multi-step task.
+
+## The Gap
+Multiple 2026 benchmarks show agents combining vision and tool use succeed on multi-step tasks less than half the time, but voice is consistently the least-represented modality across them — every surfaced benchmark targets vision+tool-use or omni-modal inputs broadly, despite voice agents being a live, high-volume production category (per P1-P8 in the same digest). Research teams (VoiceAssistant-Eval, MultiVox, MM-τ-p2, FOCAL) are building voice-inclusive benchmarks, but by the digest's own follow-up search, none yet combines voice with vision+screen+tool-use in one multi-step task suite at a scale a practitioner team could actually run against their own agent before shipping.
+
+## The Project
+A practical, run-against-your-own-agent benchmark harness — not another academic leaderboard paper — that scripts realistic multi-step tasks requiring all three: the agent must listen to a spoken request, look at a screen or document image to extract a detail needed to proceed, and call a tool with that detail, chained across 3-5 steps (e.g. "the caller describes a problem with an item, the agent needs to find the matching product on a shown catalog image, then call the refund-lookup tool with the right SKU"). The harness drives the agent under test through its real voice/tool-calling SDK, scores full-chain task success (not per-step accuracy, which papers like Agent-X show inflates perceived capability), and reports a breakdown of which modality combination (voice→vision, vision→tool, voice→tool) is the weakest link for that specific agent.
+
+## Tangible Impact
+**Population**: teams building production voice agents that also need screen/document understanding mid-call — insurance claims intake, customer-service agents resolving issues against a shared screen, and accessibility-focused voice-driven screen-navigation agents (the population behind the "Beyond the Pilot" blind/low-vision browsing idea already in this index) — all of whom are shipping multi-modal multi-step agents today with no production-relevant way to measure full-chain success before launch.
+**Mechanism**: a team runs the harness against their own agent before shipping and gets a concrete full-chain success rate plus a weakest-link diagnosis (is it misreading the screen, mishearing the request, or calling the wrong tool with the right information?), replacing "it worked in our manual demo runs" with a measured number that generalizes across their actual task variety.
+**Measure**: full-chain multi-step success rate on the harness's task suite for a given agent; per-transition accuracy (voice-to-vision handoff vs. vision-to-tool handoff) identifying the weakest link; correlation between harness score and real production escalation/failure rate once a team adopts it and compares pre/post-launch.
+
+## Why Now
+Voice-driven multimodal agents (screen-aware voice assistants, call-center agents paired with document/image lookups) have moved from demo to production in the last few months per this digest's own P1-P8 evidence, exactly while the academic benchmarks measuring this combination are still research-stage and not packaged for a practitioner to run against their own stack — the gap is timing, not capability.
+
+## MVP Sketch
+Scope: a 10-task scripted suite (spoken request → screen/image reference → tool call, 3-5 step chains) with a driver that wires into one agent framework first (LiveKit Agents, since it already supports both voice and vision tool-calling), a scoring script computing full-chain success and per-transition breakdown, and a reference run against one open baseline agent to establish what a "normal" score looks like. Target: 3-4 weeks for two people (one building the task suite and ground truth, one building the driver/scorer).
+
+## Risks & Open Questions
+- Designing tasks that genuinely require all three modalities chained (not decomposable into separately-solvable sub-tasks) is the hardest part of this project and the biggest risk to doing it well — a sloppy task suite would just reproduce the single-modality benchmarks' blind spots in a different shape.
+- If one of the in-flight academic benchmarks (MM-τ-p2, FOCAL) ships a production-usable harness before this does, the differentiation narrows to "easier to run against your own agent" rather than "the only option" — worth checking their release timelines before committing fully.
+- Full-chain success scoring requires a reliable automated judge for whether each step's output was actually correct (not just plausible), which for the vision-extraction step may need either ground-truth-labeled task assets or a calibrated vision judge — an under-specified piece of the MVP that needs real design.
+- The population this serves (voice+vision+tool-use production agents) is currently smaller than pure-voice or pure-vision agent builders, which could mean a longer path to adoption even if the benchmark itself is sound.

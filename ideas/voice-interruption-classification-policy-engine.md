@@ -1,6 +1,6 @@
 # Barge Triage: A Six-Way Interruption Classification Engine for Voice Agents
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-12
 - **Topic**: Voice & multimodal agents
 - **Source**: research/2026-11-12-voice-multimodal-agents.md · P3
