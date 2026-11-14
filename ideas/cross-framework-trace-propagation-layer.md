@@ -1,0 +1,37 @@
+# One Trace: A Cross-Framework Context-Propagation Layer for Multi-Agent Tracing
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-14
+- **Topic**: LLM evaluation & observability
+- **Source**: research/2026-11-14-llm-evaluation-observability.md · P3
+- **Maturity verdict**: PARTIAL — single-framework instrumentation is heavily built out (Arize Phoenix/OpenInference, Langfuse, AgentOps, MLflow, LangSmith each cover LangGraph, CrewAI, AutoGen individually per vendor docs) but no source confirms true single-coherent-trace stitching across heterogeneous frameworks in one request. Two independent dev.to practitioner reviews (Utibe Okodi's market sweep calling this "broken in every existing tool"; Soufian Azzaoui, who tried LangSmith/Langfuse/Helicone/Phoenix and built a bespoke "AgentLens" instead) both independently name this specific sub-problem unsolved.
+- **Format**: BOTH — the always-on context-propagation middleware across live framework boundaries is persistent infrastructure; correlating two already-exported, separately-captured traces from the same request after the fact is a separable one-off diagnostic task.
+- **Data Sources**: CONNECTED — hooks into each agent framework's own existing instrumentation surface (LangGraph's callback system, CrewAI's trace hooks, a raw tool-use loop's OTel wrapper) to carry a shared W3C trace-context (trace ID + span parentage) across the hop from one framework into another — these per-framework hook points already exist and are mature individually; the propagation glue that threads one trace ID through all of them in a single request does not.
+
+## The Gap
+A dev.to market sweep of agent observability tools ("I evaluated every AI agent observability tool on the market, here's what's actually missing," Utibe Okodi) names cross-framework multi-agent tracing as "broken in every existing tool" tested. A second, independently written dev.to post (Soufian Azzaoui, "I tried LangSmith, Langfuse, Helicone, and Phoenix") reports none of the four covered his multi-framework needs, so he built a custom tool ("AgentLens") rather than adopt an existing product — the textbook "we hacked together" signal corroborating the first review's finding.
+
+## The Project
+A lightweight context-propagation library that sits at the exact point where one agent framework invokes another (e.g., a LangGraph node that calls into a CrewAI crew, or a CrewAI agent that drops into a raw tool-use loop): it reads the current trace context from the calling framework's own instrumentation, injects it into the called framework's instrumentation before execution starts, and ensures both sides' spans land under one shared trace ID in whatever backend the team already uses (Phoenix, Langfuse, or a plain OTel collector). The result is one coherent, zoomable trace spanning the full heterogeneous call chain, instead of two or three disconnected fragments a human has to manually correlate by timestamp.
+
+Components: per-framework context-extraction/injection shims (LangGraph, CrewAI, OpenAI Agents SDK to start); a propagation contract defining how trace context crosses a framework boundary call; a backend-agnostic exporter confirming the stitched trace renders correctly in Phoenix and Langfuse; a validation harness that runs a synthetic cross-framework call chain and checks the resulting trace is a single connected tree, not disjoint fragments.
+
+## Tangible Impact
+**Population**: Engineering teams building multi-agent systems that deliberately mix frameworks — a common pattern when one team's specialist sub-agent (built in CrewAI) is called from another team's orchestrator (built in LangGraph), or when a raw tool-use loop handles a narrow task inside a larger framework-managed flow. Both independent dev.to reviews surfaced this from real production debugging needs, not a hypothetical team.
+**Mechanism**: Without propagation, debugging a failure that crosses a framework boundary means manually correlating two or three separate trace exports by timestamp and guessing at causality — slow and error-prone, and the reason Soufian Azzaoui built a bespoke tool rather than use an existing one. A shared trace ID across the boundary turns that manual correlation into a single click-through in the existing viewer.
+**Measure**: (1) fraction of a seeded cross-framework call chain's spans that land under one shared trace ID vs. fragmented into separate traces, target 100% for the supported framework pairs; (2) time to localize a failure to the specific framework-boundary hop in a seeded test, stitched vs. manually-correlated; (3) number of distinct framework pairs (LangGraph↔CrewAI, CrewAI↔raw tool loop, etc.) demonstrated stitching correctly at launch.
+
+## Why Now
+Production multi-agent systems mixing frameworks (rather than committing to one framework end-to-end) have become common enough in 2026 that two independent practitioners hit the identical wall within the same window and one resorted to building a bespoke tool — real, current demand, and every piece this needs (per-framework instrumentation hooks, W3C trace-context propagation, OTel-compatible backends) already exists and is mature; only the glue connecting them across a framework boundary is missing.
+
+## Skill Angle
+Trigger: an engineer has two or three separately-exported trace files from the same failing request (one per framework involved) and needs to understand what happened across the full chain without the live propagation library installed. Inputs: the separate trace export files, each tagged with which framework produced it. Output: a timestamp- and payload-correlated merged timeline reconstructing the likely call order and handoff points across the fragments, with explicit caveats where correlation is inferred rather than certain. This is the after-the-fact manual-stitching task; the project is the live, always-correct propagation middleware installed ahead of time.
+
+## MVP Sketch
+Build the LangGraph→CrewAI direction only: a small shim that extracts the current OTel trace context inside a LangGraph node right before it invokes a CrewAI crew, and injects that context into CrewAI's own trace hooks so both frameworks' spans export under one trace ID to a shared Phoenix instance. Experiment: run a synthetic two-hop task (LangGraph orchestrator calling a CrewAI sub-crew) and confirm Phoenix renders it as one connected trace tree, not two separate traces, across 10 repeated runs. 2–3 weeks, 1–2 people.
+
+## Risks & Open Questions
+- Each framework's internal instrumentation API can change between versions without notice, making the shim an ongoing-maintenance commitment rather than a one-time build — the same risk the digest flags for related schema-normalization efforts.
+- If one framework's instrumentation doesn't expose a hook point early enough in its call lifecycle, context injection may arrive after some spans have already started, leaving partial fragmentation even with the shim installed.
+- This is adjacent to but distinct from this pipeline's existing "Common Trace" idea (post-hoc schema normalization of already-exported traces) — this project propagates a live trace ID *during* execution so the traces are never fragmented in the first place; the two could eventually compose but should stay separately scoped.
+- Only 3-4 framework pairs can realistically be supported at MVP scope; teams using an unsupported combination get no benefit until a new shim is written.

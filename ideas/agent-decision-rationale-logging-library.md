@@ -1,0 +1,37 @@
+# Why Not What: A Portable Decision-Rationale Logging Library for Agent Branch Points
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-14
+- **Topic**: LLM evaluation & observability
+- **Source**: research/2026-11-14-llm-evaluation-observability.md · P9
+- **Maturity verdict**: PARTIAL — Galileo markets a shipped "decision spans" feature and Datadog has announced an "execution flow" view of decision paths, both established vendors locked to their own platforms; GitHub also shows a cluster of very recent (Nov 2026), low/no-star narrow attempts (`ZIZKA-AI-SL/ZizkaDB`, `Superone77/TraceVista`, `Providex-AI/rootsign`, an independent "why layer" dev.to project). No standard schema or widely adopted, framework-agnostic convention found — narrow and fragmented rather than closed.
+- **Format**: BOTH — the always-on SDK hook capturing rationale across live agent runs is persistent infrastructure; drafting the decision-logging instrumentation code for a specific agent's known branch point is a separable one-off dev task.
+- **Data Sources**: CONNECTED — a lightweight SDK hook installed directly in the agent's own decision/routing code (framework-agnostic: works against LangGraph conditional edges, CrewAI task routing, or a raw if/else branch calling an LLM) that captures the rationale the model already produces at that branch point and writes it as a structured span into the team's existing OTel-based trace store (Langfuse, Phoenix, Datadog) — the trace-store connectors are mature and already in place for most teams; the branch-capture hook and its structured schema are what's missing.
+
+## The Gap
+A practitioner recommendation surfaced in the digest's search states plainly: "If your agent branches ('should I use the search tool or answer from memory'), log the decision and the reason, not just the action taken" — framed as something teams should start doing, implying current common practice and default tooling logs actions only. Galileo and Datadog both market narrow, platform-locked versions of this, and a cluster of brand-new, zero/low-star GitHub repos from November 2026 shows independent builders hitting the same wall simultaneously, with no shared schema or framework-agnostic library to show for it.
+
+## The Project
+A small SDK that developers drop one call into at each decision/branch point in their agent code — the exact place where the LLM is already asked to choose between options (use tool A vs. tool B, escalate vs. continue, answer from memory vs. retrieve). The hook captures the model's own stated rationale for that choice (already present in most chain-of-thought or structured-output branching logic, just currently discarded) and writes it as a structured "decision span" — distinct from the downstream action span — into whichever OTel-compatible backend the team already uses, following one consistent schema regardless of agent framework. The goal is making "why did it branch this way" a first-class, queryable field next to "what did it do," without locking a team into Galileo's or Datadog's platform to get it.
+
+Components: a per-framework decision-point hook (LangGraph conditional edge wrapper, CrewAI task-router wrapper, a plain decorator for raw if/else-plus-LLM-call code); a shared decision-span schema (branch options considered, chosen option, stated rationale, confidence if available) validated against what Galileo's and Datadog's shipped features already capture; exporters confirming the span renders correctly in Langfuse and Phoenix alongside normal action spans.
+
+## Tangible Impact
+**Population**: Engineers debugging agents whose failures are a wrong strategic choice rather than a crashed tool call — support/routing agents, research agents choosing between tools, and any multi-step agent where "it did the wrong thing" traces back to a branch decision three steps earlier that nothing currently records the reasoning for. The November 2026 cluster of independent zero-star repos shows multiple separate teams hitting exactly this need within the same weeks.
+**Mechanism**: Without this, diagnosing a bad branch decision means re-running the agent with extra logging enabled after the fact, or guessing from the chosen action alone why it was chosen — the rationale that existed in the model's own output at decision time is simply discarded today. Capturing it as a structured span means the "why" is already in the trace the next time a similar failure happens, with no special debugging mode required.
+**Measure**: (1) fraction of branch-point decisions in an instrumented agent that produce a usable, non-empty rationale span versus logging just the action, target near 100% once the hook is installed at a given branch point; (2) time to diagnose a seeded "wrong branch chosen" failure with rationale spans available vs. action-only logging; (3) number of distinct agent frameworks (LangGraph, CrewAI, raw) the hook ships working adapters for at launch.
+
+## Why Now
+Multi-step agents making repeated strategic choices (tool vs. memory, escalate vs. continue) are now common enough in production that a specific practitioner recommendation and several independent November 2026 GitHub attempts converged on the same gap within weeks — real, current demand — and the hook requires no new model capability: it only captures rationale the model is already producing at decision time and was simply being thrown away.
+
+## Skill Angle
+Trigger: a developer has a specific agent codebase with a known branch point (e.g., a conditional edge or an if/else calling an LLM to decide) and wants decision-rationale logging added without hand-designing the schema themselves. Inputs: the relevant snippet of branching code and which framework it's written in. Output: a drafted code patch adding the decision-span hook at that exact point, using the shared schema, ready to paste in. This is the one-off instrumentation-drafting task; the project is the maintained SDK and schema itself, installed once and running on every future branch point.
+
+## MVP Sketch
+Ship the LangGraph adapter only: a thin wrapper around LangGraph's conditional-edge function that, given the LLM's branching call already includes a rationale field (or prompts for one if not), emits a structured decision span to a configured OTel exporter alongside the existing action span. Experiment: instrument a small multi-branch LangGraph agent (e.g., a support router choosing between 3 tools), run 20 varied test queries, and confirm each branch produces a non-empty, specific (not generic/boilerplate) rationale span reviewable in Phoenix. 2 weeks, 1 person.
+
+## Risks & Open Questions
+- If the agent's branching logic doesn't already prompt for an explicit rationale, the hook may need to add a rationale-eliciting prompt change itself, which risks altering the agent's actual behavior, not just its logging.
+- A model's stated rationale could be a post-hoc confabulation rather than the genuine cause of its choice — this project logs what the model claims, not a verified causal account, and that caveat needs to stay visible in the output.
+- Galileo and Datadog shipping broader native support soon would narrow this project's differentiation to the cross-framework, platform-agnostic angle specifically, not the underlying capability.
+- Three independent November 2026 attempts already exist in the open — this project's value is consolidating into one maintained, schema-consistent library, not being first; a scan of those three repos' actual code is needed before build to avoid redundant reinvention.

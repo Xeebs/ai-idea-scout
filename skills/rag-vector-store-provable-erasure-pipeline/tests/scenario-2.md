@@ -1,0 +1,16 @@
+# Scenario 2 — Self-hosted pgvector, no ingestion-time tagging, pre-launch startup
+
+## Setup
+A two-person startup is about to launch an internal-knowledge-search tool built on self-hosted pgvector, indexing employee Slack exports and onboarding docs (which include employee names and some HR-adjacent content). One founder, who handles infra, asks for an audit before they onboard their first EU-based employee, since that triggers GDPR obligations. No live connector access — manual description:
+
+"We're on self-hosted pgvector, one Postgres instance, no managed backup service — we just take a `pg_dump` every Sunday and store it on the same server's disk, nothing offsite. We never built a delete flow at all; the only way to remove something today would be to re-run the whole ingestion pipeline after manually editing the source Slack export file, then truncate and rebuild the embeddings table from scratch. We didn't tag chunks with any kind of per-employee or per-document ID at ingestion time — it's just raw text chunks with embeddings, no metadata column. There's no logging of anything related to deletion, because we've never had to do it."
+
+## Expected output (what a pass looks like)
+- Stack summary table includes at least two distinct layers: the live pgvector table, and the weekly `pg_dump` snapshot.
+- Live pgvector table scored **MISSING**, not CLAIMED or UNKNOWN — correctly reasoning that with no per-record ID tagging, there is no addressable way to delete one person's data without a full rebuild, which is the defining MISSING condition in the SKILL's own rubric.
+- The `pg_dump` snapshot scored independently (likely MISSING or UNKNOWN) — the report does not pretend this layer doesn't exist just because the live table already fails.
+- Headline gap correctly identifies the **lack of ingestion-time tagging** as the structural root cause (not just "no delete button"), since that's what makes targeted deletion impossible in the first place, distinct from Scenario 1 where tagging already exists and the backup/verification step is the gap.
+- Manual stopgap runbook is honest about the real cost here — it should recommend adding a per-document/per-employee ID column going forward and acknowledge that retroactively erasing one person's data today requires the manual edit-and-rebuild process the founder described, not invent a faster shortcut that doesn't exist for this setup.
+- Does not claim this setup is "basically fine because it's self-hosted" — self-hosting removes the managed-backup-opacity problem but does not fix the missing per-record addressability, and the report must say so.
+- Includes the mandatory disclaimer.
+- Fails if: the live table or the pg_dump snapshot is scored PROVABLE or CLAIMED (neither qualifies — there's no addressing mechanism at all); the report invents a nonexistent delete-by-ID capability for pgvector that contradicts what the user described; the runbook suggests the current rebuild-from-scratch process is acceptable long-term without flagging it as the thing that most needs fixing; the report skips naming the missing ingestion-tagging as the root cause and instead treats this identically to Scenario 1's "verification missing" framing.

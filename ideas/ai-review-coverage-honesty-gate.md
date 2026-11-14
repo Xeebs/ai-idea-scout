@@ -1,0 +1,37 @@
+# Full Disclosure: A Coverage-Honesty Gate for AI Code Review and Eval Tools
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-14
+- **Topic**: LLM evaluation & observability
+- **Source**: research/2026-11-14-llm-evaluation-observability.md · P7
+- **Maturity verdict**: PARTIAL — Cursor's Bugbot has shipped a version of this (reports when a review is partial and lists which files were left out), proving the fix is buildable and that at least one well-resourced vendor has it narrowly, but Qodex silently caps diffs at 200KB before the model sees them, Claude Ultrareview has open bug reports for large diffs returning zero findings with no partial-coverage notice, and a GitHub issue explicitly requests this exact feature — the failure mode is still widespread across the market.
+- **Format**: BOTH — the CI-integrated coverage gate running on every PR is persistent infrastructure; auditing one specific pasted review's actual coverage against the diff it claimed to review is a separable one-off task.
+- **Data Sources**: CONNECTED — reads the diff/PR content directly from the CI pipeline via the GitHub (or GitLab) PR API, and, where the underlying AI review tool exposes chunking/truncation metadata in its own output or logs, reads that too; where a tool doesn't expose chunk boundaries, computes an estimated coverage gap itself by comparing the diff's byte/token size against the configured model's known context window — the PR API is mature and universal; per-vendor coverage-metadata exposure varies and is the main integration risk, addressed by the self-computed fallback.
+
+## The Gap
+`amoai-tech/mdeai` PR #730, "SAN-1634 · Show partly reviewed giant files instead of claiming 100% AI coverage" (2026-11-04, 21 comments — real engagement for an internal fix PR), describes a concrete incident: "An actual four-chunk NVIDIA PR-Agent review ... detected that one huge documentation patch ... was clipped before the model saw its full contents," while other paths in the same tool still report full coverage regardless. This is a real incident, not a hypothetical, and the gap-analyst found it's still widespread: Qodex caps diffs silently, and Claude Ultrareview has open bug reports of large diffs returning zero findings with no partial-coverage flag.
+
+## The Project
+A model-agnostic wrapper that sits between a CI pipeline and whichever AI review/eval tool a team already uses: before the tool runs, it computes the diff's actual size against the tool's known (or configured) context-window limit and predicts which portions, if any, will be truncated or chunked away; after the tool returns results, it reconciles the tool's own coverage claim (if any) against this prediction and, on any mismatch, posts an explicit "partially reviewed — N of M files/lines not actually seen by the model" comment on the PR instead of letting a blanket "reviewed" status stand. The gate can also optionally block merge on undisclosed-partial-coverage findings, mirroring how a strict test-coverage gate blocks on missing test coverage today.
+
+Components: a per-vendor diff-size/context-window estimator (starting with GitHub PR API + a config of known context limits for Cursor Bugbot, Qodex, Claude-based reviewers, generic PR-Agent-style tools); a coverage-claim reconciler comparing the tool's stated output against the estimate; a PR-comment formatter naming exactly which files/sections were missed; an optional CI merge-block mode for undisclosed partial coverage.
+
+## Tangible Impact
+**Population**: Engineering teams relying on an AI code-review or AI-eval tool's "reviewed" or pass/fail signal as part of their merge process — specifically teams merging large PRs, generated migrations, or big documentation patches, where truncation silently drops coverage exactly when the review matters most. The digest's cited incident alone drew 21 comments of engineer discussion, and the gap-analyst found the failure mode recurring across at least three separate named vendors (Cursor, Qodex, Claude Ultrareview), indicating this isn't one team's edge case.
+**Mechanism**: Today a team sees "AI review passed" on a giant PR and merges trusting full coverage, when in reality a silent truncation left large sections unseen by the model — the exact incident that prompted the `mdeai` PR. An explicit, mechanically-generated partial-coverage flag turns a false "all clear" into an honest "here's what was actually checked," so a human knows exactly where to look before merging.
+**Measure**: (1) fraction of large PRs (above a size threshold) where the gate correctly flags a real truncation that the underlying tool's own output didn't disclose, on a seeded test set of known-truncated reviews; (2) false-positive rate — flagging coverage as partial when the tool actually reviewed everything, which erodes trust in the gate itself; (3) time-to-notice for an undisclosed truncation incident, gate-equipped vs. the `mdeai` team's own experience of discovering it only after an incident report.
+
+## Why Now
+AI code-review and eval tools have become a default part of CI for many teams in 2026, and the `mdeai` incident shows the exact failure mode (silent chunking, false full-coverage claims) is happening in production right now across multiple named vendors — the fix requires no new model capability, only wiring existing diff-size math and PR-comment APIs that are already mature, standard pieces.
+
+## Skill Angle
+Trigger: an engineer has a specific AI review's raw output plus the original diff it claimed to review, and wants to know whether it actually saw everything. Inputs: the diff (or PR link) and the review tool's full output/comment text, pasted. Output: an estimated coverage breakdown — which files or line ranges were plausibly within the model's context window versus plausibly truncated, based on size math and any chunking hints in the output — flagged as a likely undisclosed partial review if the tool's own claim doesn't mention any gap. This is the one-off audit version; the project is the always-on CI gate running automatically on every PR.
+
+## MVP Sketch
+A GitHub Action that, on every PR, fetches the diff size via the GitHub API, compares it against a small config table of known context-window limits for 2–3 common AI review tools, and posts a PR comment flagging any file/section likely outside that limit — run alongside (not replacing) the team's existing AI reviewer. Experiment: reproduce a version of the `mdeai` incident (a deliberately oversized documentation-style diff) and confirm the gate correctly flags the predicted-truncated sections against what a tool's own output discloses. 2 weeks, 1 person.
+
+## Risks & Open Questions
+- Context-window limits and chunking behavior aren't always publicly documented per vendor and can change without notice, making the config table an ongoing-maintenance burden.
+- A size-based estimate is a proxy, not a certainty — a tool could summarize rather than truncate, or use retrieval tricks that let it genuinely cover more than naive size math predicts, risking false-positive flags.
+- Teams may resist an optional merge-block mode if false positives are too frequent early on — the rollout should default to comment-only, not blocking, until the estimator is proven reliable.
+- If more vendors ship their own native partial-coverage disclosure (as Cursor's Bugbot already has), this project's value narrows to the cross-vendor reconciliation and standardized disclosure format, not the detection itself.
