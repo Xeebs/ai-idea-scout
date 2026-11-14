@@ -1,6 +1,6 @@
 # Route Check: A Standard Evaluation Harness for MCP Tool-Selection Failures
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 66: recurrence)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 66: recurrence)
 - **Date**: 2026-11-12
 - **Topic**: Tool use & MCP ecosystem
 - **Source**: research/2026-11-12-tool-use-mcp-ecosystem.md · P1
