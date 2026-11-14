@@ -1,0 +1,33 @@
+# Test Rig: A Unified Mock-Transport + Sequence-Assertion Testing Framework for Agent Tool Calls
+
+Five different teams, within the same thirty-day window, independently built a piece of the same missing tool — and none of them built the whole thing. If your agent calls `transfer_funds` before it calls `verify_identity`, or closes a support ticket before one was ever opened, today's testing stack will not catch that. Per-tool unit tests pass. The bug ships. Someone files a support ticket about it instead.
+
+## The Gap
+
+MCP tool-call testing right now is a pile of good-but-incomplete fragments. There are libraries that mock an individual MCP server's responses for unit tests — `zeph-mcp`'s `MockMcpServer`, the `mcpkit-testing` Rust crate, the npm `mcp-server-mock` package, `vaayne/mcphub`'s internal testing package. There's a DEV Community post walking through hand-building a tool-call "test rig" from scratch, because nothing off-the-shelf does it. And there's a separate DEV Community piece arguing that mocks alone "miss how real models behave," since tool-calling habits differ meaningfully between model families.
+
+Independent gap-analysis search turned up five more attempts at the missing piece — `AgentProof` (a pytest plugin with `assert_tool_order`/`assert_tool_called`/`assert_max_steps`), `assay-core` (a Rust crate doing exact/subsequence/must-not-call trace assertions), `agentguard` (trace replay plus an assertion builder), and two GitHub repos, `itsPremkumar/mcptest` and `guruambati/agent-tool-call-testing-framework`. Five teams, one gap, zero convergence: nothing combines mocked transport, scripted or model-in-the-loop behavior, and sequence assertions into one maintained, adopted framework. The gap-analyst's verdict was PARTIAL rather than OPEN precisely because these fragments exist — but fragmented, unmaintained-at-scale fragments aren't the same as a solved problem.
+
+This matters because MCP has crossed into mainstream production agent stacks (the `modelcontextprotocol/servers` repo alone sits at 92K stars), and the failure mode in question — an agent calling tools in the wrong order — isn't cosmetic. It's the difference between a wrong log line and a real-world action that already happened.
+
+## The Project
+
+The fix is a pytest-style, cross-SDK framework built from three pieces that currently only exist separately. First, a mock MCP transport that records real tool-call traffic once and replays it deterministically in CI — so tests don't depend on a live server being up and well-behaved on every run. Second, a scenario DSL exposing sequence assertions across a whole trajectory, not a single call: `assert_tool_order`, `assert_max_steps`, `assert_not_called`, and subsequence matching, so you can assert the agent called things in the right order and not just that it called the right thing. Third, a multi-model fidelity harness that re-runs the same scenario against two or three live model APIs to catch cases where mocked behavior quietly diverges from how a real model actually behaves — directly answering the "mocks miss real model behavior" objection raised in the evidence itself, instead of hand-waving past it.
+
+Components: mock-transport recorder/replayer, a scenario DSL and assertion library, a pytest/CI plugin, a multi-model fidelity runner, and a trace-diff reporter.
+
+It's worth being honest about where this sits relative to the field. Any one of the five existing point solutions could simply absorb the missing piece and converge first — this project doesn't own the idea, it's racing fragments that are already partway there. And multi-model fidelity checking means live API calls inside CI, which brings cost, latency, and flakiness that could undercut the whole "deterministic CI gate" pitch if it isn't scoped carefully (nightly runs, not a check on every PR, is the likely answer). Each MCP SDK language — Python, TypeScript, Rust — also needs its own transport-mocking adapter, and multi-language maintenance burden looks like exactly what has quietly stalled several of the existing fragments already.
+
+## Tangible Impact
+
+**Population**: developers building and maintaining MCP-integrated agents with multi-step tool-call sequences — concretely the authors of the five independent fragments found in search (AgentProof, assay-core, agentguard, mcptest, agent-tool-call-testing-framework), each solving one piece of this within the same 30-day window, plus any team shipping an agent where calling tools out of order (e.g., transferring funds before verifying balance) causes a wrong real-world action.
+**Mechanism**: today teams either skip testing tool-call sequences entirely (bugs surface only via user reports) or hand-write bespoke assertion helpers per project. A maintained framework combining mocked transport, sequence assertions, and multi-model fidelity checks turns "agent called tools out of order" into a standard, catchable pre-merge CI failure instead of a production incident.
+**Measure**: (1) count of real sequencing bugs caught in CI pre-merge vs. post-ship, on pilot teams migrating from no test coverage; (2) time to author a new test scenario vs. a hand-rolled bespoke assertion; (3) divergence rate between mocked-scenario pass/fail and live-model pass/fail across 2-3 model families, validating (or refuting) the "mocks miss real model behavior" concern raised in the evidence.
+
+## Try It
+
+A companion skill, [`skills/mcp-agent-tool-call-test-rig/`](../skills/mcp-agent-tool-call-test-rig/), already exists as the authoring front-end to this idea. Its one-line description: "Drafts a starter suite of sequencing-sensitive test scenarios (forbidden tool-call orders, required preconditions, near-miss distractors, redundant-call limits) from an MCP tool manifest, ready to drop into a tool-call sequence-assertion framework. Use when a developer has a multi-tool MCP server and no tests yet for call *order*, not just per-tool correctness."
+
+It doesn't run or score anything itself — it's a one-shot scenario drafter, not the CI runner described above. To use it: either drop the `skills/mcp-agent-tool-call-test-rig/` folder into `~/.claude/skills/` for Claude Code, or paste the contents of its `README.md` into any AI chat tool, hand it a live `tools/list` result (or a pasted JSON tool manifest if no live server is reachable), and it will draft forbidden-order, required-precondition, near-miss distractor, and redundant-call test scenarios you can paste straight into whichever sequence-assertion framework you're already using — AgentProof, assay-core, or a hand-rolled one.
+
+Surfaced from `research/2026-11-13-tool-use-mcp-ecosystem-2.md`, pattern `P2`.
