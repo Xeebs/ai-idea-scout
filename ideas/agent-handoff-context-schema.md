@@ -1,6 +1,6 @@
 # Handoff Envelope: a Typed Context Schema for Agent-to-Agent Handoffs
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED — [writeup](../published/agent-handoff-context-schema.md) (promoted 2026-11-13 cycle 65: recurrence — same no-standard-handoff-schema gap (P5) surfaced independently in research/2026-11-13-context-engineering-memory.md)
 - **Date**: 2026-06-10
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-06-10-multi-agent-architectures.md · P1

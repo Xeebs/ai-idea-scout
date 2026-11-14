@@ -1,6 +1,6 @@
 # Write Gate: A Pre-Commit Validation Firewall for Agent Memory
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING (promoted 2026-11-13 cycle 65: recurrence — same pre-write validation-gate gap (P6) surfaced independently in research/2026-11-13-context-engineering-memory.md)
 - **Date**: 2026-11-12
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-12-agentic-ai-autonomous-agents.md · P6
