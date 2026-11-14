@@ -1,0 +1,33 @@
+# Task Anchor: A Compaction-Agnostic Task-State Guarantee for Coding Agents
+
+Set a long task running in Codex or Claude Code, walk away, and come back to find the agent cheerfully doing something else entirely — not because it got confused, but because the harness itself quietly erased what it was working on. That's not a hypothetical. It's a live, independently reproduced bug sitting in two of the most widely used coding-agent tools today, and as of this writing, nobody has shipped a fix.
+
+## The Gap
+
+The failure has a name now: `openai/codex` issue #57608, "Automatic compaction loses active task: continuation receives environment-only user context despite preserved rollout," filed 2026-10-28 and still drawing engagement (5 reactions, 16 comments). The pattern is specific and ugly — when Codex's automatic context compaction fires mid-session, the message the agent receives afterward contains only generic environment context, not the task it was actually doing. The agent doesn't error out or ask for clarification. It just picks up as if the task never existed.
+
+What makes this more than a one-off bug report is how it reproduces. One commenter on the thread reports an independent occurrence on Windows the same day. Another, after a newer Codex release (0.165.0) shipped, went back and inspected their ten most recently active sessions and reported "this is still occurring." A WebSearch for a shipped fix turned up nothing better than more evidence of the same problem elsewhere — community.openai.com threads describing "context compression caused Codex to attribute the previous approval error to this task" and "automatic compaction does not trigger task-state recovery," three more Codex issues referencing related symptoms (#19558, #22107, #29356), and — critically — an independent report of the identical failure mode in a completely different tool: Claude Code's Auto-Compact, via claudeissues.com. Two unrelated harnesses, same failure shape, neither maintainer with a fix out the door. The only mitigation found anywhere was a single third-party forum post describing someone's private, unofficial patch that reattaches the active-goal prompt mid-compaction — a workaround, not a product, and not something anyone else can install.
+
+## The Project
+
+Task Anchor is a thin, framework-agnostic middleware layer that refuses to let "what the agent is currently trying to do" live or die by whatever lossy compaction algorithm a harness happens to run. It treats task state as a protected, independently-tracked checkpoint instead of trusting the host tool's own continuation logic to carry it forward.
+
+Mechanically, it's a goal-tracker that updates a single structured task-state record — active goal, acceptance criteria, the last few concrete steps taken — off of tool calls and user messages as the agent works. It hooks into the harness's own compaction lifecycle (Codex exposes a plugin API for exactly this; `mindroom-ai/openviking-plugin` already demonstrates hooking a `compaction:before`/`compaction:after` surface against a different harness, which is the model this project adapts across tools). On the "after compaction" hook, a verifier diffs what the harness actually sent the model against the tracked task-state record, and reinjects the missing pieces the moment it detects drift — rather than letting the agent silently wander off. A regression-test harness reproduces the exact #57608 repro steps as the ongoing correctness check.
+
+This is deliberately a narrow guarantee layered on top of existing compaction, not a replacement compaction architecture or a full versioned-context rewrite. It doesn't try to make compaction smarter — it makes losing the active task impossible to do silently.
+
+## Tangible Impact
+
+**Population**: Developers running long, multi-hour unattended or semi-attended coding-agent sessions in OpenAI Codex and Claude Code — the population directly filing and independently reproducing #57608 across releases and platforms, plus claudeissues.com's independent reports of the same failure mode in a second harness; a conservative proxy is the subset of each tool's many thousands of daily active users whose sessions routinely run long enough to trigger at least one auto-compaction event.
+**Mechanism**: Today, when auto-compaction fires mid-task, the agent silently receives only environment context afterward and abandons the active work without warning — the developer discovers this only once they notice drift or stalled progress, often well after the fact, costing diagnosis time plus a lost session. A reattached task-state checkpoint converts this from silent, undiagnosable drift into either a non-event (state survives automatically) or a loud, immediate flag the moment the actual continuation doesn't match what was tracked.
+**Measure**: (1) Reproduction rate of the #57608 failure mode on a fixed benchmark of long sessions crossing at least one compaction boundary, with vs. without the middleware. (2) Time-to-detect a dropped task state (immediate flag vs. developer noticing drift later), in minutes. (3) False-positive reinjection rate on a held-out set of normal compaction events.
+
+## Try It
+
+No companion skill ships with this idea. A skill angle was explored — a one-shot forensic tool that takes a pre-compaction task description plus a harness's actual post-compaction continuation message and reconstructs a corrected continuation — but the skill-synthesizer's search turned up three close, well-adopted public equivalents already covering that exact forensic-recovery job (`compact-guard`, `context-recovery`, `long-task-continuation`), so the Format was dropped back to PROJECT-only. The always-on daemon described above — reattaching task state live, across harnesses, the moment compaction runs — is the part of this idea that remains genuinely open.
+
+## Worth Knowing Before You Build
+
+Both OpenAI and Anthropic have live, acknowledged bug threads on exactly this failure — either could ship a first-party fix at any time, which would make a third-party middleware layer redundant overnight. It's also unclear whether Claude Code's hook surface exposes enough introspection to verify a continuation message before it reaches the model the way Codex's plugin API does. And there's a sharper risk underneath the obvious one: "reinject if missing" is a patch, not a cure — it could paper over a deeper compaction bug that resurfaces in a different shape later, and there's no data yet on whether developers will tolerate another always-on middleware layer sitting between them and their agent for a bug that, while damaging when it hits, is intermittent.
+
+Surfaced from `research/2026-11-12-context-engineering-and-memory.md`, pattern `P3`.
