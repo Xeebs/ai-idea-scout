@@ -67,3 +67,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-13 | verifier-swarm-frontier-parity-benchmark | An open, reproducible benchmark replacing self-reported "matches Opus 4.6 on a 128GB machine" claims with an honest adjudicated number | Small & local models | no |
 | 2026-11-13 | agent-handoff-context-schema | Three independent Show HN reinventions in 30 days for a typed handoff envelope that no spec yet standardizes | Multi-agent architectures | yes |
 | 2026-11-13 | mcp-dependency-drift-auditor | Five teams independently built MCP rug-pull detectors in 30 days with zero consolidated winner | Tool use & MCP ecosystem | no |
+| 2026-11-13 | agent-memory-write-gate | A pre-commit validation firewall that catches a poisoned or contradictory fact before it ever lands in agent long-term memory | Agentic AI & autonomous agents | has-skill: no |
