@@ -1,6 +1,6 @@
 # Playbook: A Portable Procedural-Memory Layer That Lets Coding Agents Reuse Solved Procedures Across Clients
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 52: evidence density — source HN Ask thread alone carries 100pts/62cmt, exceeding the ≥50-point bar)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 52: evidence density — source HN Ask thread alone carries 100pts/62cmt, exceeding the ≥50-point bar)
 - **Date**: 2026-11-13
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-13-agentic-ai-autonomous-agents.md · P4
