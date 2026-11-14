@@ -93,6 +93,6 @@ Format: `- [STATUS] <topic>` — STATUS ∈ UNWORKED | IN_PROGRESS | DONE | FAIL
 - [DONE] Tool use & MCP ecosystem
 - [DONE] LLM evaluation & observability
 - [DONE] Small & local models
-- [UNWORKED] AI safety & guardrails in production
+- [DONE] AI safety & guardrails in production
 - [UNWORKED] Voice & multimodal agents
 - [UNWORKED] Applied AI for underserved domains
