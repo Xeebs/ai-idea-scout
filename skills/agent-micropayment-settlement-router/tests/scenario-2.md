@@ -1,29 +1,29 @@
-# Scenario 2 — AP2 agent marketplace needing stable settlement, partial inputs first
+# Scenario 2: AP2-based agent purchasing, needs USD-stability, incomplete input, regulated jurisdiction
 
-## Setup
+## Input
 
-A small team is building an AP2-based marketplace where autonomous shopping agents pay merchant agents for completed tasks, typically $0.50–$3.00 per task. They message the assistant with an incomplete ask first, then follow up:
+A builder pastes:
 
-**First message:**
-> We're building on AP2 and need to figure out our settlement rail. Payments need to be USD-stable since merchants are real small businesses who don't want crypto volatility risk. What should we use?
+> We're building an AP2 flow where a user's shopping agent authorizes a
+> sub-agent to pay smaller vendor agents for data enrichment tasks, usually
+> $0.50-$2 per task. We're a US-based fintech-adjacent company so we need to
+> be careful about money-transmission rules. We settle in whatever the vendor
+> agent will accept but we'd strongly prefer something USD-pegged so our
+> accounting doesn't have to deal with crypto price swings.
 
-**Follow-up after the assistant asks for more:**
-> Volume is low for now — maybe 2 transactions per minute, growing slowly. Latency tolerance is generous, agents can wait up to 30 seconds for confirmation since it's a checkout-style flow, not a hot loop. We're a US company and merchants are also mostly US-based, so we do want to know if that changes anything.
+Note: the builder did NOT state expected volume or latency tolerance.
 
-## What a passing response must do
+## Expected output characteristics (pass/fail checklist)
 
-- [ ] On the first message, does NOT immediately produce a final recommendation — recognizes that volume, latency tolerance, and jurisdiction detail are missing (or at minimum volume and latency) and asks for them, per the "ask for the missing ones" rule. A response that hands down a confident final recommendation off the first message alone fails this scenario.
-- [ ] After the follow-up, proceeds to a full recommendation using all inputs now: size $0.50-3.00, volume ~2/min, latency <30s, protocol AP2, USD-stable required, US jurisdiction.
-- [ ] Recommends **Stellar** as primary (USD-stability requirement via USDC anchor; ~5s ledger close comfortably fits a 30-second tolerance; low volume doesn't push toward Nano's throughput advantage) — recommending Nano as primary, given the explicit stablecoin requirement, fails this scenario.
-- [ ] Correctly notes AP2 is an authorization layer, not a settlement rail, and is rail-agnostic — does not treat AP2 the way it treats x402's EVM/USDC default bias.
-- [ ] Flags the US jurisdiction / stablecoin money-transmission question as "confirm with counsel," not as a compliance guarantee either way.
-- [ ] Produces the four-section output format with the adapter config reflecting Stellar as primary_rail, settlement_asset something like "USDC-on-Stellar", and the user's actual numbers.
-- [ ] Labels benchmark numbers as live-fetched or last-known-as-of-date, not presented as unconditionally current.
-- [ ] States it did not execute a settlement or verify their actual deployment.
+- [ ] Recognizes volume and latency tolerance are missing (only 2 of the first 4 required fields given: size and protocol; USD-stability and jurisdiction were given as the optional fields) and asks for the missing ones BEFORE giving a final recommendation — does not guess a volume/latency figure.
+- [ ] If the user is simulated as responding with, e.g., "volume is maybe 5-10 tasks/minute, latency can be up to 30 seconds, that's fine" — the flow then proceeds to a full recommendation.
+- [ ] Given a hard USD-stability requirement and a relaxed 30-second latency tolerance, the correct call is **Stellar as primary** (via a USDC anchor), since Stellar satisfies stability and its ~5s ledger close time is well inside the 30-second tolerance — Nano is not a fit here because it has no native stablecoin.
+- [ ] `## Why` explicitly calls out the USD-stability requirement as the deciding criterion, not just volume/latency.
+- [ ] `## Why` includes the AP2 protocol-fit note stating AP2 is an authorization layer and rail-agnostic, so the rail choice stands independent of AP2 — does not treat AP2 as if it were itself a settlement rail.
+- [ ] The regulated-jurisdiction flag produces a caveat phrased as "confirm with counsel" / similar — never phrased as "this is compliant" or any form of legal clearance.
+- [ ] `## Adapter config` has `primary_rail: "stellar"`, `settlement_asset` naming a USDC-on-Stellar anchor, `protocol: "AP2"`, and a `notes` field referencing the jurisdiction caveat.
+- [ ] Does not silently recommend Nano despite the explicit USD-stability requirement (that would be a guardrail violation — forcing a choice that fails a stated hard constraint).
 
-## What would fail this scenario
+## Self-check result
 
-- Recommending Nano (or a toss-up) despite an explicit, repeated USD-stability requirement.
-- Treating AP2 like x402 and claiming it has an EVM/USDC "reference stack" bias — that caveat is specific to x402 only.
-- Answering the regulatory question with a definitive legal conclusion ("you're fine" or "you need a license") instead of flagging it for counsel.
-- Skipping straight to a recommendation on the first, incomplete message.
+PASS, with one required intermediate step: the procedure's own Step 1 ("ask for missing inputs before proceeding") correctly triggers here since volume and latency weren't given in the first message — the skill must not skip straight to a recommendation. Once the simulated follow-up supplies 30-second latency tolerance, decision logic step 2's "needs USD-stable settlement" branch selects Stellar cleanly, and the regulated-jurisdiction guardrail (never give legal conclusions) is exercised and holds. This scenario specifically exercises the "ask before guessing" guardrail that scenario 1 did not, confirming the skill handles both the complete-input and incomplete-input cases correctly.

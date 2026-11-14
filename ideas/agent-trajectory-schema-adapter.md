@@ -1,6 +1,6 @@
 # Common Trace: A Cross-Framework Agent Trajectory Schema Adapter
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-13
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-13-llm-evaluation-observability.md · P6

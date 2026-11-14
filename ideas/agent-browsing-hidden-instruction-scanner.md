@@ -5,7 +5,7 @@
 - **Topic**: AI safety & guardrails in production
 - **Source**: research/2026-11-14-ai-safety-and-guardrails-in-production.md · P5
 - **Maturity verdict**: PARTIAL — a scattered set of narrow, early-stage scanners exist for this exact vector (InjectScan, Palisade Scanner, Trap Scout, an "Injection Detection" pip tool, the InjectGuard Chrome extension, an Apify actor, `Vick606/subcanopy-guard`), plus Google's own billion-page indirect-injection crawl, but none is a widely-adopted, maintained standard a team reaches for by default — most are single-author, unverified, or very recent.
-- **Format**: BOTH
+- **Format**: PROJECT (downgraded from BOTH cycle 91: skill-synthesizer NOVELTY_FAIL — `detecting-indirect-prompt-injection` (multi-registry: claudskills.com, skills.sh, claudeskills.info) and GitHub's `html-hidden-text-check`/`prompt-injection-screen` already ship this exact paste-a-URL hidden-instruction-report skill; the always-on fetch-pipeline middleware/project angle remains the differentiated, unaddressed half)
 - **Data Sources**: CONNECTED — hooks directly into an agent's own web-fetch/browsing tool call (e.g., a Playwright/Puppeteer-based browse tool, a generic HTTP-fetch tool, or a computer-use agent's native page-read step) rather than requiring a manual paste; the scanner fetches and renders the page itself once given a URL. No mature cross-framework "universal fetch interceptor" connector exists today, so building adapters for the 2-3 most common browsing-tool surfaces is the core new work, mirroring the same hook-surface problem this repo's `agent-execution-sink-provenance-gate.md` ("Trace Gate") already solves for execution-sink tool calls.
 
 ## The Gap

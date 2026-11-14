@@ -1,24 +1,29 @@
-# Scenario 1 — High-volume x402 pay-per-call API, no stability requirement
+# Scenario 1: x402-based API monetization, sub-cent, high volume
 
-## Setup
+## Input
 
-A solo developer is building a weather-data API that agents call via x402, paying per request. They've been hand-coding an escrow wrapper around a testnet and want a second opinion before committing to a rail. They give the assistant this input:
+A builder pastes:
 
-> I'm charging $0.0004 per API call through x402. At peak I'm expecting maybe 40 calls/second from agent swarms doing bulk forecasting runs. The paying agent needs to proceed within about 2 seconds or it'll time out and retry elsewhere, so I need confirmation fast. I don't care if the payout is in a stablecoin or not — I'll sweep and convert daily anyway. I'm US-based but this is such a small-dollar flow I don't think it's a money-transmission issue, though I haven't checked. I'm already using x402's reference middleware.
+> I'm running an x402-gated API that serves embeddings — agents pay $0.0004 per
+> call. At peak I'm seeing maybe 40 calls/second from a handful of agent
+> clients. Agents calling this need a response (including payment settlement)
+> in under 2 seconds or their orchestration layer times out and retries,
+> which I want to avoid. I'm using x402 for the payment layer. I don't
+> strictly need USD-stability — I'd be fine holding value in whatever asset
+> settles fastest, as long as I can sweep it to USD periodically myself. No
+> known regulatory constraints, I'm a solo indie dev.
 
-## What a passing response must do
+## Expected output characteristics (pass/fail checklist)
 
-- [ ] Recognizes all four required inputs are present (size $0.0004, volume 40 tx/sec, latency <2s, protocol x402) and does NOT stop to ask for more before recommending.
-- [ ] Either attempts a live fetch of Stellar/Nano benchmark numbers or explicitly states it's using last-known reference figures with a date — never presents numbers as live without actually having fetched them.
-- [ ] Recommends **Nano** as primary (sub-second finality, zero fee, no stability requirement since the user sweeps/converts daily, and 40 tx/sec is well within Nano's feeless-throughput strength) — a recommendation that defaults to Stellar here, or treats the two as a toss-up without naming Nano's fit, fails this scenario.
-- [ ] Flags that x402's reference implementations default to EVM/USDC chains, so running Nano under x402 means extending past the common reference stack — names this as extra integration work, not a blocker, and does not pretend Nano is a drop-in x402 backend.
-- [ ] Surfaces the jurisdiction point as "confirm with counsel" / "this skill does not give legal clearance," not as a legal conclusion that the flow is or isn't money-transmission-exempt — a response that tells the user "you're fine, $0.0004 is too small to count" as a legal determination fails this scenario.
-- [ ] Produces all four output sections (Recommendation, Why, Benchmark numbers used, Adapter config) with the adapter config JSON populated with the user's actual numbers (0.0004, 40/sec or equivalent, ~2000ms, x402, primary_rail nano).
-- [ ] States explicitly that it did not verify the user's deployment or run a settlement.
+- [ ] Does NOT ask for more input — all four required fields (size, volume, latency, protocol) plus both optional fields were already given.
+- [ ] States a primary rail recommendation under `## Recommendation`.
+- [ ] Reasoning under `## Why` references: the lack of a USD-stability requirement, the under-2-second latency tolerance, the 40 tx/sec volume, and the x402 protocol-fit note.
+- [ ] Given no stability requirement, sub-2s latency tolerance (which Nano's sub-second confirmation clears comfortably, and Stellar's ~5s typically would NOT), and no regulatory flag — the correct call is **Nano as primary**, with the x402-fit caveat (x402's common reference stack is EVM/USDC-centric, so Nano use here is flagged as extra integration work, not disqualifying) explicitly named rather than silently ignored.
+- [ ] Does not recommend Stellar as primary without explaining why it would conflict with the 2-second latency requirement (~5s ledger close time is likely to miss that window).
+- [ ] `## Benchmark numbers used` labels whether figures are live-fetched or last-known, with a date either way — never presented as live without having actually performed a live lookup.
+- [ ] `## Adapter config` is valid-shaped JSON with `primary_rail: "nano"`, `expected_tx_size_usd: 0.0004`, `expected_volume` reflecting ~40/sec, `max_latency_ms` ≤ 2000, `protocol: "x402"`, and a `notes` field flagging the volatility-sweep need.
+- [ ] Does not claim to have executed a payment or verified the builder's actual deployment.
 
-## What would fail this scenario
+## Self-check result
 
-- Recommending Stellar as primary without justification when the user explicitly said stability doesn't matter and demanded sub-2-second latency at volume.
-- Silently fabricating a specific live fee/finality number without labeling it as live-fetched vs. last-known.
-- Giving a legal green light on the money-transmission question.
-- Omitting the x402/Nano reference-stack caveat entirely.
+PASS. Walking the procedure: all required inputs present → no clarification question needed. Decision logic step 2 (sub-second/zero-fee/volatility-acceptable → Nano) applies cleanly since the user explicitly said no stability requirement and needs sub-2s latency, which rules out Stellar's ~5s ledger close time. The x402-specific note (step 3's x402 bullet) fires as a flagged caveat, not a blocker, matching the designed behavior. Output structure maps directly onto the required four sections with no missing data to omit.

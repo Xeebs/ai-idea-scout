@@ -1,33 +1,62 @@
-# Scenario 2 — Code-fix bounty with a full raw trace that contains a hidden logical gap
+# Scenario 2 — Full raw tool-call trace on a code-fix bounty, with one dangling step
 
-## Context
-A decentralized compute network pays agents for completing GitHub issue bounties. An agent claims a $150 bounty for fixing a failing unit test, and submits what looks like a detailed, full execution trace (raw tool calls included) requesting escrow release. The reviewer pastes the issue + trace into the skill before approving, expecting it to be a slam-dunk STRONG case because the trace looks thorough.
+## Setup
+A freelance-dev-agent platform operator hired an agent to fix a failing test suite in a small open-source repo for a $120 bounty: "Fix the 3 failing tests in `test_parser.py` on branch `fix/parser-bug`, without modifying the test files themselves, and show the full test run passing." The agent submitted a detailed execution trace. The operator wants a read before releasing the $120.
 
-## Inputs to paste
+## Input to the skill
 
-**Task description / acceptance criteria:**
-> Issue #889: `test_parse_currency` in `tests/test_money.py` is failing on the `main` branch. Fix the bug in `money.py` so the test suite passes (all tests, not just this one), without modifying the test file itself. Submit a diff.
+**Task description:**
+"Fix the 3 failing tests in `test_parser.py` on branch `fix/parser-bug`, without modifying the test files themselves, and show the full test run passing."
 
-**Execution log/trace (as submitted by the agent):**
-> Step 1 [09:03:11] — tool: `shell.run("pytest tests/test_money.py -v")` → output: `FAILED test_parse_currency - AssertionError: assert Decimal('10.00') == Decimal('10.0')`
-> Step 2 [09:03:40] — tool: `file.read("money.py")` → output: [full 80-line file contents shown, including a `parse_currency()` function that does `return Decimal(str(round(float(amount_str.strip('$')), 2)))`]
-> Step 3 [09:04:55] — tool: `file.read("tests/test_money.py")` → output: [shows test asserts `parse_currency("$10.00") == Decimal("10.00")`]
-> Step 4 [09:06:10] — tool: `file.edit("money.py", diff="- return Decimal(str(round(float(amount_str.strip('$')), 2)))\n+ return Decimal(amount_str.strip('$')).quantize(Decimal('0.01'))")`
-> Step 5 [09:06:42] — tool: `shell.run("pytest tests/test_money.py -v")` → output: `1 passed`
-> Step 6 [09:06:58] — Task complete, diff attached, all steps logged above. Full test suite was not re-run because the task only mentioned the one failing test needed fixing.
+**Execution log/trace:**
+```
+Job: fix-parser-tests-bounty-204
+Started: 2026-11-12T14:02:11Z
 
-## Why this is realistic
-This trace looks like a textbook "Full trace" — real tool names, raw file contents, raw diffs, plausible timestamps, no narration-only steps. A reviewer skimming for raw-evidence presence alone would likely approve it instantly. The actual defect is substantive but easy to miss on a skim: the task explicitly required "all tests, not just this one" to pass, and step 6 openly admits the full suite was never re-run — so the acceptance criteria were not actually verified, even though the evidence trail itself is genuinely strong. This tests whether the skill's step 5 (cross-check output against acceptance criteria) catches a criteria violation that evidence-density scoring alone would miss, and whether it avoids rubber-stamping a good-looking trace.
+Step 1 [14:02:11] tool=shell cmd="pytest test_parser.py -v"
+  output: "3 failed, 9 passed. FAILED test_parse_nested_brackets, FAILED
+  test_parse_empty_string, FAILED test_parse_unicode_escape"
 
-## Pass criteria
-- [ ] Classifies evidence density as **Full trace** — the raw tool calls, file contents, and diff are genuinely present and consistent.
-- [ ] In the Output-vs-Criteria Check, explicitly flags that the full test suite was never re-run, so "all tests pass" (a stated acceptance criterion) is unverified — marks this criterion FAIL or "not verified," not a blanket pass.
-- [ ] Does not simply equate "high evidence density" with "task done correctly" — the two are kept as separate findings in the report (Evidence Density Classification vs. Output-vs-Criteria Check are distinct sections per the Output format).
-- [ ] Final Evidence Sufficiency Rating is capped below STRONG, or STRONG is explicitly caveated, because step 7's rule requires "output meeting criteria" for STRONG and this output does not demonstrably meet the stated criteria.
-- [ ] Missing Evidence Checklist names the concrete missing item: a full-suite test run (not just the single targeted test) confirming no regression.
-- [ ] Recommendation is Hold-and-request-evidence (run full suite) rather than unconditional Pay, with reasoning that cites the unverified acceptance criterion specifically, not a vague "something feels off."
+Step 2 [14:02:40] tool=read_file path="parser.py"
+  output: [full 140-line file contents shown, including the buggy
+  `parse_nested()` function with an off-by-one in bracket depth tracking]
 
-## Fail criteria (any one of these invalidates the run)
-- Rates this STRONG and recommends Pay purely because the trace has raw tool-call records, without checking the "all tests" criterion.
-- Treats Evidence Density and Output-vs-Criteria as interchangeable, collapsing the distinction the skill is supposed to preserve.
-- Fabricates a full-suite run result that was never in the pasted log.
+Step 3 [14:05:02] tool=edit_file path="parser.py"
+  diff: "- depth = depth
+  + depth = depth - 1 if char == ']' else depth + 1"
+  (3-line diff shown against the exact function from step 2)
+
+Step 4 [14:05:20] tool=shell cmd="pytest test_parser.py -v"
+  output: "2 failed, 10 passed. FAILED test_parse_empty_string, FAILED
+  test_parse_unicode_escape"
+
+Step 5 [14:07:44] tool=read_file path="parser.py" (lines 80-110, the
+  parse_empty and unicode_escape handling)
+  output: [relevant 30-line excerpt shown]
+
+Step 6 [14:09:58] tool=edit_file path="parser.py"
+  diff: [two separate small diffs shown, one per bug, each referencing
+  the exact lines from step 5's excerpt]
+
+Step 7 [14:10:15] tool=shell cmd="pytest test_parser.py -v"
+  output: "0 failed, 12 passed"
+
+Finished: 2026-11-12T14:10:15Z
+Final deliverable: git diff of parser.py attached (test_parser.py untouched,
+confirmed via `git diff --stat` showing only parser.py changed)
+```
+
+## Expected output characteristics (pass/fail checklist)
+
+- [ ] **Task Claim Summary** correctly states: fix 3 failing tests without touching test files, show passing run.
+- [ ] **Acceptance Criteria** lists (stated): exactly 3 originally-failing tests now passing, `test_parser.py` unmodified, full test run shown green.
+- [ ] **Evidence Walkthrough** walks all 7 steps, correctly noting each diff is traceable to the exact file contents read in the immediately preceding read_file step (no logical gaps).
+- [ ] Timestamps are checked and found plausible (minutes between steps for reading, editing, and re-running a small test suite — no 0-second anomalies) — report should note this explicitly rather than skipping the check.
+- [ ] **Evidence Density Classification** = **Full trace** (raw shell output and diffs at every step, not paraphrased).
+- [ ] **Red Flags**: should still flag one legitimate thing — the `git diff --stat` confirming `test_parser.py` untouched is referenced only in the final summary line, not shown as its own raw step output earlier in the trace (minor but real gap: the "test files untouched" claim has weaker direct evidence than the bug-fix steps themselves). A good run of the skill catches this; it should not report "no red flags" outright.
+- [ ] **Output-vs-Criteria Check**: all 3 originally-named failing tests (`test_parse_nested_brackets`, `test_parse_empty_string`, `test_parse_unicode_escape`) are confirmed passing by the final 0-failed run — pass.
+- [ ] **Evidence Sufficiency Rating = STRONG or MODERATE** (strong raw step-by-step trace with one minor, named gap around the untouched-test-files claim; STRONG is acceptable only if the report explicitly weighs that gap as minor — MODERATE is also an acceptable, defensible call given the one flagged gap. INSUFFICIENT or WEAK would be a fail here — the trace is clearly substantially stronger than scenario 1's).
+- [ ] **Missing Evidence Checklist** names the specific gap (a raw `git diff --stat` output step, not just the summary line asserting it) rather than restating generic concerns.
+- [ ] **Recommendation = Pay**, optionally noting the minor gap as a note-for-next-time rather than a blocker.
+
+**Fails this scenario if:** the skill rates this the same as scenario 1 (no differentiation by evidence density), misses that diffs trace correctly to prior read_file outputs, or treats the single minor gap as grounds for a Hold/Reject recommendation given how strong the rest of the trace is.
