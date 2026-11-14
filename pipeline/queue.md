@@ -95,4 +95,4 @@ Format: `- [STATUS] <topic>` — STATUS ∈ UNWORKED | IN_PROGRESS | DONE | FAIL
 - [DONE] Small & local models
 - [DONE] AI safety & guardrails in production
 - [DONE] Voice & multimodal agents
-- [UNWORKED] Applied AI for underserved domains
+- [DONE] Applied AI for underserved domains

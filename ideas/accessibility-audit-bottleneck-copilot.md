@@ -1,0 +1,35 @@
+# Audit Hours Back: A Crowdsourced Bottleneck Map and Remediation-Drafting Copilot for Manual Accessibility Audits
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-14
+- **Topic**: Applied AI for underserved domains
+- **Source**: research/2026-11-14-applied-ai-for-underserved-domains.md · P5
+- **Maturity verdict**: PARTIAL — gh search for "accessibility audit AI copilot" returned zero repos. WebSearch found adjacent tooling shipped downstream of a completed audit (accessible.org's Audit Tracker explainer/VPAT drafting; Level Access's Audit Summaries prioritization) but neither maps or targets which specific manual-audit steps consume the most consultant time — the exact question the Reddit thread is asking.
+- **Format**: BOTH
+- **Data Sources**: MANUAL — for the core copilot workflow, the auditor pastes a specific flagged issue (the WCAG success criterion, a short description of what they observed, and the offending HTML/code snippet) and the tool drafts the remediation write-up and suggested fix. For the bottleneck-mapping component, auditors manually submit anonymized time-tracking entries via a simple web form (no external API read). A CONNECTED upgrade path exists if an org already runs findings through a platform like axe DevTools Pro or Siteimprove with an accessible API, letting the copilot pull findings directly instead of requiring paste — noted as a future iteration, not required for the MVP.
+
+## The Gap
+A working accessibility consultant asked peers directly on r/accessibility (r/accessibility, "Accessibility consultants: what part of your last audit took the longest?", 2026-11-09): "Thinking of your last one: What ate the most time, and which part was the most tedious?" The question itself is the evidence of the gap — practitioners don't have a shared map of where their own time goes, which means nobody has built a tool that targets the actual bottleneck rather than guessing. Existing AI copilots (Audit Tracker, Audit Summaries) all operate *after* a manual audit is already complete, summarizing or drafting from findings a human already spent the time to generate — none touch the generation step itself.
+
+## The Project
+Two linked pieces. First, a lightweight, anonymous crowdsourced survey/dashboard where accessibility consultants log which audit phase (initial automated triage, manual keyboard-nav walkthrough, screen-reader walkthrough, writing issue descriptions, drafting remediation guidance, client Q&A/retesting) took the most time on their last few audits — turning the Reddit thread's one-off question into a continuously-updated, ranked public map. Second, once a top bottleneck is identified (the digest's downstream tooling and general practitioner consensus both point toward remediation-write-up drafting as a strong early candidate), an AI copilot specifically targeting that step: given a flagged issue, the relevant code snippet, and the WCAG criterion, it drafts the plain-English issue description, the developer-facing remediation guidance with a corrected code example, and a suggested retest step — the exact tedious writing task, not a VPAT summary of work already done.
+
+## Tangible Impact
+**Population**: Professional accessibility consultants and auditors — IAAP's own certification base and the broader freelance/agency accessibility-consulting trade (several thousand certified professionals globally, plus a larger uncertified practitioner base, per IAAP's published CPACC/WAS credential counts) — and, downstream, the small-business and nonprofit clients who currently can't afford a full manual audit because of its cost, and the disabled users whose barriers go unfound as a result.
+**Mechanism**: Once the actual bottleneck is named (not assumed), a targeted copilot for that one step cuts real audit hours — lowering the price point at which a manual audit becomes affordable for a small client, meaning more organizations get a real manual audit instead of relying solely on an automated scan (see the companion P1 gap-map idea), and auditors can serve more clients per month without burning out on the most tedious part of the job.
+**Measure**: (1) the crowdsourced survey's own ranked bottleneck data, published and re-surveyed each quarter; (2) hours-per-audit reduction for consultants piloting the copilot on the identified top-bottleneck step, self-reported pre/post; (3) number of consultants adopting the copilot beyond the initial pilot group.
+
+## Why Now
+LLMs are now reliably good at drafting structured, code-aware technical writing (remediation guidance with corrected code examples) from a short issue description — a task that was genuinely unreliable two years ago and is now a core competency, making this the first moment a copilot for this specific step would actually save time rather than require as much editing as writing from scratch.
+
+## Skill Angle
+The remediation-drafting copilot is itself skill-shaped for a single invocation: paste a flagged issue (criterion, observation, code snippet) and get back a drafted issue description, remediation guidance, and suggested retest step — no persistent state required per use. The survey/dashboard remains the project-side infrastructure (it needs to persist and aggregate submissions over time); the skill is the separable, immediately-useful piece a consultant can try before any shared dashboard exists.
+
+## MVP Sketch
+Scope: skip building the full dashboard first — ship the remediation-drafting skill immediately (it needs no infrastructure) and separately post a simple Google Form/Typeform survey to r/accessibility and IAAP channels asking the original Reddit question at scale. Single experiment: have 5-10 consultants use the drafting skill on their next real audit's findings and self-report time saved on the write-up step versus their usual process, while the survey independently confirms whether write-up drafting is in fact the top-ranked bottleneck or whether the data points elsewhere.
+
+## Risks & Open Questions
+- The survey could reveal the real bottleneck is something the copilot can't easily address (e.g. the manual screen-reader walkthrough itself, which requires a human operating assistive tech, not drafting) — the MVP experiment is explicitly designed to test this assumption rather than assume write-up drafting is the answer.
+- Risk of drafted remediation guidance being subtly wrong (incorrect ARIA usage, bad code example) and an auditor shipping it unverified to a client — guardrail: the output must always be framed as a draft requiring the auditor's sign-off, never auto-sent to a client.
+- Overlaps with P1's scanner-divergence gap-map and existing downstream tools (Audit Tracker, Audit Summaries) in the general "AI for accessibility audits" space — differentiated here by targeting the generation step itself rather than scanning or post-hoc summarization, but worth monitoring for scope creep between the two ideas.
+- Crowdsourced survey data quality depends on getting real working consultants to respond honestly and repeatedly — a one-time Reddit thread got anecdotal answers; sustaining a quarterly re-survey needs an incentive beyond goodwill.
