@@ -65,3 +65,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-13 | agent-security-benchmark-verification-pipeline | Reconstructs and re-runs a vendor's "100% prevention" claim instead of asking buyers to just trust it | AI safety & guardrails in production | no |
 | 2026-11-13 | small-model-agent-adversarial-hardening-layer | A hardening sidecar calibrated to small models' actual attack profile, instead of nothing or an oversized large-model guardrail | Small & local models | yes |
 | 2026-11-13 | verifier-swarm-frontier-parity-benchmark | An open, reproducible benchmark replacing self-reported "matches Opus 4.6 on a 128GB machine" claims with an honest adjudicated number | Small & local models | no |
+| 2026-11-13 | agent-handoff-context-schema | Three independent Show HN reinventions in 30 days for a typed handoff envelope that no spec yet standardizes | Multi-agent architectures | yes |
