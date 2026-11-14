@@ -76,3 +76,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-14 | agent-sandbox-live-delegation-inspector | Per-agent sandboxed delegation with live step-in inspection instead of all-or-nothing autonomy | Multi-agent architectures | has-skill: yes |
 | 2026-11-14 | rag-agent-memory-leakage-benchmark | A benchmark that attributes privacy leaks to the retrieval layer or the agent-memory layer instead of collapsing both into one number | RAG techniques | has-skill: yes |
 | 2026-11-14 | rag-offline-decision-models-ddil | Sub-1B CPU decision models so air-gapped and DDIL teams get a usable RAG assistant instead of none at all | RAG techniques | has-skill: no |
+| 2026-11-14 | multiagent-a2a-access-control-gate | RBAC/ABAC and default-deny enforcement for agent-to-agent delegation, the gap both Alter and Okta still leave as "coming soon" | Multi-agent architectures | has-skill: yes |
