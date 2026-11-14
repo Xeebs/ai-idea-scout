@@ -1,6 +1,6 @@
 # Mid-Sentence: A Combined Intent/Dialog-Act/Safety Streaming Tagger for Voice Agents
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING (promoted 2026-11-13 cycle 60: recurrence — same combined intent/dialog-act/PII/safety streaming-tagger gap resurfaced independently as P1 in research/2026-11-13-voice-multimodal-agents-ii.md, the "Arc Tagger" r/speechtech build)
 - **Date**: 2026-11-12
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-12-agentic-ai-autonomous-agents-iii.md · P8
