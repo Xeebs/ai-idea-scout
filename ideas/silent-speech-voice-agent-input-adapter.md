@@ -1,6 +1,6 @@
 # Quiet Channel: A Silent-Speech Input Adapter for Existing Voice-Agent Runtimes
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 60: evidence density — ≥2 independent threads within the digest, HN's "Ramble" Apple Watch launch and MIT Media Lab's muscle-reading wearable coverage both surfacing the same silent-speech-input gap independently)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 60: evidence density — ≥2 independent threads within the digest, HN's "Ramble" Apple Watch launch and MIT Media Lab's muscle-reading wearable coverage both surfacing the same silent-speech-input gap independently)
 - **Date**: 2026-11-13
 - **Topic**: Voice & multimodal agents
 - **Source**: research/2026-11-13-voice-multimodal-agents-ii.md · P8
