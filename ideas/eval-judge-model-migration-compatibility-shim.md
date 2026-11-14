@@ -1,6 +1,6 @@
 # Judge Swap: A Compatibility Shim for Migrating Eval Frameworks Between LLM-as-Judge Models
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 57: evidence density — ≥2 independent threads, PostHog's live GitHub PR #133640 corroborated independently by tianpan.co's "The Eval Harness Whose Judge Model Was Upgraded Silently" and "Model Migration Bills You Twice," all describing the same judge-model-swap compatibility gap)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 57: evidence density — ≥2 independent threads, PostHog's live GitHub PR #133640 corroborated independently by tianpan.co's "The Eval Harness Whose Judge Model Was Upgraded Silently" and "Model Migration Bills You Twice," all describing the same judge-model-swap compatibility gap; published cycle 121)
 - **Date**: 2026-11-13
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-13-llm-evaluation-observability.md · P6
