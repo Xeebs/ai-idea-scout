@@ -1,6 +1,6 @@
 # Local Bench: A TypeScript-Native, Local-First LLM Eval Runner for Vitest
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 57: evidence density — ≥2 independent posts within the digest, "Evalite - an Early Preview" (aihero.dev) and "Evaluating Eval Tooling," both independently naming the same TS-native local-first eval gap)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 57: evidence density — ≥2 independent posts within the digest, "Evalite - an Early Preview" (aihero.dev) and "Evaluating Eval Tooling," both independently naming the same TS-native local-first eval gap)
 - **Date**: 2026-11-13
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-13-llm-evaluation-observability.md · P4
