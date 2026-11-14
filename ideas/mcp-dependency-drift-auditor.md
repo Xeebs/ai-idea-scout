@@ -1,6 +1,6 @@
 # Driftwatch: Continuous Supply-Chain Drift Monitoring for MCP Server Dependencies
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 66: recurrence; published cycle 66, see [writeup](../published/mcp-dependency-drift-auditor.md))
 - **Date**: 2026-11-11
 - **Topic**: Tool use & MCP ecosystem
 - **Source**: research/2026-11-11-tool-use-mcp-ecosystem.md · P3
