@@ -1,0 +1,37 @@
+# Dual Mandate: Reconciling GDPR Erasure and EU AI Act Retention in Agent Memory
+
+- **Status**: EXPLORING (promoted 2026-11-14 cycle 75: evidence density — 4 independent sources in the digest — Atlan, tianpan.co, arkforge.tech, MintMCP — all independently naming the GDPR-erasure/AI-Act-retention conflict in agent memory)
+- **Date**: 2026-11-14
+- **Topic**: Context engineering & memory
+- **Source**: research/2026-11-14-context-engineering-and-memory.md · P5
+- **Maturity verdict**: PARTIAL — Mem0 ships a real but narrow deletion feature (a CLI command to delete all memories for a user, with a dry-run preview), but Mem0's own guide advises recording requests/results in "your own compliance system" separately — it explicitly doesn't cover the full compliance workflow. No dedicated GDPR/AI-Act compliance product, audit-trail tool, or third-party wrapper surfaced for any agent-memory vendor; a practitioner review confirms Codex CLI's lack of deletion audit logs is an open, unaddressed gap. Partial, narrow vendor tooling exists; the compliance-surface problem itself remains unsolved.
+- **Format**: BOTH — the write-time classifier and retention scheduler are runtime infrastructure; drafting a team's classification/retention policy is a one-shot design task.
+- **Data Sources**: CONNECTED — the team's existing agent-memory backend's write/read/delete API (Mem0, Letta, Zep — all mature and documented) plus whatever trace/event store the agent framework already emits for decision context (e.g. OTel GenAI spans, or the framework's own tool-call log). No new connector needs to be built; this project classifies and schedules retention on data these backends and loggers already produce.
+
+## The Gap
+Multiple 2026 vendor/practitioner posts (Atlan, tianpan.co, arkforge.tech, MintMCP) independently describe agent memory as an un-mapped compliance surface: GDPR Article 17's erasure right conflicts with the EU AI Act Article 12 record-keeping requirement for high-risk systems (applicable since August 2, 2026, per the digest's source), and memory systems store recency-ranked embeddings rather than the reasoning behind a stored decision, making either obligation hard to satisfy cleanly. One source calls this "the hardest architectural problem in agent memory in 2026." A practitioner review confirms Codex CLI's memory feature produces no deletion audit logs, and the "wrapper tooling" needed is explicitly described as missing, not built.
+
+## The Project
+A write-time classifier and tiered-retention scheduler for agent memory: every write is tagged either "working memory" (ordinary conversational/embedding content, erasable on request, expiring on a bounded TTL — e.g. 30/90 days) or "decision record" (the structured reasoning/policy behind a high-risk action, retained per AI Act Art. 12 regardless of a later erasure request, with personally-identifying conversational content stripped where feasible so the record can survive an Art. 17 request intact). A deletion-audit-log wrapper produces a verifiable before/after trail for every erasure request — the exact tooling the practitioner review said Codex CLI lacks. This is distinct from the "Erasure Proof" idea already in the backlog (`rag-vector-store-provable-erasure-pipeline.md`), which proves a delete call actually purged every physical copy of a vector-store record; this project solves the upstream architectural question of *what should and shouldn't be deletable in the first place*, and would hand off to an Erasure-Proof-style pipeline once a record is determined to be actually erasable.
+
+Components: a write-time classifier (working-memory vs. decision-record); a TTL-bounded retention scheduler; a PII-minimized decision-record store; a deletion-audit-log wrapper; a compliance report mapping each stored item to its legal basis.
+
+## Tangible Impact
+**Population**: EU-market SaaS vendors deploying memory-enabled agents that fall into the EU AI Act's "high-risk" category (e.g. agents making credit, hiring, or benefits-eligibility-adjacent recommendations) — the European Commission's own guidance estimates roughly 5-15% of AI systems placed on the EU market will fall into this category once the Act's requirements are in force. Compliance/legal and engineering teams at these vendors are the direct beneficiaries.
+**Mechanism**: Today these teams either over-retain everything to be safe on Art. 12 (violating Art. 17 erasure rights and accumulating unnecessary liability) or delete aggressively to honor erasure requests (destroying the audit trail a regulator could later demand). A classify-at-write-time architecture lets a team honor an erasure request on conversational content while retaining exactly the structured decision record the AI Act requires — resolving the conflict instead of forcing an engineer to guess.
+**Measure**: (1) Percentage of erasure requests fulfilled without triggering a retention-policy violation flag, target ~100%. (2) Time for a compliance reviewer to produce a defensible answer to "what do we retain and why" per memory category, versus no answer today. (3) Percentage of AI-Act-mandated audit fields (decision rationale, timestamp, model version) present and retrievable after a corresponding GDPR erasure, target 100% for in-scope decision records.
+
+## Why Now
+AI Act Article 12's record-keeping requirement for high-risk systems has been applicable since August 2, 2026, making this newly urgent rather than hypothetical for any in-scope EU deployment. Four independent 2026 vendor/practitioner posts within the last 30 days name the same unresolved conflict, and mature memory-backend delete APIs (Mem0's dry-run delete-by-user, Weaviate/Pinecone delete-by-ID) are already in place as the raw material this architecture needs.
+
+## Skill Angle
+Given a description of an agent's memory architecture and the categories of decisions it makes, draft a classification map (working-memory vs. decision-record per category), a tiered-retention policy (TTL windows, what survives an erasure request), and flag any category whose legal basis is unclear — a one-shot compliance-architecture design aid, distinct from the always-on classifier and scheduler.
+
+## MVP Sketch
+A wrapper around Mem0 that tags every write at creation as `working` or `decision` (via a rule set: any write preceding or justifying an action gated by a "high-risk" flag is `decision`), auto-expires `working` entries on a 90-day TTL, and redacts PII from a `decision` record (keeping the rationale) instead of deleting it outright on an Art. 17 request. Experiment: simulate one erasure request against a seeded agent that previously made a flagged high-risk recommendation; verify conversational PII is gone but the decision rationale, timestamp, and model version survive intact and retrievable. 3-4 weeks for 1-2 people.
+
+## Risks & Open Questions
+- The actual legal line between "must retain" and "must delete" needs validation with EU counsel, not assumed from vendor blog posts.
+- A regulator could rule that even redacted decision records remain personal data subject to erasure, undercutting the whole architecture.
+- Mem0, Letta, or Zep could ship native tiered retention first, since they already control both the write path and the delete path.
+- Evidence base is entirely vendor/practitioner blogs, not case law or a DPA ruling — the urgency itself should be sanity-checked before committing real engineering time.
