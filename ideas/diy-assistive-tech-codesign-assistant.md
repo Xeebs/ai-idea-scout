@@ -1,6 +1,6 @@
 # Co-Maker: An LLM-Guided DIY Assistive-Tech Design Assistant for Disabled Makers
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-13
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-13-applied-ai-for-underserved-domains.md · P4
