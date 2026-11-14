@@ -1,6 +1,6 @@
 # Dead Pipeline Alarm: A Zero-Score Health Check for Production Eval Pipelines
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 57: evidence density — ≥2 independent threads, the triggering dev.to post corroborated independently by gorelik.net's "When your LLM pipeline silently returns zero" and tianpan.co's on-call postmortem, all three describing the same silent zero-score failure)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 57: evidence density — ≥2 independent threads, the triggering dev.to post corroborated independently by gorelik.net's "When your LLM pipeline silently returns zero" and tianpan.co's on-call postmortem, all three describing the same silent zero-score failure)
 - **Date**: 2026-11-13
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-13-llm-evaluation-observability.md · P5
