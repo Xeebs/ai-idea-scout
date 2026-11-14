@@ -1,6 +1,6 @@
 # Test Rig: A Unified Mock-Transport + Sequence-Assertion Testing Framework for Agent Tool Calls
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 56: evidence density — ≥2 independent threads)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 56: evidence density — ≥2 independent threads; published 2026-11-14 cycle 119)
 - **Date**: 2026-11-13
 - **Topic**: Tool use & MCP ecosystem
 - **Source**: research/2026-11-13-tool-use-mcp-ecosystem-2.md · P2
