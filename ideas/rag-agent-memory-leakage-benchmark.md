@@ -1,6 +1,6 @@
 # MemLeak Bench: Separating Retrieval Leakage from Agent-Memory Leakage
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-11
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-11-rag-techniques.md · P8
