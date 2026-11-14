@@ -73,3 +73,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-14 | technical-content-guardrail-false-positive-reducer | A drop-in classifier that stops safety guardrails from flagging "kill this process" as violence | AI safety & guardrails in production | has-skill: yes |
 | 2026-11-14 | humanitarian-offline-ai-deployment-toolkit | Shared model-packaging/sync/inference plumbing so the next SHIFA or VectorCam doesn't re-engineer offline deployment from scratch | Applied AI for underserved domains | has-skill: yes |
 | 2026-11-14 | voice-agent-midsentence-intent-tagger | A bundled intent/dialog-act/PII/safety streaming tagger so a voice agent can act before the speaker finishes talking | Agentic AI & autonomous agents | has-skill: yes |
+| 2026-11-14 | agent-sandbox-live-delegation-inspector | Per-agent sandboxed delegation with live step-in inspection instead of all-or-nothing autonomy | Multi-agent architectures | has-skill: yes |
