@@ -1,6 +1,6 @@
 # FieldPack: A Reusable Offline-Deployment Toolkit for Humanitarian AI Across Problem Domains
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-12
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-12-applied-ai-for-underserved-domains.md · P8
