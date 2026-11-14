@@ -1,6 +1,6 @@
 # Budget Gate: An Opt-In, Provenance-Tracked RAG Escalation Governance Layer
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING
 - **Date**: 2026-11-13
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-13-rag-techniques-ii.md · P1

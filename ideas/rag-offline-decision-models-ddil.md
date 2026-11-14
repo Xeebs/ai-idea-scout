@@ -1,6 +1,6 @@
 # Offline RAG Gatekeeper: Sub-1B CPU Decision Models for Air-Gapped Retrieval
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING
 - **Date**: 2026-11-11
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-11-rag-techniques.md · P7
