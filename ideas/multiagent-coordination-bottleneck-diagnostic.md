@@ -1,6 +1,6 @@
 # Bottleneck Watch: A Runtime Coordination-Overhead Diagnostic for Scaling Multi-Agent Stacks
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING (promoted 2026-11-14 cycle 72: recurrence — the same ~multi-agent coordination-overhead/bureaucracy-collapse gap resurfaced independently in the 2026-11-14 digest (research/2026-11-14-agentic-ai-autonomous-agents.md, P5), a second cycle's worth of signal on the same gap)
 - **Date**: 2026-11-12
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-12-multi-agent-architectures-iii.md · P5
