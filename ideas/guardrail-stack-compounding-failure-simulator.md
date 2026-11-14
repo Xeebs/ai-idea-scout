@@ -1,6 +1,6 @@
 # Stack Math: A Compounding-Failure Simulator for Layered Guardrail Pipelines
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-12
 - **Topic**: AI safety & guardrails in production
 - **Source**: research/2026-11-12-ai-safety-guardrails-production.md · P7

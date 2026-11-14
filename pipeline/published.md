@@ -69,3 +69,4 @@ One row per idea promoted all the way to a public writeup. Written and maintaine
 | 2026-11-13 | mcp-dependency-drift-auditor | Five teams independently built MCP rug-pull detectors in 30 days with zero consolidated winner | Tool use & MCP ecosystem | no |
 | 2026-11-13 | agent-memory-write-gate | A pre-commit validation firewall that catches a poisoned or contradictory fact before it ever lands in agent long-term memory | Agentic AI & autonomous agents | has-skill: no |
 | 2026-11-14 | mcp-tool-selection-eval-harness | A CI-gated scenario harness that catches invisible tool-routing regressions no per-tool unit test can see | Tool use & MCP ecosystem | has-skill: yes |
+| 2026-11-14 | guardrail-stack-compounding-failure-simulator | Monte Carlo simulation of real measured per-layer accuracy to compute actual end-to-end stacked-guardrail reliability instead of a blog-post rule of thumb | AI safety & guardrails in production | has-skill: yes |
