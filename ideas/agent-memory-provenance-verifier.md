@@ -1,6 +1,6 @@
 # Proof of Recall: A Structural Verifier for Claimed Agent Memory Authenticity
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING
 - **Date**: 2026-11-12
 - **Topic**: Context engineering & memory
 - **Source**: research/2026-11-12-context-engineering-and-memory.md · P6

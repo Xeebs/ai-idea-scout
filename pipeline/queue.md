@@ -113,7 +113,7 @@ Format: `- [STATUS] <topic>` — STATUS ∈ UNWORKED | IN_PROGRESS | DONE | FAIL
 ## Rotation — pass 9 (generated 2026-11-14)
 
 - [DONE] Agentic AI & autonomous agents — dedup note cycle 80: `research/2026-11-14-agentic-ai-autonomous-agents.md` already fully processed today as cycle 72 (same digest, same 4 ideas/INDEX appends); Phases 1-3 skipped as pure duplicates, cycle only ran Phase 4 (skill synthesis) + Phase 5 (publish) against the shared backlog
-- [UNWORKED] Multi-agent architectures
+- [DONE] Multi-agent architectures — dedup note cycle 81: `research/2026-11-14-multi-agent-architectures.md` already fully processed today as cycle 73 (same digest, same INDEX appends incl. the AgentLeak P8 recurrence promotion); Phases 1-3 skipped as pure duplicates, cycle only ran Phase 4 (skill synthesis — 3 skills: local-omni-model-cascade-replacement, shared-voice-loop-daemon-protocol, usage-policy-guardrail-drift-detector) + Phase 5 (publish — agent-memory-provenance-verifier) against the shared backlog. Same-day queue-regen collision bug recurring (see memory note), not yet fixed at the source.
 - [UNWORKED] RAG techniques
 - [UNWORKED] Context engineering & memory
 - [UNWORKED] Tool use & MCP ecosystem
