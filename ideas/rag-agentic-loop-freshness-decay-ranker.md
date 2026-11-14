@@ -1,6 +1,6 @@
 # Stay Current: A Freshness-Decay Hybrid Ranker for Multi-Step Agentic Retrieval
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED (published 2026-11-14 cycle 79, see published/rag-agentic-loop-freshness-decay-ranker.md)
 - **Date**: 2026-11-13
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-13-rag-techniques.md · P4

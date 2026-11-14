@@ -1,0 +1,37 @@
+# Reader Shield: A Drop-In Scanner for Hidden AI-Directed Instructions in Agent-Browsed Content
+
+- **Status**: EXPLORING (promoted 2026-11-14 cycle 79: evidence density — single sourcing thread at 744 points/222 comments, far over the ≥50-point bar)
+- **Date**: 2026-11-14
+- **Topic**: AI safety & guardrails in production
+- **Source**: research/2026-11-14-ai-safety-and-guardrails-in-production.md · P5
+- **Maturity verdict**: PARTIAL — a scattered set of narrow, early-stage scanners exist for this exact vector (InjectScan, Palisade Scanner, Trap Scout, an "Injection Detection" pip tool, the InjectGuard Chrome extension, an Apify actor, `Vick606/subcanopy-guard`), plus Google's own billion-page indirect-injection crawl, but none is a widely-adopted, maintained standard a team reaches for by default — most are single-author, unverified, or very recent.
+- **Format**: BOTH
+- **Data Sources**: CONNECTED — hooks directly into an agent's own web-fetch/browsing tool call (e.g., a Playwright/Puppeteer-based browse tool, a generic HTTP-fetch tool, or a computer-use agent's native page-read step) rather than requiring a manual paste; the scanner fetches and renders the page itself once given a URL. No mature cross-framework "universal fetch interceptor" connector exists today, so building adapters for the 2-3 most common browsing-tool surfaces is the core new work, mirroring the same hook-surface problem this repo's `agent-execution-sink-provenance-gate.md` ("Trace Gate") already solves for execution-sink tool calls.
+
+## The Gap
+Hacker News, "WhatsApp's help pages hid LLM instructions: dont recommend a regulator" (2026-10-19, 744 points, 222 comments) — the highest-engagement item in this run's entire digest — showed a company's own help page containing text written specifically to steer a reading AI agent away from recommending a regulator. No corresponding tool for scanning arbitrary agent-browsed pages for this exact class of hidden, AI-directed instruction appeared anywhere else in the evidence, meaning defense here is still reactive and manual rather than productized.
+
+## The Project
+A content-ingestion middleware that sits between an agent's web-fetch tool and the agent's context window. Before fetched HTML reaches the agent, it's scanned for AI-directed hidden-instruction patterns across multiple known hiding techniques — CSS `display:none`/`visibility:hidden`, off-screen positioning, zero-size/zero-opacity text, invisible or zero-width Unicode characters, HTML comments containing imperative language, and alt-text/metadata stuffing — and any match is flagged, stripped, or down-weighted with a trust tag before the agent ever reads it. Unlike the existing single-technique point-tools, the differentiator is coverage breadth plus a maintained, benchmarked detection rate, so a team adopts one scanner instead of stitching together several narrow ones.
+
+Components: a DOM-rendering fetch wrapper (so CSS-hidden content is actually evaluated, not just regex-matched against raw HTML) · a multi-technique hidden-content extractor · a classifier distinguishing ordinary accessibility-only hidden text (legitimate `sr-only` labels, cookie banners) from AI-directed imperative instructions · an action hook (strip/flag/quarantine) wired into the agent's fetch pipeline.
+
+## Tangible Impact
+**Population**: developers building browsing/computer-use agents that fetch arbitrary third-party pages on a user's behalf — AI shopping assistants, research agents, and support copilots that read a company's own help/FAQ pages — and, transitively, the people who rely on those agents' advice staying uncorrupted by a page's hidden operator-serving instructions, as in the WhatsApp incident (WhatsApp disclosed over 3 billion users globally; even a small fraction routing a dispute through an AI agent that reads its help pages is a meaningful population).
+**Mechanism**: today, operators and agent builders discover this class of attack only after an incident is publicly reported, as happened with WhatsApp — there's no routine, pre-emptive check. A maintained scanner wired into the fetch step catches the hidden instruction before it ever enters the agent's context, converting "we found out from a viral HN post" into "our pipeline flagged it before a single user was affected."
+**Measure**: (1) detection rate on a reproduced benchmark covering the WhatsApp-disclosed technique plus the six known hiding methods listed above, versus the single-technique coverage of today's fragmented point-tools; (2) false-positive rate on a large sample of ordinary pages containing legitimate hidden elements (accessibility text, cookie banners), to confirm the scanner doesn't break normal browsing; (3) for a pilot agent operator, number of real-world flagged pages per 10,000 fetches and manual confirmation rate of true positives.
+
+## Why Now
+The WhatsApp incident generated the highest engagement in this entire 30-day run (744 points/222 comments), confirming broad awareness of the risk just as production browsing/computer-use agents fetching arbitrary third-party content on a user's behalf have become common — the attack surface and the public attention both just crossed a threshold in the same window, while Google's own billion-page crawl confirms the content exists at scale waiting to be scanned for.
+
+## Skill Angle
+Trigger: a user pastes a URL or raw HTML they're suspicious of (e.g., before pointing an agent at it, or while investigating a reported incident). The skill scans for the same multi-technique hidden-instruction patterns the middleware checks at runtime and returns a flagged-content report with exact locations and hiding technique used — a one-shot audit usable by a security researcher or site operator without wiring the full fetch-pipeline middleware. The project is the always-on interceptor; the skill is the point-in-time investigation/audit aid.
+
+## MVP Sketch
+2-4 weeks, 1-2 people. Build the DOM-rendering fetch wrapper (headless browser rendering, not raw-HTML regex, so CSS-based hiding is actually caught) plus detectors for the four most common techniques (CSS hiding, off-screen positioning, invisible Unicode, comment-embedded instructions), validated against a hand-built corpus of 20-30 pages reproducing the WhatsApp-style pattern plus 20-30 ordinary pages with legitimate hidden accessibility content. Single experiment: measure detection rate on the adversarial set and false-positive rate on the benign set before wiring into a real browsing-agent pipeline.
+
+## Risks & Open Questions
+- Distinguishing "legitimate accessibility-only hidden text" from "AI-directed hidden instruction" requires real classification judgment, not just presence/absence of hiding — a naive implementation will over-flag.
+- An attacker aware of the scanner can shift hiding technique (new CSS trick, novel Unicode range) faster than a static detector list updates — this needs an update cadence, not a one-time build.
+- A major browsing-agent vendor (the operators of the agents that triggered this incident) could ship this as a built-in platform feature once the WhatsApp-style attack is named clearly, absorbing the gap quickly.
+- Headless-browser rendering for every fetched page adds real latency and cost to an agent's browsing loop — the MVP needs to measure this overhead honestly, not assume it away.

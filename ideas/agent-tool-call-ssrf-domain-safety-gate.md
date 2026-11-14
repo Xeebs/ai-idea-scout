@@ -1,0 +1,37 @@
+# Fetch Guard: A Combined SSRF and Semantic Domain-Safety Gate for Agent Tool Calls
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-14
+- **Topic**: AI safety & guardrails in production
+- **Source**: research/2026-11-14-ai-safety-and-guardrails-in-production.md · P9
+- **Maturity verdict**: PARTIAL — several small libraries exist for SSRF-guarding agent tool calls (`agentguard`, `synaptic-middleware`'s `ssrf_guard.rs`, Warlock.js's outbound-policy guard, `yoker`'s web guardrail), but none combines SSRF defense with semantic domain-safety (off-topic/abusive-domain) classification, and maintenance/adoption of these point-solutions is unverified and likely low — the SATURATED bar of multiple well-resourced implementations covering the full combined pattern isn't met.
+- **Format**: BOTH
+- **Data Sources**: CONNECTED — wraps the agent framework's own fetch/tool-call dispatch point (the same class of hook surface this repo's `agent-execution-sink-provenance-gate.md` and `agent-individual-policy-approval-middleware.md` use for other tool-call gates), intercepting any outbound HTTP request before it leaves the process. For the abuse/malware half of domain-safety, it connects to an existing, mature threat-intel API (e.g., Google Safe Browsing API, a free-tier URL-reputation service) rather than building a denylist from scratch; the off-topic/relevance half has no existing API to read from, so a lightweight classifier comparing the target domain/URL against the agent's declared task scope is new work.
+
+## The Gap
+GitHub PR `saumyashah0510/Multi-Agent-Research-System-Architecture` #90 (2026-11-05) implements SSRF defense and "semantic domain safety" (off-topic/abusive-domain filtering) from scratch inside one project's own PDF/web-retrieval pipeline, addressing malicious prompt injections, off-topic query abuse, and SSRF together in one feature. None of the guard frameworks named elsewhere in this digest (Llama Guard, NeMo Guardrails, Presidio) cover SSRF or tool-call-level network safety, so this layer is still being hand-rolled per project with no shared library.
+
+## The Project
+A middleware wrapping any fetch-type agent tool call (web retrieval, PDF download, API calls to a model-chosen URL) that performs two checks before the request leaves the process: (1) SSRF defense — resolve the target hostname, check the resolved IP against private/internal network ranges (RFC 1918, link-local, cloud metadata endpoints), and re-check on every redirect hop rather than trusting the initial URL; (2) semantic domain-safety — classify whether the target domain is topically relevant to the agent's declared task scope and whether it appears on a maintained abuse/malware reputation list. Either check failing blocks or quarantines the request before a single byte of the target's response reaches the agent. The combined gate — not either check alone — is the differentiator: an SSRF-only guard lets an agent happily fetch a legitimate-looking but off-topic or abusive public domain, and a domain-reputation-only check doesn't stop an agent reaching an internal service via a public-looking redirect chain.
+
+Components: hostname-resolution-and-redirect-chain SSRF checker · a threat-intel API connector for abuse/malware reputation · a lightweight task-scope relevance classifier · a configurable allow/deny/quarantine policy with an audit log of every blocked fetch.
+
+## Tangible Impact
+**Population**: developers building agentic pipelines (research assistants, RAG ingestion pipelines, support agents) whose tools fetch external content at a URL the agent itself chooses mid-run, rather than a human-pre-vetted source — exactly the research-pipeline shape evidenced by the sourcing PR, a category that includes any agent doing open-web or open-PDF retrieval as part of its own reasoning loop.
+**Mechanism**: today a team either adopts a narrow SSRF-only point-solution with no domain-relevance awareness, or (as the sourcing PR shows) spends real engineering time hand-building both checks from scratch per project, with no shared library to reach for. A single drop-in middleware converts that from a multi-day custom implementation into wrapping one existing fetch tool call, while closing the specific gap where an agent's tool call can reach an internal service or an off-topic/abusive domain that neither half of the point-solutions alone would catch.
+**Measure**: (1) SSRF block rate on a reproduced test suite of internal-IP and redirect-chain SSRF payloads (target: 100%, matching the narrow point-solutions' own claims); (2) domain-safety classification accuracy — detection rate and false-positive rate on a labeled test set mixing legitimate-but-off-topic domains, known abuse/malware domains, and genuinely relevant fetch targets; (3) time to wire the combined gate into an existing fetch-type tool (target: under an hour, versus the multi-day from-scratch implementation evidenced in the sourcing PR).
+
+## Why Now
+Agentic research and RAG-ingestion pipelines that let the model itself choose which URL to fetch mid-run have become common enough in the last 30 days that a real team (the sourcing PR) just shipped a from-scratch version of exactly this combined check — the attack surface and the engineering pattern it motivates are both live evidence, not speculation, and the underlying building blocks (SSRF-checking libraries, domain-reputation APIs) are all mature today.
+
+## Skill Angle
+Trigger: a user describes an agent's declared task scope and lists which of its tools fetch external content. The skill audits which fetch-type tool calls currently lack SSRF/domain-safety gating and drafts the allow/deny domain policy and SSRF check configuration for each — the same separable design decision the runtime middleware then enforces mechanically, usable as a one-shot security review before committing to the full integration.
+
+## MVP Sketch
+2-3 weeks, 1-2 people. Build the SSRF checker first (hostname resolution, private-range blocking, redirect-chain re-checking — the better-understood half), wire in one free-tier threat-intel API for the abuse/malware check, and build a minimal relevance classifier (embedding similarity between the agent's task description and the target page's title/meta-description) for the off-topic half. Single experiment: reproduce the sourcing PR's own threat model (SSRF during PDF retrieval, off-topic query abuse) as a test suite and confirm the combined gate catches both classes that a single-purpose point-solution would miss one half of.
+
+## Risks & Open Questions
+- The off-topic/relevance classifier is the least mature half of this idea — no existing API to lean on means its accuracy and false-positive rate are unproven until built and tested, unlike the well-understood SSRF-checking half.
+- An agent framework vendor could ship SSRF-checking as a built-in fetch-tool default (the narrow point-solutions suggest some already are), narrowing this project's unique value to the combined-check differentiator specifically.
+- Redirect-chain re-checking adds latency to every fetch; the MVP needs to measure this overhead honestly against the agent's existing retrieval-step budget.
+- Overlaps conceptually with this index's "Trace Gate" (execution-sink provenance gating) — needs explicit positioning as network-egress-safety-for-fetch-tools specifically, not goal-hijack-into-execution-sinks, to avoid reading as redundant.
