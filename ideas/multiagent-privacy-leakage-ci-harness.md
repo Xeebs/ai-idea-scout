@@ -1,6 +1,6 @@
 # LeakCheck CI: A Maintained, CI-Integrated Privacy-Leakage Regression Harness for Multi-Agent Systems
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING
 - **Date**: 2026-11-13
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-13-multi-agent-architectures.md · P8
