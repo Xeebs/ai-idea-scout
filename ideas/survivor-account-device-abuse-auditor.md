@@ -1,6 +1,6 @@
 # Clear Signal: A Self-Service Smart-Device and Cloud-Account Abuse Auditor for DV Survivors
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 61: evidence density — ≥2 independent threads, Refuge UK's reporting on rising wearable/cloud-linked abuse cases and the independent SSWR 2026 conference study finding advocates' only taught strategy is "turn off location," both confirming no automated cross-account audit tool exists, only manual checklists)
+- **Status**: PUBLISHED — [writeup](../published/survivor-account-device-abuse-auditor.md) (promoted 2026-11-13 cycle 61: evidence density — ≥2 independent threads, Refuge UK's reporting on rising wearable/cloud-linked abuse cases and the independent SSWR 2026 conference study finding advocates' only taught strategy is "turn off location," both confirming no automated cross-account audit tool exists, only manual checklists)
 - **Date**: 2026-11-13
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-13-applied-ai-underserved-domains-6th.md · P3
