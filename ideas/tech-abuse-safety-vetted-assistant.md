@@ -1,6 +1,6 @@
 # Vetted Answer: A Safety-Evaluated Assistant and Advocate Review Aid for Tech-Facilitated-Abuse Questions
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 61: evidence density — 3 independent sources, the USENIX Security 2026 paper (Prakash et al.), Refuge's narrow-scope live chatbot, and Chayn's discontinued 3-year "Little Window" pilot, all confirming only narrow/unevaluated/discontinued attempts exist)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 61: evidence density — 3 independent sources, the USENIX Security 2026 paper (Prakash et al.), Refuge's narrow-scope live chatbot, and Chayn's discontinued 3-year "Little Window" pilot, all confirming only narrow/unevaluated/discontinued attempts exist; published cycle 129)
 - **Date**: 2026-11-13
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-13-applied-ai-underserved-domains-6th.md · P4
