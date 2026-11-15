@@ -1,6 +1,6 @@
 # Signing Off: A Deaf-Led Co-Governance Registry for AI ASL Interpreting Vendors
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 61: evidence density — ≥2 independent threads, the Deaf/HoH community survey naming "hearing people profiting / few Deaf people leading" as a top concern, Nagish's own CEO framing the rural-access pitch, Sorenson/Silence Speaks shipping avatars the same way, and r/ASLinterpreters pushback, all converging on the same ungoverned-rollout gap)
+- **Status**: PUBLISHED (promoted to EXPLORING 2026-11-13 cycle 61: evidence density — ≥2 independent threads, the Deaf/HoH community survey naming "hearing people profiting / few Deaf people leading" as a top concern, Nagish's own CEO framing the rural-access pitch, Sorenson/Silence Speaks shipping avatars the same way, and r/ASLinterpreters pushback, all converging on the same ungoverned-rollout gap; published 2026-11-14 cycle 125)
 - **Date**: 2026-11-13
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-13-applied-ai-underserved-domains-6th.md · P1
