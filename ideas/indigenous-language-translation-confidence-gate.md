@@ -1,6 +1,6 @@
 # No Entiendo, Flagged: A Confidence and Escalation Gate for Indigenous-Language AI Translation
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 61: evidence density — ≥2 independent threads, EdSource's reporting on Salinas Valley Mixteco/Zapotec parents, the grupoanimal.mx chatbot-test report documenting "no entiendo" failures, the Middlebury Institute piece on interpreter-coverage gaps, and academic BLEU data confirming inconsistent MT quality, all converging on the same translation-quality gap)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 61: evidence density — ≥2 independent threads, EdSource's reporting on Salinas Valley Mixteco/Zapotec parents, the grupoanimal.mx chatbot-test report documenting "no entiendo" failures, the Middlebury Institute piece on interpreter-coverage gaps, and academic BLEU data confirming inconsistent MT quality, all converging on the same translation-quality gap)
 - **Date**: 2026-11-13
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-13-applied-ai-underserved-domains-6th.md · P6
