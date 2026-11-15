@@ -1,6 +1,6 @@
 # Common Board: An Open Blackboard Protocol Spec for Cross-Framework Multi-Agent Shared State
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 63: evidence density — 3 independent infra-vendor sources within the digest, sentra.app, Cockroach Labs, and Blck Alpaca, all converging on the same no-standardized-shared-memory gap)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 63: evidence density — 3 independent infra-vendor sources within the digest, sentra.app, Cockroach Labs, and Blck Alpaca, all converging on the same no-standardized-shared-memory gap)
 - **Date**: 2026-11-13
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-13-multi-agent-architectures.md · P4
