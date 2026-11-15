@@ -1,6 +1,6 @@
 # MemBench Commons: A Practitioner-Facing, Cross-Backend Test Harness for Agent Memory
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-13
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-13-agentic-ai-autonomous-agents-ii.md · P3
