@@ -1,6 +1,6 @@
 # Leak Detector: Exposing Silent LLM Eval-Telemetry Loss Inside Generic APM Pipelines
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 67: evidence density — ≥2 independent threads found in gap analysis, the same silent-truncation gap independently documented across Langfuse, Groundcover, Lumigo, Braintrust, and a live Vercel AI SDK GitHub issue, none generalized)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 67: evidence density — ≥2 independent threads found in gap analysis, the same silent-truncation gap independently documented across Langfuse, Groundcover, Lumigo, Braintrust, and a live Vercel AI SDK GitHub issue, none generalized)
 - **Date**: 2026-11-13
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-13-llm-evaluation-observability-ii.md · P4
