@@ -1,0 +1,37 @@
+# Preflight: A Local-Model Request/Response Quality Gate for Expensive Cloud Agent Calls
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-14
+- **Topic**: Small & local models
+- **Source**: research/2026-11-14-small-local-models.md · P6
+- **Maturity verdict**: PARTIAL — "Local Preflight for Cloud Agents: Small Models as Quality Gates for Codex CLI" (codex.danielvaughan.com) frames exactly this pattern for one author's Codex CLI workflow. A `local-model-suitability-mcp` server returns LOCAL/CLOUD/EITHER routing verdicts per call, and PyPI packages `llm-preflight`/`model-preflight` check model/prompt changes at development time — but no package or product does live, per-request screening of a request/response pair before and after it reaches a cloud agent call, which is the actual pattern described.
+- **Format**: BOTH — the live request/response screening middleware is persistent infrastructure sitting in the call path; drafting the specific preflight rule set for a given coding-agent workflow is a separable, one-time design task.
+- **Data Sources**: CONNECTED — wraps the existing cloud agent CLI/SDK call path (Codex CLI, Claude Code, Cursor's agent mode, or a raw OpenAI/Anthropic API call) via a request/response interceptor hook, and runs the local screening model against the team's existing local inference server (Ollama/llama.cpp); both integration points — hooking a CLI's call lifecycle and running a local model — are mature today. No external data is pasted; the gate screens calls the workflow is already making.
+
+## The Project
+A middleware that wraps a cloud coding-agent call (e.g. Codex CLI, Claude Code) with a cheap local small model acting as a two-sided gate: on the way out, it screens the outgoing request for signs it's likely to fail or waste the call — missing required context, an underspecified instruction, a request that duplicates one already answered in this session — and can hold or flag it before it's sent; on the way back, it screens the cloud response for signs it's obviously wrong before the calling workflow trusts it — code that references an undefined symbol, a response that ignored a required tool call, output that doesn't match the expected format. This differs from this digest's separate confidence-escalation-routing idea: that project decides *which model answers* a request based on confidence in the local model's own output; this one assumes the cloud call is necessary and instead polices the *quality of what goes in and comes out* of that call, catching wasted spend and bad trust regardless of routing.
+
+Components: a pre-send checklist scorer (local model flags missing-context/underspecified/duplicate requests against a configurable rubric); a post-receive sanity checker (local model validates response against structural expectations — format, referenced symbols, required-tool-use); a hold/flag/pass decision with full logging; adapters for common coding-agent CLIs' call-interception points.
+
+## The Gap
+Only one blog post describing a single author's bespoke implementation was found for this exact pattern; the two adjacent PyPI packages check model or prompt *changes* during development, not live per-call screening of a request/response pair in production use. No general-purpose, tool-agnostic "local gate" middleware surfaced despite the pattern being specifically named and described as valuable by its one known implementer.
+
+## Tangible Impact
+**Population**: Individual developers and small teams using cloud coding-agent CLIs (Codex CLI, Claude Code, Cursor agent mode) who pay per-call or per-token for cloud agent requests and currently have no way to catch a doomed or wasteful call — one missing a file path, repeating a question already answered, or returning code that plainly won't compile — before it burns cloud spend or gets trusted downstream. This is a subset of the same population generating router/cascade cost-cutting discussion elsewhere in this digest, specifically developers running agentic CLI tools daily enough that per-call cost and silent bad-output risk both compound.
+**Mechanism**: Today a malformed or underspecified request simply gets sent to the cloud agent, often producing a response that's wrong in a way that isn't flagged as an error — the developer only discovers it when the generated code fails to run or the task clearly wasn't completed. A free local screening pass catches a share of these before send (saving the call entirely) and after receipt (catching bad output before it's acted on), without requiring the developer to change how they use the cloud tool.
+**Measure**: (1) percentage of outgoing requests the gate correctly flags as doomed/wasteful, validated against a labeled set of real past calls known to have failed; (2) dollars saved from calls the gate holds before send, on a team's own call history; (3) downstream task success-rate improvement when the gate's post-receive check is enabled vs. disabled on the same workload.
+
+## Why Now
+Cloud agent CLIs (Codex CLI, Claude Code) have become daily-driver tools for a large share of developers in 2026, making per-call cost and silent bad-output risk a recurring, measurable cost rather than a theoretical one; local small models are now cheap and fast enough to run a sub-second screening pass on every call without adding meaningful latency to an already multi-second cloud round trip.
+
+## Skill Angle
+Trigger: a developer has a specific coding-agent CLI workflow and wants a preflight rule set designed before building any middleware. Inputs: a description of the workflow (which CLI, what kinds of requests typically fail or waste calls, what a "bad response" looks like for this codebase). Output: a drafted checklist of pre-send checks and post-receive sanity checks tailored to that workflow, with example pass/fail cases — a one-time design task, separate from running the actual gate.
+
+## MVP Sketch
+A CLI wrapper around Codex CLI (or a generic OpenAI-compatible agent call) that routes each outgoing request through a local Ollama model scoring it against a configurable checklist (context completeness, duplicate-question detection) before send, and scores the returned response against a structural checklist (does referenced code compile/parse, was a required tool actually called) before marking it trusted. Experiment: replay a labeled set of 30–50 real past Codex CLI calls (known good vs. known wasted/bad) through the gate and measure precision/recall on both the pre-send and post-receive checks. 2–3 weeks, 1 person.
+
+## Risks & Open Questions
+- The one known implementer could generalize their own tool first, or a CLI vendor (OpenAI, Anthropic) could ship an equivalent built-in preflight check, closing this gap from the platform side.
+- A local model screening another model's output risks the same "confidence scores lie" calibration problem seen elsewhere in agent-escalation research — the structural/format checks likely need to carry more weight than the local model's own judgment calls.
+- False holds on legitimate requests could add friction that outweighs the savings, especially before the rubric is calibrated to a specific team's actual failure patterns.
+- Scope must stay distinct from this digest's confidence-escalation-routing idea — blurring "should this reach the cloud at all" with "is this specific cloud call well-formed and trustworthy" risks building a redundant, muddled tool.
