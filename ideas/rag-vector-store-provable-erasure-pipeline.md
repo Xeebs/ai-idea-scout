@@ -1,6 +1,6 @@
 # Erasure Proof: A Cross-Backend Provable Deletion Pipeline for Vector Stores
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-13
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-13-rag-techniques-ii.md · P4
