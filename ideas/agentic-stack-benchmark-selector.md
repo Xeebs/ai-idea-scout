@@ -1,6 +1,6 @@
 # Stack Pick: An Evaluated, Scenario-Based Decision Tool for the Agentic Framework/Model/Tool-Calling Stack
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-13
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-13-agentic-ai-autonomous-agents-ii.md · P6
