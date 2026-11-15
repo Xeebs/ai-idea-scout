@@ -1,6 +1,6 @@
 # Breadcrumb: Correlation-ID and Heartbeat Tracing That Pinpoints Which Agent Handoff Broke a Multi-Agent Run
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 63: evidence density — 3 independent sources within the digest, a dev.to guide, a getmaxim.ai practitioner report, and a separate dev.to roundup all naming the same cross-agent correlation/heartbeat gap)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 63: evidence density — 3 independent sources within the digest, a dev.to guide, a getmaxim.ai practitioner report, and a separate dev.to roundup all naming the same cross-agent correlation/heartbeat gap)
 - **Date**: 2026-11-13
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-13-multi-agent-architectures.md · P1
