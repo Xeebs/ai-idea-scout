@@ -1,6 +1,6 @@
 # Cohort Watch: A Per-Segment Regression Gate for Distilled Small Models
 
-- **Status**: EXPLORING (promoted 2026-11-14 cycle 78: evidence density — ≥2 independent sources within the digest, FutureAGI glossary content, a Redwerk blog post, and Predibase's distillation playbook, all independently flagging cohort-level eval regression as unaddressed, with zero GitHub/benchmark tooling found)
+- **Status**: PUBLISHED (promoted 2026-11-14 cycle 78: evidence density — ≥2 independent sources within the digest, FutureAGI glossary content, a Redwerk blog post, and Predibase's distillation playbook, all independently flagging cohort-level eval regression as unaddressed, with zero GitHub/benchmark tooling found)
 - **Date**: 2026-11-14
 - **Topic**: Small & local models
 - **Source**: research/2026-11-14-small-and-local-models.md · P3
