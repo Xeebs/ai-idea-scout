@@ -1,6 +1,6 @@
 # VoiceStep: A Combined Voice+Vision+Tool-Use Multi-Step Benchmark Harness
 
-- **Status**: EXPLORING (promoted 2026-11-14 cycle 70: evidence density — ≥2 independent threads, Agent-X (ICLR 2026) and AgentVista independently document the same low multi-step-success/voice-underrepresentation gap, corroborated by OmniGAIA, MM-ToolSandbox, and TOBench)
+- **Status**: PUBLISHED (promoted 2026-11-14 cycle 70: evidence density — ≥2 independent threads, Agent-X (ICLR 2026) and AgentVista independently document the same low multi-step-success/voice-underrepresentation gap, corroborated by OmniGAIA, MM-ToolSandbox, and TOBench)
 - **Date**: 2026-11-14
 - **Topic**: Voice & multimodal agents
 - **Source**: research/2026-11-14-voice-multimodal-agents.md · P9
