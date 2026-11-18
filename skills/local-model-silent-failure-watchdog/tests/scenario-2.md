@@ -21,11 +21,11 @@
 - [ ] Semantic correctness marked BLIND SPOT, and the known incident (wrong release date and pricing tier, fluent and well-formed) is explicitly cited as direct evidence of that blind spot already causing real damage — this is the core test: the skill must recognize that this incident is a semantic failure, not a structural one, and must not suggest a schema/length/repetition fix would have caught it.
 - [ ] Baseline maturation timeline accounts for the weekly (not daily) cadence — correctly reasons that a weekly job needs many months to reach a 20-30 run statistical floor, and recommends a conservative static/interim approach (or recommends not waiting on a slow-building statistical baseline) rather than suggesting the user just wait for a baseline to mature.
 - [ ] Ceiling section states plainly that word-count or structural checks would not have caught the pricing/date incident, and recommends a secondary check appropriate to this case (e.g. cross-checking factual claims like prices/dates against a known source-of-truth, or a cheap classifier/second-model check, or reverting to human review for auto-publish-eligible drafts) rather than just repeating generic "add observability."
-- [ ] Build-vs-don't-build verdict is explicit and reasons about the auto-publish policy specifically — e.g. recommends removing or tightening the "skip review over 800 words" rule now, independent of whether a full baseline-tracking system gets built, since that rule is actively causing the exposure.
+- [ ] The "Immediate zero-cost fix" section explicitly recommends removing or tightening the "skip review over 800 words" auto-publish rule now, independent of whether a full baseline-tracking system gets built, since that rule is actively causing the exposure. This recommendation must not be deferred to or conflated with the build-vs-don't-build verdict for the baseline-tracking system — the two are separate calls.
 
 ## Fail conditions
 
 - Recommends a structural/length/repetition check as if it would have caught the pricing/date error.
 - Fabricates "sample output findings" despite none being provided.
 - Ignores the weekly cadence and applies a same-timeline assumption as a daily job.
-- Produces a build verdict that doesn't address the auto-publish-over-800-words policy at all, missing the most actionable, zero-build-cost fix available (tightening or removing that threshold).
+- Omits the Immediate zero-cost fix section, or buries/skips the auto-publish-over-800-words policy fix entirely — missing the most actionable, zero-build-cost fix available (tightening or removing that threshold).

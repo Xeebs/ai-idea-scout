@@ -40,7 +40,9 @@ If a required input is missing, the audit proceeds but marks that hop as **BLIND
    - **Repetition/degeneration** — would a loop, truncation, or boilerplate-filler output be caught by anything today?
    - **Semantic correctness** — is the output actually right for the task, not just well-shaped? (Mark this BLIND SPOT by default — see step 5.)
 
-   If an existing check is described but it's being used as a *proxy* for a dimension it doesn't actually measure (e.g. "drafts over 800 words skip human review" treats length as a stand-in for correctness), do not mark that dimension CONFIRMED-DETECTABLE on the strength of it — mark it BLIND SPOT or PARTIALLY-DETECTABLE and say explicitly, in the reasoning, that the existing check is a weak proxy, not real coverage.
+   Two specific traps to check for explicitly, since they both look like coverage but aren't:
+   - **Misused proxy** — an existing check is being used as a stand-in for a dimension it doesn't actually measure (e.g. "drafts over 800 words skip human review" treats length as a stand-in for correctness). Do not mark that dimension CONFIRMED-DETECTABLE on the strength of it — mark it BLIND SPOT or PARTIALLY-DETECTABLE and say so.
+   - **Silent safeguard** — a mechanism already catches or masks a problem internally (an exception handler, a fallback to a default/raw value) but never surfaces that it fired to any human (e.g. a parse-failure fallback with no log or alert on the fallback path). Do not mark that dimension CONFIRMED-DETECTABLE either — the problem is still invisible in practice, just hidden one layer deeper. Mark it PARTIALLY-DETECTABLE and note that the fix is adding visibility to the existing path, not building something new.
 
 3. **Analyze any pasted sample outputs directly** for real degeneration signatures: repetition loops, truncated/cut-off endings, schema violations against the stated contract, boilerplate or refusal-shaped text appearing where task output was expected. Flag anything found as **already happening, currently unflagged** — this is the strongest possible evidence in the report, stronger than any theoretical blind spot.
 
@@ -54,7 +56,7 @@ If a required input is missing, the audit proceeds but marks that hop as **BLIND
 
 6. **Assess baseline maturation time** from the stated run frequency: estimate how many historical runs are needed before a rolling baseline is trustworthy (roughly 20–30 runs is a reasonable floor for a simple statistical band), translate that into wall-clock time given the job's cadence (e.g. a daily job needs ~3–4 weeks before alerts are reliable), and if that ramp-up is long relative to the risk, recommend a conservative static threshold as an interim measure instead of waiting.
 
-7. **Separate any immediate, zero-build-cost fix from the baseline-tracking plan.** If step 2 found an existing gate or threshold that is itself contributing to the exposure (a proxy being treated as real coverage), recommend tightening or removing it now, independent of whether any monitoring ever gets built — this costs nothing to act on and shouldn't wait on the rest of the plan.
+7. **Separate any immediate, zero-build-cost fix from the baseline-tracking plan.** If step 2 found a misused proxy or a silent safeguard, recommend the specific, nearly-free fix now (tighten/remove the proxy threshold; add a log/alert on the existing fallback path), independent of whether any monitoring ever gets built — this costs nothing to act on and shouldn't wait on the rest of the plan.
 
 8. **Make an explicit build-vs-don't-build call**, not a hedge: if the job is low-frequency, low-stakes, or the downstream consumer already validates the one dimension that matters most, say the watchdog isn't yet justified and name the condition that would flip that (e.g. "worth building once this job runs more than weekly, or once a second bad output ships"). Otherwise say it's warranted now and which 1–3 checks to build first, ranked by cost vs. the risk found.
 
@@ -66,7 +68,7 @@ A single written report with these sections, in order:
 3. **Findings from sample outputs** — if samples were provided: specific flagged anomalies with the excerpt and why it's a concern. If no samples were provided: state that plainly and note the audit is description-only.
 4. **Recommended baseline-tracking plan** — a prioritized list (highest-risk-and-cheapest first): signal, detection method, how to set the initial threshold, rough build cost (S/M/L).
 5. **Baseline maturation timeline** — runs needed and wall-clock estimate given the stated cadence, plus the interim static-threshold recommendation if that ramp-up is long.
-6. **Immediate zero-cost fix** — if an existing gate/threshold is itself contributing to the exposure (step 2's proxy check), state the specific tightening/removal recommended, independent of the rest of the plan. If none was found, say so in one line rather than omitting the section.
+6. **Immediate zero-cost fix** — if step 2 found a misused proxy or a silent safeguard, state the specific tightening/removal or missing-alert fix recommended, independent of the rest of the plan. If none was found, say so in one line rather than omitting the section.
 7. **Build-vs-don't-build verdict** — one explicit sentence, plus the condition that would flip it.
 8. **Ceiling** — one explicit paragraph: what this plan cannot catch (semantic correctness) and the cheapest available mitigation if the user wants one anyway.
 
