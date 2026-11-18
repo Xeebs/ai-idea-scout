@@ -1,6 +1,6 @@
 # Swap Call: An Automatic Ground-Truth-Classifier Distillation Layer for LLM-as-Judge Pipelines
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-18
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-18-llm-evaluation-observability.md · P5
