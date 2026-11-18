@@ -1,0 +1,28 @@
+# WorkLedger: An Escrow-Backed Agent Labor Marketplace Protocol
+
+Search GitHub for "agent marketplace escrow" right now and you won't find one answer — you'll find a dozen. marketclaw, moltpay, agentmart, AGORA, agentgig, spawnbook, clawhire-mcp-server, xavi-marketplace, and more, each a solo or weekend-hackathon attempt at the same idea: let one AI agent hire, pay, and trust another. Every single one sits at zero stars. The one slightly more serious attempt — a pull request adding an "EarnFi" payments-and-escrow plugin to the Hermes agent framework — is still under review, nine comments deep, and locked to that one framework. Builders clearly want this. Nobody has shipped it.
+
+## The Gap
+
+That volume of independent, near-identical zero-star repos is itself the evidence: this isn't a niche itch, it's a pattern repeating across the ecosystem because no shared answer exists. Agents are increasingly expected to act as both buyers and sellers of real work — not just tool-callers executing a human's instructions, but counterparties in their own transactions — yet every builder who wants that today is reinventing listing formats, escrow logic, and dispute handling from scratch, alone, in a weekend. The most advanced single attempt found, Hermes's EarnFi PR, is explicit about what it's going for ("connects Hermes agents to real-world work, human specialists, agent services, programmable payments and escrow-backed workflows") but it's scoped to one framework, unmerged, and nine comments is not the sound of an ecosystem converging on an answer — it's one team trying to solve it for themselves before anyone else gets there first.
+
+## The Project
+
+WorkLedger is the shared protocol none of those dozen attempts bothered to coordinate on. A seller agent — or a human-run service wrapped in an agent interface — publishes a listing: task type, price, and a deliverable spec. A buyer agent locks funds in escrow against that listing. The seller delivers. Funds release automatically against a verifiable completion check, or the transaction moves to dispute instead of just... stopping, which is where most of today's one-off attempts quietly end up. Three pieces do the real work: a listing registry for discovery, an escrow state machine built on a payment rail that already exists rather than a bespoke one (Stripe Connect handles the actual fiat movement), and a thin adapter layer so CrewAI, LangGraph, or a Hermes-style agent can all list and buy through the same API — instead of each framework growing its own incompatible silo, which is exactly the trajectory EarnFi is already on.
+
+## Tangible Impact
+
+**Population**: Solo and small-team AI agent developers who've built one narrow, genuinely useful agent capability (a specialized research, review, or extraction agent) and want to sell access to other agents/builders, but today either build bespoke escrow themselves or trust an unaudited one-off hackathon project — the exact population the dozen+ near-identical, zero-star repos found in gap analysis represent.
+**Mechanism**: WorkLedger gives any seller a standard, audited way to get paid for delivered agent work without writing payment/trust plumbing, and gives any buyer a standard way to pay without the "will this agent actually deliver" risk a bare wire transfer carries — replacing a dozen incompatible, abandoned side-projects with one protocol builders can actually plug into.
+**Measure**: (1) number of cross-framework listings transacted successfully end-to-end, compared against zero known production transactions across all existing attempts today; (2) dispute rate and median time-to-resolution; (3) seller time from publishing a listing to receiving a first real payment.
+
+## Try It
+
+A companion skill is already written at [`skills/agent-labor-marketplace-escrow-protocol/`](../skills/agent-labor-marketplace-escrow-protocol/) — *"Turns a seller's plain-language description of an AI agent service into an escrow-ready listing — price, deliverable spec, and machine-checkable acceptance criteria — that can be loaded into an agent labor marketplace / escrow protocol (e.g. WorkLedger-style, Stripe Connect-backed)."* It doesn't run escrow or move money itself — it's the drafting step before that: hand it a plain description of what your agent does, how you price it, and a couple of example deliverables, and it returns a listing precise enough that payment release could actually be checked against it automatically, flagging anything too subjective to machine-verify instead of pretending it isn't. Paste the README into any AI chat tool, or drop the folder into `~/.claude/skills/` for Claude Code.
+
+## Honest Risks
+
+The strongest reason this might not be needed: if Hermes's EarnFi PR merges and gains real traction, it could become the de facto standard inside that one popular framework and undercut the case for a separate, framework-agnostic protocol before WorkLedger gets off the ground. Dispute resolution itself is also a harder, separate problem — already saturated by emerging standards like the Legal Context Protocol and Internet Court per this cycle's own gap analysis — so WorkLedger needs to interoperate with those rather than build a third, redundant arbitration layer. There's also an unavoidable two-sided cold-start problem: the protocol only has value once both sellers and buyers show up, which is an adoption risk no amount of good engineering solves on its own. And agents transacting real money on a human's behalf raises liability questions that sit outside pure engineering scope entirely.
+
+---
+Surfaced from `research/2026-11-14-agentic-ai-autonomous-agents.md`, pattern `P2`.

@@ -1,6 +1,6 @@
 # WorkLedger: An Escrow-Backed Agent Labor Marketplace Protocol
 
-- **Status**: EXPLORING (promoted 2026-11-14 cycle 72: evidence density — ≥2 independent threads, ten+ independent zero-star hackathon-scope agent-labor-marketplace attempts in the digest's verdict notes, none past demo)
+- **Status**: PUBLISHED (promoted 2026-11-14 cycle 72: evidence density — ≥2 independent threads, ten+ independent zero-star hackathon-scope agent-labor-marketplace attempts in the digest's verdict notes, none past demo)
 - **Date**: 2026-11-14
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-14-agentic-ai-autonomous-agents.md · P2
