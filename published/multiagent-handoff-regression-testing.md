@@ -1,0 +1,34 @@
+# Contract Watch: Captured-Traffic Regression Testing for Agent-to-Agent Handoffs
+
+A widely cited failure-mode study (MAST, Cemri et al., NeurIPS 2025) found that handoff and specification issues are the single largest cluster of multi-agent failures — about 41.8% of everything that goes wrong. Two independent testing-advice writeups from 2026 both tell teams to start "capturing input and output schemas at each boundary" and running "automated regression testing that catches context loss at specific agent transitions." Neither says where to get that tool. That's because it doesn't really exist yet — what's out there is a scatter of one-off recipes, not something you can drop into CI.
+
+## The Gap
+
+Search qawerk.com or getmaxim.ai and you'll find the same advice independently: snapshot the schema at every agent-to-agent boundary and regression-test against it. The fact that two unrelated sources converged on the same recommendation, as a recommendation rather than a pointer to a tool, is itself the signal — this is a known-good practice nobody has packaged. What exists instead is a pile of DIY: Braintrust's three-level testing writeup, Autonoma, an ITECS fixture-replay recipe, a Testomat.io pipeline that wires Claude Code and Playwright together around a hand-maintained `handoff.json` contract. Further out, one narrow research prototype (a DVCon paper on hardware-verification regression triage — not even the same domain) and PromptSentry, which buries "multi-agent handoff testing" as one minor feature inside a broader red-teaming toolkit rather than treating it as the main job. Every team solving this today is solving it for themselves, from scratch, as a side project of building their actual pipeline.
+
+## The Project
+
+The core move is auto-derivation instead of hand-authoring. Most contract-testing ideas assume someone writes the schema down first; this one samples real handoff payloads from staging or production traffic, infers the implicit schema per boundary — which fields show up, their types, their size/truncation envelope — and builds a golden corpus without anyone having to specify anything up front. On every pull request, a held-out sample from that corpus gets replayed against the new build. If a prompt edit or code change causes a boundary's output to violate the schema it has historically satisfied — a field quietly disappears, a type flips, a payload gets truncated where it never used to be — the build fails and names the exact boundary and the exact violation, the same job a snapshot test does for an API response, just pointed at agent-to-agent handoffs instead of client-server ones.
+
+Four pieces make it work: a traffic sampler that pulls handoff payloads from recent runs into the corpus; a schema-inference engine tuned to tolerate ordinary LLM output variance rather than demanding exact matches; a CI-runnable regression check that replays the held-out sample; and a PR reporter that names the specific boundary and violation instead of a vague "something broke" signal.
+
+## Tangible Impact
+
+**Population**: Engineering teams shipping frequent prompt or pipeline-code changes to production multi-agent systems (support triage, document-processing, coding-review chains) who currently have end-to-end task-success tests but no coverage specifically for the handoff/specification failure class MAST identifies as the largest single cluster of multi-agent failures.
+**Mechanism**: Today a handoff-schema regression (a field silently dropped, a payload newly truncated after a prompt edit) is caught, if at all, by an end-to-end test noticing the final task failed — which doesn't localize to the boundary responsible and can miss subtler quality degradation entirely. Auto-capturing a golden corpus and regression-testing against it moves detection to PR time, with the specific boundary and violation named, instead of a vague end-to-end failure discovered later.
+**Measure**: (1) percentage of handoff-schema-drift-causing changes caught at PR time vs. discovered only in production or via an end-to-end test failure, on a pilot team's repo; (2) reduction in the MAST-style handoff/specification failure share measured against the team's own incident log, before vs. after adoption; (3) time to add test coverage for a new boundary (near-zero, since schemas are inferred from captured traffic rather than hand-authored).
+
+## Why Now
+
+The MAST study's handoff/specification failure-rate finding got cited widely through 2026, giving teams a credible, numbered reason to prioritize this specific failure class rather than treating it as one vague risk among many. At the same time, frameworks' maturing OTel GenAI instrumentation makes automatic payload capture at each boundary feasible without every team hand-rolling its own logging first — which is exactly the step that's been keeping this stuck at the DIY-recipe stage.
+
+## Try It
+
+A companion skill is already written at [`skills/multiagent-handoff-regression-testing/`](../skills/multiagent-handoff-regression-testing/) — *"Given a pasted 'before' set and 'after' set of example agent-to-agent handoff payloads from a multi-agent pipeline (LangGraph, CrewAI, AutoGen/AG2, or similar), infers the implicit schema each set satisfies and flags any field dropped, type changed, or truncation introduced in the 'after' set that the 'before' set never exhibited."* It's a deliberately smaller tool than the full CI harness above — a pre-merge sanity check you can run before you've wired up any continuous capture pipeline at all. Paste the README into any AI chat tool, or drop the folder into `~/.claude/skills/` for Claude Code, hand it a before/after pair of example payloads from one boundary, and it tells you whether the after set broke a contract the before set always honored.
+
+## Honest Risks
+
+This isn't the only idea in this ledger chewing on agent handoffs, and it isn't a silver bullet. It's the deliberate complement to this repo's "Contract Layer" idea (a hand-authored declarative spec checked statically at build time) — that one validates a spec a team writes down explicitly; this one auto-derives and continuously regression-tests against what the pipeline actually does, for teams who haven't written a spec and won't. Because the schema comes purely from sampled traffic, there's real risk of overfitting: a legitimate but rare field shape could get flagged as a false-positive regression if the tolerance model isn't built carefully, and ordinary LLM output variance could generate noisy drift alerts if the check demands exact matches instead of tolerating reasonable variation. And PromptSentry's maintainers could always decide to extend their existing minor handoff-testing feature into a dedicated competing tool before this gains any adoption of its own — the gap is real today, but it isn't guaranteed to stay open.
+
+---
+Surfaced from `research/2026-11-14-multi-agent-architectures.md`, pattern `P4`.
