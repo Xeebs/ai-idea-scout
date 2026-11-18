@@ -1,6 +1,6 @@
 # Confidence Gate: A Benchmarked Escalation-Decision Library for Local-to-Cloud Model Routing
 
-- **Status**: EXPLORING (promoted 2026-11-14 cycle 138: evidence density — ≥2 independent threads)
+- **Status**: PUBLISHED (promoted 2026-11-14 cycle 138: evidence density — ≥2 independent threads)
 - **Date**: 2026-11-14
 - **Topic**: Small & local models
 - **Source**: research/2026-11-14-small-local-models.md · P1
