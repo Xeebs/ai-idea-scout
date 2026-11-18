@@ -1,6 +1,6 @@
 # Intent Check: A Second-Opinion Reviewer That Verifies Agent PRs Against the Original Task, Not Just the Diff
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-17
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-17-agentic-ai-autonomous-agents.md · P1
