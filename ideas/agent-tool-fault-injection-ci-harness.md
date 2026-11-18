@@ -1,6 +1,6 @@
 # Chaos Stub: A Deterministic Failure-Injection CI Harness for Tool-Calling Agents
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-18
 - **Topic**: Tool use & MCP ecosystem
 - **Source**: research/2026-11-18-tool-use-mcp-ecosystem.md · P6
