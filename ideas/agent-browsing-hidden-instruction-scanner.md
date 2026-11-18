@@ -1,6 +1,6 @@
 # Reader Shield: A Drop-In Scanner for Hidden AI-Directed Instructions in Agent-Browsed Content
 
-- **Status**: EXPLORING (promoted 2026-11-14 cycle 79: evidence density — single sourcing thread at 744 points/222 comments, far over the ≥50-point bar)
+- **Status**: PUBLISHED (promoted 2026-11-14 cycle 79: evidence density — single sourcing thread at 744 points/222 comments, far over the ≥50-point bar)
 - **Date**: 2026-11-14
 - **Topic**: AI safety & guardrails in production
 - **Source**: research/2026-11-14-ai-safety-and-guardrails-in-production.md · P5
