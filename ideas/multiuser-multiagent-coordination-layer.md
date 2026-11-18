@@ -1,6 +1,6 @@
 # Shared Session: A Coordination Channel for Multi-User, Multi-Agent Teams
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING
 - **Date**: 2026-11-14
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-14-multi-agent-architectures.md · P7

@@ -1,6 +1,6 @@
 # Vendor Switch: A Resilient, Evaluated Relay for Automatic Cross-Vendor Coding-Agent Handoffs
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING
 - **Date**: 2026-11-13
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-13-multi-agent-architectures.md · P7
