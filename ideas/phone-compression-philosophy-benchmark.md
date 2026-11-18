@@ -1,6 +1,6 @@
 # Honest Compare: An Independent Head-to-Head Benchmark for On-Device Compression Philosophies
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-14
 - **Topic**: Small & local models
 - **Source**: research/2026-11-14-small-and-local-models.md · P6
