@@ -1,6 +1,6 @@
 # Legal Lexicon: A Shared, Open Translation-Memory Substrate for Multilingual Legal-Aid Assistants
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-17
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-17-applied-ai-for-underserved-domains.md · P6
