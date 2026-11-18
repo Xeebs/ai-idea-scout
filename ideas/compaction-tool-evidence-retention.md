@@ -1,6 +1,6 @@
 # Evidence Hold: A Tool-Call Evidence Retention Layer for Context Compaction
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-17
 - **Topic**: Context engineering & memory
 - **Source**: research/2026-11-17-context-engineering-and-memory.md · P4
