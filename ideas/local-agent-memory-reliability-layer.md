@@ -1,6 +1,6 @@
 # Steady Memory: A Hardened, Packaged Persistent-Memory Layer for Local Small-Model Agents
 
-- **Status**: EXPLORING (promoted 2026-11-14 cycle 78: evidence density — ≥2 independent threads within the digest, a Mem0+Ollama+Qdrant guide, an LM Studio community plugin, and a dev.to "why do local AI agents forget you" post, plus a dozen+ separate 0–1-star solo GitHub repos independently re-deriving the same fragile stack)
+- **Status**: PUBLISHED (promoted 2026-11-14 cycle 78: evidence density — ≥2 independent threads within the digest, a Mem0+Ollama+Qdrant guide, an LM Studio community plugin, and a dev.to "why do local AI agents forget you" post, plus a dozen+ separate 0–1-star solo GitHub repos independently re-deriving the same fragile stack; published 2026-11-18)
 - **Date**: 2026-11-14
 - **Topic**: Small & local models
 - **Source**: research/2026-11-14-small-and-local-models.md · P4
