@@ -1,0 +1,35 @@
+# NavKit: A Shared Agent Scaffolding Toolkit for AI Care-Navigation Agents
+
+- **Status**: EXPLORING
+- **Date**: 2026-11-17
+- **Topic**: Applied AI for underserved domains
+- **Source**: research/2026-11-17-applied-ai-for-underserved-domains.md · P5
+- **Maturity verdict**: PARTIAL — three live, independent point solutions (HemaVajra's AI calling agent, Neravu's financial-assistance navigator, MedHaul's transport-coordination agent, the latter funded with a $500k prize) each solve one navigation slice from scratch; a stale 2018 18F eligibility-rules prototype and a DiMe Society proposal with no published code are the only prior shared-scaffold attempts found, alongside narrow closed-source point products (Benefit Navigator, Eleos). No reusable toolkit exists that the next team could build on instead of starting over.
+- **Format**: BOTH
+- **Data Sources**: CONNECTED — Twilio Voice API (mature) for the calling-agent leg; Uber Health / Lyft Pass APIs (mature, purpose-built for healthcare ride coordination) for the transport leg. The financial-assistance eligibility leg is MANUAL at launch — a navigator configures each program's published eligibility rules into the engine once per program, since no universal live benefits-eligibility API exists across U.S. states and nonprofits — with each configured ruleset reusable by every other adopting org afterward.
+
+## The Gap
+Three separate hackathon-stage or newly-funded teams — HemaVajra (an AI calling agent for health navigation), Neravu (a financial-assistance navigator for cancer patients), and MedHaul ($500k-prize-winning medical transport coordination) — each built a narrow care-navigation agent from scratch within the same 30-day window, solving one slice (calling, finance, transport) independently with no shared scaffolding between them. The only prior attempt at a shared layer, 18F's eligibility-rules prototype, is a stale 2018 artifact; DiMe Society's proposal for a shared evidence-based navigation framework has no published code. The next team building a care-navigation agent starts from zero, just like these three did.
+
+## The Project
+An open agent-scaffolding toolkit providing the three reusable building blocks every care-navigation agent needs but currently hand-builds: a configurable eligibility-rules engine (load a program's published rules once, query it for any patient profile), a calling-agent scaffold wired to a telephony API with a scripted-but-adaptive conversation flow for common navigation calls (insurance verification, appointment scheduling, benefits inquiries), and a transport-coordination connector that books and tracks medical rides through existing ride-booking APIs. A shared case-tracking data model ties all three together so a single patient's navigation history (eligibility checks, calls made, rides booked) lives in one record instead of three disconnected tools.
+
+## Tangible Impact
+**Population**: Low-income and uninsured patients who need active help navigating health-system bureaucracy — cancer patients specifically (Neravu's target) and more broadly the roughly 25 million uninsured and the much larger Medicaid-eligible-but-under-enrolled U.S. population (KFF estimates) who rely on hospital or nonprofit patient-navigator programs that are themselves understaffed and under-resourced; and, directly, the small nonprofit/hospital tech teams who would otherwise build a bespoke calling, financial-navigation, or transport-coordination agent from zero, as HemaVajra, Neravu, and MedHaul each just did.
+**Mechanism**: A navigator program today either hires more human navigators (expensive, hard to scale) or a tech-capable team builds a narrow bespoke agent per task (as the three hackathon examples did, with no reuse across teams). A shared scaffold lets a navigator program assemble a working calling + eligibility + transport agent in weeks using existing building blocks, multiplying how many patients a fixed navigator-hour budget can reach — and lets the next hackathon team start from working infrastructure instead of from zero.
+**Measure**: (1) patients navigated per navigator-hour before and after toolkit adoption (capacity multiplier); (2) missed-appointment / no-show rate for patients using toolkit-coordinated transport vs. the program's prior baseline; (3) time-to-deploy a new navigation agent for a new assistance program (toolkit-enabled weeks vs. the multi-month hackathon-to-pilot timeline each of the three source projects implicitly took).
+
+## Why Now
+Twilio Voice and Uber Health/Lyft Pass are both mature, already-adopted APIs purpose-built for exactly the calling and medical-transport legs this gap needs, and three independent teams building the same three slices within one 30-day window is a direct signal that demand for the integrated version exists right now, before a fourth team builds yet another one-off agent nobody else can reuse.
+
+## Skill Angle
+A companion skill drafts a new program's eligibility-rules configuration from its published policy document: given a benefits program's PDF/webpage (pasted or uploaded), it extracts the eligibility criteria into the engine's structured rule format and flags ambiguous or missing criteria for a human navigator to resolve before the ruleset goes live. This is a bounded drafting task fully separable from the running toolkit — it prepares input the toolkit needs, it doesn't run calls or book rides itself.
+
+## MVP Sketch
+Partner with one small hospital or nonprofit navigator program to scope a single program (e.g., one state's Medicaid transport benefit) end to end: configure its eligibility rules into the engine, wire a Twilio-based calling flow for one common call type (benefits-status inquiry), and connect Uber Health for ride booking. Stack: a rules engine (simple decision-table library, not ML), Twilio Voice for calls, Uber Health API for transport, Postgres for the shared case record. Single validating experiment: run the pilot program's next 20 real patient-navigation cases through the toolkit and compare navigator time-per-case and ride-coordination success rate against the program's own prior-month baseline.
+
+## Risks & Open Questions
+- Financial-assistance eligibility rules vary by state, program, and change frequently; a stale or misconfigured ruleset giving a patient wrong eligibility information is a real harm risk that needs an explicit human-review gate before any live deployment, not just an MVP convenience.
+- Calling agents interacting with insurers/providers on a patient's behalf raise consent and liability questions (is the agent authorized to act for this patient) that need a clear legal answer before broad adoption, not just technical plumbing.
+- MedHaul's $500k prize may already be funding it toward a more general platform that overlaps this scope — worth a direct check before building a competing scaffold from zero.
+- Toolkit adoption requires navigator programs to trust an agent with real patient interactions; the MVP partnership and its measured results need to be genuinely convincing, not just technically functional, before a second program will adopt it.
