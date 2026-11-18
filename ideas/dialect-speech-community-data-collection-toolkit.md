@@ -1,6 +1,6 @@
 # Dialect Commons: A Reusable Toolkit for Community-Sourced Dialect and Colloquial-Speech Data Collection
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-17
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-17-applied-ai-for-underserved-domains.md · P2
