@@ -1,6 +1,6 @@
 # Carryover: A Portable Context Handoff Protocol for Cross-Tool Agent Work
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-11
 - **Topic**: Context engineering & memory
 - **Source**: research/2026-11-11-context-engineering-and-memory.md · P2

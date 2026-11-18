@@ -1,6 +1,6 @@
 # Pin It: An Invariant-Retention Library for Context Compaction
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING
 - **Date**: 2026-11-13
 - **Topic**: Context engineering & memory
 - **Source**: research/2026-11-13-context-engineering-memory.md · P3
