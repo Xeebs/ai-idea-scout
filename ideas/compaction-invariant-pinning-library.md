@@ -1,6 +1,6 @@
 # Pin It: An Invariant-Retention Library for Context Compaction
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED (status drift fix: idea file still said EXPLORING while ideas/INDEX.md and pipeline/published.md had already recorded the publish; synced by the orchestrator on 2026-11-18, cycle 152)
 - **Date**: 2026-11-13
 - **Topic**: Context engineering & memory
 - **Source**: research/2026-11-13-context-engineering-memory.md · P3
