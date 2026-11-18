@@ -1,6 +1,6 @@
 # Judge Arena: An Independent Benchmark for Specialist Trace-Error-Finders vs. Prompted LLM Judges
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-14
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-14-llm-evaluation-observability.md · P5
