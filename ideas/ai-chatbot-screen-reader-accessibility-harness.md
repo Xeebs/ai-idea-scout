@@ -1,6 +1,6 @@
 # Screen Reader Ready: An Automated Accessibility Test Harness for AI Chatbot/Assistant UIs
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-14
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-14-applied-ai-for-underserved-domains.md · P2
