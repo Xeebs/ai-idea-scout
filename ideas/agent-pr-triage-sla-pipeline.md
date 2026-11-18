@@ -1,6 +1,6 @@
 # Pipeline Shape: A Risk-Triage, Size-Discipline, and Explicit-SLA Gate Purpose-Built for Agent-Authored PRs
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-17
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-17-agentic-ai-autonomous-agents.md · P5

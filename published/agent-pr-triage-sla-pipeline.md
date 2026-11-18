@@ -1,0 +1,31 @@
+# Pipeline Shape: A Risk-Triage, Size-Discipline, and Explicit-SLA Gate Purpose-Built for Agent-Authored PRs
+
+Your coding agent just opened its fourth pull request of the morning. It's 640 lines, touches eleven files, and nobody on the team has looked at it in six hours — because your review process still treats it exactly like the two-line config tweak someone opened yesterday. That mismatch, multiplied across every team now shipping agent-authored code, is quietly becoming the actual bottleneck in AI-assisted development: not generating the code, but proving it's safe to merge.
+
+## The Gap
+
+The signal here is specific and recent. Vendor benchmarks cited in the source research — flagged there as unverified secondary-aggregator figures, but directionally consistent across two independent sources — put agent-authored PRs at 4.6 to 5.3 times slower to get picked up for human review than ordinary PRs (LinearB via Synodus; Faros AI), and roughly 1.7x more defect-prone (LeadDev-sourced). Addy Osmani's framing, quoted in the same research: "The bottleneck moved from writing code to proving it works."
+
+What's missing isn't effort — it's a shared answer. Point tools exist: Tenki routes agent PRs to a faster review lane, Cubic scores initial risk inside GitHub, Shiplight offers hosted CI runners pitched at "agent-written code" but only guarantees CI uptime, not review turnaround. GitHub's own engineering blog published a piece in March 2026 acknowledging agent PRs are "everywhere" and walking through how to review them — confirmation this is a live, named problem, not a hypothetical one. But no source found a single pipeline that ties risk-based routing, an explicit SLA keyed to that risk, and enforced PR-size discipline together. Teams described as "pulling ahead" are said to have assembled something like this themselves, ad hoc, rather than adopted a standard.
+
+## The Project
+
+The idea is a PR-pipeline layer that intercepts agent-authored changes at open time and does four things a flat review process doesn't: it scores risk from diff size, files-touched count, and change type (feature vs. refactor vs. config-only); it blocks PRs that exceed the size threshold for their risk tier from entering the normal queue, instead returning a structured decomposition recommendation with suggested split points by file or module boundary; it assigns a review SLA clock specific to that risk tier — a high-risk, oversized PR gets a shorter mandatory pickup window and a named reviewer, not the same deadline as everything else; and it tracks SLA breaches and how often engineers actually accept the decomposition recommendation, so a team can tune its own thresholds against its own pickup-time and defect data instead of flying blind on industry benchmarks nobody has verified.
+
+The four pieces — a risk/complexity scorer, a size-to-decomposition-recommendation generator, an SLA-clock-and-routing engine, and a breach/outcome tracker feeding threshold tuning — are the whole project. None of it is a bolt-on feature; the triage-SLA-size combination is the mechanism, not a wrapper around a generic review bot.
+
+## Tangible Impact
+
+**Population**: Engineering teams whose agent-authored PR volume is high enough that review has become the measured bottleneck — the same cohort the digest's cited Harvard-research-based HN item (60 pts, 93 comments) and the 4.6–5.3x pickup-time multiplier describe, specifically teams currently applying one flat review process to every PR regardless of whether an agent produced a 20-line config change or an 800-line multi-module feature.
+**Mechanism**: A single review SLA and no enforced size discipline means a team's limited review bandwidth gets consumed unpredictably by whichever PR happens to be biggest or riskiest that day, and the empirically-worse defect rate on large agent PRs goes unaddressed because nothing structurally discourages them. Tying size discipline and an explicit, risk-tiered SLA together means oversized high-risk PRs get decomposed before they ever enter the queue, and the SLA clock itself reflects actual risk instead of a one-size-fits-all number — converting an invisible, growing backlog into a measured, triaged one.
+**Measure**: (1) Median and p95 review pickup time per risk tier, before and after adopting the pipeline, against the team's own baseline (replacing reliance on the unverified LinearB/Faros figures with the team's own measured numbers). (2) Defect rate (post-merge bugs/reverts) on PRs that were decomposed per the pipeline's recommendation vs. PRs of comparable original size that weren't. (3) SLA breach rate per risk tier over time, confirming the tiered SLA is actually achievable and not just a stricter number nobody meets.
+
+## Try It
+
+A one-shot version of this already exists as a Claude Code skill: [`skills/agent-pr-triage-sla-pipeline/`](../skills/agent-pr-triage-sla-pipeline/). Its own description: "One-shot risk tier, review SLA, and (if oversized) split recommendation for a single agent-authored pull request. Use when a reviewer or team lead has one specific agent-authored PR stuck or about to enter the review queue and wants a quick triage read instead of a flat org-wide SLA."
+
+To use it: paste the `README.md` from that folder into any AI chat tool along with the PR's diff (or its size/files-touched metadata) and the change's stated intent — you'll get back a risk tier, a recommended review SLA, and, if it's oversized, concrete split points. If you're on Claude Code, drop the whole `agent-pr-triage-sla-pipeline/` folder into `~/.claude/skills/` and invoke it directly on a real PR. Note this is the one-shot triage judgment, not the always-on routing infrastructure described above — it's meant to be run by hand, one PR at a time.
+
+A caveat worth carrying forward honestly: the core 4.6–5.3x and 1.7x figures behind this idea are vendor-sourced and explicitly flagged as unverified in the underlying research — treat them as directional, not gospel, and a well-resourced reviewer-automation vendor could plausibly ship risk-tiered SLA routing as a platform feature now that GitHub's own blog has publicly named the problem.
+
+Surfaced from `research/2026-11-17-agentic-ai-autonomous-agents.md`, pattern `P5`.
