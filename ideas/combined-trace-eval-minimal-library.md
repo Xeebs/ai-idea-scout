@@ -1,6 +1,6 @@
 # Trace+Check: A Minimal Combined Observability-and-Eval Library for LLM-Backed Features
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-18
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-18-llm-evaluation-observability.md · P8
