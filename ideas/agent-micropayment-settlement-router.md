@@ -1,6 +1,6 @@
 # RailBridge: A Unified Sub-Cent Settlement Router for Agent-to-Agent Micropayments
 
-- **Status**: EXPLORING (promoted 2026-11-14 cycle 72: evidence density — ≥2 independent threads, GitHub issue JulioMCruz/QuestBoard#33 plus six independent 0-6-star x402/AP2/escrow settlement-rail repos, none consolidated into a standard)
+- **Status**: PUBLISHED (promoted 2026-11-14 cycle 72: evidence density — ≥2 independent threads, GitHub issue JulioMCruz/QuestBoard#33 plus six independent 0-6-star x402/AP2/escrow settlement-rail repos, none consolidated into a standard)
 - **Date**: 2026-11-14
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-14-agentic-ai-autonomous-agents.md · P1
