@@ -1,6 +1,6 @@
 # Hard Gate: A Portable SMT Verification Layer for Agent Actions, Benchmarked Against LLM-as-Judge
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 67: evidence density — ≥2 independent threads found in gap analysis beyond qwed-verification itself — an academic SMT/Z3 paper, AWS Bedrock's Automated Reasoning checks, and a commercial PolicyLayer gate — none portable or benchmarked against LLM-as-judge)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 67: evidence density — ≥2 independent threads found in gap analysis beyond qwed-verification itself — an academic SMT/Z3 paper, AWS Bedrock's Automated Reasoning checks, and a commercial PolicyLayer gate — none portable or benchmarked against LLM-as-judge)
 - **Date**: 2026-11-13
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-13-llm-evaluation-observability-ii.md · P5
