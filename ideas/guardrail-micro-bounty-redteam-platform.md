@@ -1,6 +1,6 @@
 # Breach Bounty: A Micro-Bounty Red-Teaming Platform for Self-Hosted Guardrails
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 39: evidence density — 2 independent, unlinked attempts at the same micro-bounty mechanic)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 39: evidence density — 2 independent, unlinked attempts at the same micro-bounty mechanic; published 2026-11-17)
 - **Date**: 2026-11-13
 - **Topic**: AI safety & guardrails in production
 - **Source**: research/2026-11-13-ai-safety-guardrails-in-production.md · P1
