@@ -1,6 +1,6 @@
 # NavKit: A Shared Agent Scaffolding Toolkit for AI Care-Navigation Agents
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-17
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-17-applied-ai-for-underserved-domains.md · P5
