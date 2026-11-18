@@ -1,6 +1,6 @@
 # ReceiptChain: A Verifiable Proof-of-Work Attestation Layer for Agent-Claimed Labor
 
-- **Status**: EXPLORING (promoted 2026-11-14 cycle 72: evidence density — ≥2 independent threads, TessPay, an IETF draft, Inference Labs' Proof of Inference, Hive's signed receipts, and a Solv Labs/Bedrock AgentCore case study all independently targeting the same verifiable-labor gap, none a settled adopted standard)
+- **Status**: PUBLISHED (promoted 2026-11-14 cycle 72: evidence density — ≥2 independent threads, TessPay, an IETF draft, Inference Labs' Proof of Inference, Hive's signed receipts, and a Solv Labs/Bedrock AgentCore case study all independently targeting the same verifiable-labor gap, none a settled adopted standard; published 2026-11-18 cycle 162)
 - **Date**: 2026-11-14
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-14-agentic-ai-autonomous-agents.md · P7
