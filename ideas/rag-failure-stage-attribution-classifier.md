@@ -1,6 +1,6 @@
 # Fault Line: An Automated Retrieval/Chunking/Generation Failure Classifier for RAG
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-13
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-13-rag-techniques.md · P2
