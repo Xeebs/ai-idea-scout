@@ -1,6 +1,6 @@
 # One Path: A Consolidated Hosted Deployment + Approval Gateway for Internal MCP Servers
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-18
 - **Topic**: Tool use & MCP ecosystem
 - **Source**: research/2026-11-18-tool-use-mcp-ecosystem.md · P5
