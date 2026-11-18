@@ -1,6 +1,6 @@
 # Thread Memory: A Telephony-Native Cross-Call Memory Layer for Voice Agents
 
-- **Status**: EXPLORING (promoted cycle 140 — evidence density: 2 independent threads)
+- **Status**: PUBLISHED (promoted cycle 140 — evidence density: 2 independent threads)
 - **Date**: 2026-11-17
 - **Topic**: Voice & multimodal agents
 - **Source**: research/2026-11-17-voice-multimodal-agents.md · P3
