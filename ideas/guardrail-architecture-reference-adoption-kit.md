@@ -1,6 +1,6 @@
 # Reference Rail: A Packaged Starter Kit for the Security-Specialized Guardrail Model Architecture
 
-- **Status**: EXPLORING (promoted 2026-11-18 cycle 149: recurrence — the build-vs-buy single-pass multi-signal guardrail-gateway gap (P4) resurfaced independently in `research/2026-11-18-ai-safety-guardrails-in-production.md`, overlapping this idea's broader build-vs-buy consolidation angle)
+- **Status**: PUBLISHED (promoted 2026-11-18 cycle 149: recurrence — the build-vs-buy single-pass multi-signal guardrail-gateway gap (P4) resurfaced independently in `research/2026-11-18-ai-safety-guardrails-in-production.md`, overlapping this idea's broader build-vs-buy consolidation angle; published cycle 150, commit `1eca0f3`)
 - **Date**: 2026-11-13
 - **Topic**: AI safety & guardrails in production
 - **Source**: research/2026-11-13-ai-safety-guardrails-in-production.md · P9
