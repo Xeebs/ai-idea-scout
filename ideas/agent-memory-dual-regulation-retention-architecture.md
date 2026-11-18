@@ -1,6 +1,6 @@
 # Dual Mandate: Reconciling GDPR Erasure and EU AI Act Retention in Agent Memory
 
-- **Status**: EXPLORING (promoted 2026-11-14 cycle 75: evidence density — 4 independent sources in the digest — Atlan, tianpan.co, arkforge.tech, MintMCP — all independently naming the GDPR-erasure/AI-Act-retention conflict in agent memory)
+- **Status**: PUBLISHED — [writeup](../published/agent-memory-dual-regulation-retention-architecture.md) (promoted 2026-11-14 cycle 75: evidence density — 4 independent sources in the digest — Atlan, tianpan.co, arkforge.tech, MintMCP — all independently naming the GDPR-erasure/AI-Act-retention conflict in agent memory)
 - **Date**: 2026-11-14
 - **Topic**: Context engineering & memory
 - **Source**: research/2026-11-14-context-engineering-and-memory.md · P5
