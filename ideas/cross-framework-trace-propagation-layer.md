@@ -1,6 +1,6 @@
 # One Trace: A Cross-Framework Context-Propagation Layer for Multi-Agent Tracing
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-14
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-14-llm-evaluation-observability.md · P3
