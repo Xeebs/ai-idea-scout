@@ -1,6 +1,6 @@
 # Meter Bridge: A Vendor-Neutral Metering & Billing Abstraction for Paid MCP Tools
 
-- **Status**: EXPLORING (promoted cycle 76: evidence density — ≥2 independent threads in the source digest)
+- **Status**: PUBLISHED (promoted cycle 76: evidence density — ≥2 independent threads in the source digest)
 - **Date**: 2026-11-14
 - **Topic**: Tool use & MCP ecosystem
 - **Source**: research/2026-11-14-tool-use-mcp-ecosystem.md · P3
