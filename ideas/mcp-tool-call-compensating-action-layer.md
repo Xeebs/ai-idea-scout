@@ -1,6 +1,6 @@
 # Compensate: A Cross-Domain Effect-Journal and Compensating-Action Layer for MCP Tool Calls
 
-- **Status**: EXPLORING (promoted cycle 76: evidence density — ≥2 independent threads in the source digest)
+- **Status**: PUBLISHED (promoted cycle 76: evidence density — ≥2 independent threads in the source digest)
 - **Date**: 2026-11-14
 - **Topic**: Tool use & MCP ecosystem
 - **Source**: research/2026-11-14-tool-use-mcp-ecosystem.md · P1
