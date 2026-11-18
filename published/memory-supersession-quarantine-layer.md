@@ -1,0 +1,37 @@
+If you build on a shared agent-memory product, you've probably told yourself the safe rule is simple: never delete anything, just mark it superseded. It feels like the responsible choice — nothing gets lost, everything stays auditable. Then one day the agent reads the old rule first, acts on it, and you're staring at a transcript wondering how a correctly-labeled "superseded" entry just lost to the rule you replaced it with.
+
+## The Gap
+
+That's exactly what happened to the builder of Zenod, a shared-memory product for Claude, Codex, and Cursor. They posted to r/ContextEngineering describing their own shipped design failing in production: two old rules in a style file "still said 'don't wait for approval' after we'd decided every post waits for mine," and an agent reading the old line first acted on it — despite the newer rule existing elsewhere in the same store, correctly marked superseded. The person posting builds and sells this exact product for a living, and they were asking the community what to do, which is about as clear a signal as you get that their own shipped append-only design doesn't solve it today.
+
+This is a narrower problem than it might sound. It's not memory tampering or authenticity (a problem the field already treats as largely closed), and it's not two agents writing contradictory facts at the same time (a concurrent-write conflict). It's the specific failure of a single, honestly-recorded correction losing to recency or position at read time — the memory system did everything "right" and the model still picked the wrong entry because of where it sat in context.
+
+Prior art exists, but it's thin. A recent arXiv paper ("Don't Ask the LLM to Track Freshness: A Deterministic Recipe for Memory Conflict Resolution") argues for a version-aware aggregation layer instead of leaving freshness resolution to the model itself, and a related paper ("MemTxn") proposes transaction boundaries for source-supported updates. One shipped product feature — openclaw-cortex's v0.8.0 "temporal versioning" — does parent-linked versions where only the latest is flagged current and superseded versions stay queryable. That's real progress, but it's one early product feature and two papers without evidence of at-scale validation, and it's visibly not what Zenod's own builder reached for before hitting the wall in production. The gap is narrow, recent, and currently unanswered by anything widely adopted.
+
+## The Project
+
+The fix being proposed here is context-assembly middleware that sits between a memory store's read API and the prompt that actually reaches the model. The current convention — "never delete, mark superseded" — stops at labeling. It doesn't touch where the entry sits in the assembled context, and recency or similarity scoring can still let a labeled-stale entry out-rank its replacement. The proposed layer closes that gap directly: any entry marked superseded gets physically moved below an explicit reference divider in the assembled context — still visible for audit, but structurally demoted so it literally cannot out-compete the active rule by appearing earlier or scoring higher. The active replacement is always placed where the model reads it first.
+
+The second half of the project is what turns "this should fix it" into a number instead of a guess: a conflict-scenario test harness that runs a labeled battery of "old rule vs. new rule" pairs against the target model and reports the stale-rule-still-followed rate with the quarantine layer on versus off. Concretely, that's four pieces — a supersession-aware context assembler that intercepts the memory read and reorders by status tag, a reference-divider renderer that keeps superseded text inspectable rather than silently gone, the conflict-scenario eval harness itself, and an adapter for a Postgres/pgvector backend as the reference implementation.
+
+## Tangible Impact
+
+**Population**: Teams and builders running shared, append-only memory products across coding-agent clients — the same population the evidenced Zenod product (shared memory for Claude, Codex, and Cursor) sells to, plus any team running a long-horizon agent whose memory store accumulates revised decisions over weeks or months rather than deleting old ones.
+
+**Mechanism**: Today, marking a rule "superseded" without changing its position in the assembled context does nothing to stop the model from still finding and following the old line if it happens to sit earlier or more prominently — exactly the failure the Zenod builder describes in production. A quarantine-ordering layer removes the positional/recency advantage from stale entries structurally, instead of hoping the model infers "superseded" means "ignore this" from a label alone.
+
+**Measure**: (1) Stale-rule-still-followed rate on a labeled conflict-scenario benchmark, with the quarantine layer on versus off. (2) Time-to-detect for a real production conflict (how long a Zenod-style user runs with a silently-reverted rule before noticing) versus a baseline of discovering it the way the evidenced poster did — by the agent visibly acting on the old rule. (3) Audit completeness — the fraction of superseded entries still retrievable/inspectable after quarantine, versus a deletion-based alternative that loses the history entirely.
+
+## Try It
+
+There's already a companion skill for the design-review half of this idea: [`skills/memory-supersession-quarantine-layer/`](../skills/memory-supersession-quarantine-layer/). Its one-line job, straight from the `SKILL.md`: "Reviews an append-only agent memory/rules schema for the 'stale rule still wins' failure (a superseded entry out-ranking its replacement by position, recency, or similarity score) and drafts a concrete quarantine/ordering policy to fix it." It's a design review, not the live enforcement middleware — hand it your memory schema, how context gets assembled, and 2-3 real examples of entries that have been superseded, and it comes back with a risk verdict per example, a concrete quarantine policy for your stack, and test scenarios you can later run through an eval harness.
+
+To use it: paste the contents of the skill's `README.md` into any AI chat tool along with your own schema and example entries, or — if you're on Claude Code — drop the whole `skills/memory-supersession-quarantine-layer/` folder into `~/.claude/skills/` and invoke it directly.
+
+## The risk worth naming up front
+
+The most likely way this gets overtaken isn't a competitor outbuilding it — it's Zenod, mem0, or another shared-memory vendor shipping this exact ordering fix natively once enough users hit the same production failure the Zenod builder already named in public. The underlying research is also thin: the two papers backing the "version-aware aggregation" approach haven't been validated at scale, so the project's own eval harness has to independently confirm quarantine-ordering actually beats simple deletion or label-only approaches before anyone should treat it as solved. And it's genuinely unproven whether physical reordering alone is sufficient, or whether some models need an explicit instruction-level cue ("entries below this line are historical — never act on them") layered on top of position to reliably deprioritize quarantined content; both need testing before this is more than a promising fix.
+
+---
+
+Surfaced from `research/2026-11-13-context-engineering-and-memory.md`, pattern `P5`.
