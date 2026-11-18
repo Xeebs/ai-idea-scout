@@ -1,0 +1,37 @@
+# Claim Ledger: A Signed Attestation and Trust-Scoring Layer for Inter-Agent Claims
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-17
+- **Topic**: Multi-agent architectures
+- **Source**: research/2026-11-17-multi-agent-architectures.md · P2
+- **Maturity verdict**: PARTIAL — several narrow/early attempts exist but none mature: KYA ("veldt-kya" on PyPI, Ed25519 signing + trust scoring, arXiv 2605.25376, self-reported results only); atrib (GitHub, Ed25519 + Merkle-log provenance, ~5 stars); attest (mcpservers.org artifact verifier, had a hardcoded signing-key bug); Agent Manifest / TRACE (awesome-list mention only); ArkForge Trust Layer (vendor marketing-stage proxy); agentmem (created 2026-10-08, "trust, provenance, conflict detection"). No dominant, widely-adopted standard.
+- **Format**: BOTH — the signing/ledger/trust-scoring middleware is PROJECT-shaped (must persist attestation history and run inline on every inter-agent message); drafting a trust policy (which claim types require attestation, what trust threshold gates action) for a specific pipeline is a one-shot judgment task.
+- **Data Sources**: CONNECTED — reads inter-agent messages directly from the orchestration layer's own message bus or session API (A2A protocol envelopes, LangGraph graph state, OpenAI Agents SDK handoff/tool-call payloads, CrewAI task context) to attach and verify attestations inline; no mature "trust layer" connector exists for any of these today — this project is the adapter/library itself, shipping one framework integration first (A2A, the protocol most explicitly scoped to cross-org agent messages) and porting the same signing/ledger core to others as later adapters.
+
+## The Gap
+An HN post, "Are we building multi-agent systems without a proper trust layer?" (4pts, 2026-11-14), frames the gap as an open question the community hasn't answered: agents routinely act on a peer agent's self-report ("I verified this," "I checked inventory," "tests passed") with no way to confirm the claim was true before acting on it. Five scattered early attempts (KYA, atrib, attest, Agent Manifest, agentmem) each build a slice of signing, provenance, or trust scoring, but none combine signed attestation with a calibrated trust score an orchestrator can gate on, and none have real adoption.
+
+## The Project
+A drop-in middleware library that intercepts inter-agent claims at the message bus and does three things existing point-solutions do separately or not at all: (1) requires the claiming agent to emit a signed attestation (Ed25519) referencing whatever evidence it has (a tool-call result, a hash of the artifact it produced, nothing if the claim is pure judgment); (2) appends every attestation to an append-only, hash-chained ledger so a disputed claim can be replayed and audited later; (3) maintains a per-agent, per-claim-type trust score that updates whenever a claim is later confirmed or contradicted (by a ground-truth check, a human reviewer, or a downstream failure), so a receiving agent's policy can require corroboration or human sign-off once a peer's trust score for a given claim type drops below a threshold — converting "trust by default" into "trust by evidence and track record."
+
+Components: Ed25519 claim-signing SDK (Python/TS); hash-chained attestation ledger (append-only log, queryable by claim ID/agent/time); a trust-scoring service with configurable decay and claim-type weighting; a policy hook that lets a receiving agent's orchestrator require attestation-plus-threshold before acting on a high-stakes claim; one reference adapter for A2A protocol messages.
+
+## Tangible Impact
+**Population**: Teams operating multi-agent systems that cross organizational or vendor trust boundaries — agent marketplaces, cross-org A2A pipelines, and agent-to-agent commerce builders (the same cohort building RailBridge/WorkLedger/ReceiptChain-style agent-labor and micropayment infrastructure already in this index) — anywhere a receiving agent cannot inspect the claiming agent's internals and must decide whether to act on its word.
+**Mechanism**: Today a false or exaggerated claim from one agent propagates invisibly into whatever the receiving agent does next (approves a payment, skips a redundant check, escalates or doesn't). A signed, ledgered, trust-scored claim layer makes every claim falsifiable after the fact and lets policy gate on a peer's actual track record instead of blind trust, catching a degrading or malicious peer before its claims keep being acted on.
+**Measure**: (1) In a pilot multi-agent pipeline, the rate of downstream incidents traceable to an unverified false claim drops measurably after adoption vs. a logged baseline period. (2) Trust-score calibration: for claim types with a ground-truth check available, the trust score predicts claim correctness with a measured AUC/Brier score, not just a vibe. (3) Mean time to detect a consistently-false-claiming peer agent, from "undetected until a downstream failure" today to a bounded number of claims/hours under the scoring policy.
+
+## Why Now
+Agent-to-agent commerce infrastructure (A2A protocol, x402/AP2 micropayment rails, agent labor marketplaces) is shipping in the same 30-day window this digest covers — exactly the context where "can I trust what this other agent just told me" stops being academic and starts gating real money and real actions, which is why five independent small projects are already attempting pieces of this without coordinating.
+
+## Skill Angle
+Given a description of a multi-agent pipeline's inter-agent claims (which agent asserts what to which other agent, in the user's own words or a code excerpt), draft a tailored trust policy: which claim types need signed attestation, what evidence should back each, and what trust-score threshold should gate escalation to a human — a one-shot design task useful before anyone commits to running the actual signing/ledger infrastructure.
+
+## MVP Sketch
+3 weeks, 1–2 people: build the Ed25519 signing SDK and hash-chained ledger, wire one A2A-protocol adapter, and implement a basic trust score (simple exponential decay weighted by confirmed-vs-contradicted outcomes) over a simulated two-agent pipeline with deliberately injected false claims. Validate: show the policy hook actually blocks or escalates action on a peer whose trust score has degraded, within a bounded number of false claims, vs. an unguarded baseline that keeps acting on every claim.
+
+## Risks & Open Questions
+- A2A or a major agent framework could ship a native attestation primitive and absorb this — the strongest already-in-motion risk, since the gap was framed as an open community question only days before this digest, meaning someone with more resources could answer it first.
+- Many claims (subjective judgment calls, not tool-call outputs) have no ground truth to score against, so the trust score for those claim types is necessarily reputation-only and could be gamed by an agent that behaves well on checkable claims while lying on unverifiable ones.
+- Signing and ledgering every inter-agent message adds latency and storage overhead that needs validating against real pipeline throughput requirements.
+- Low current engagement (4 points) means demand is still speculative; the five existing narrow attempts (unlinked, not cross-referencing each other) suggest independent discovery of a real pain point, but adoption risk remains high until one wins.
