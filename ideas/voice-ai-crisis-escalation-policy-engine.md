@@ -1,6 +1,6 @@
 # Escalation Ledger: An Auditable, Severity-Conditional Crisis-Escalation Policy Engine for Voice AI Agents
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 39: evidence density — 2 independent vendors building severity-conditional crisis-escalation logic, ferni-ai/voiceai and CallSphere)
+- **Status**: PUBLISHED — [writeup](../published/voice-ai-crisis-escalation-policy-engine.md) (promoted 2026-11-13 cycle 39: evidence density — 2 independent vendors building severity-conditional crisis-escalation logic, ferni-ai/voiceai and CallSphere)
 - **Date**: 2026-11-13
 - **Topic**: AI safety & guardrails in production
 - **Source**: research/2026-11-13-ai-safety-guardrails-in-production.md · P5
