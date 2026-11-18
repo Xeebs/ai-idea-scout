@@ -1,6 +1,6 @@
 # Setup Gate: An Agent-Readable Capability & Credential Protocol for Eval Platforms
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-12
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-12-llm-evaluation-observability.md · P1
