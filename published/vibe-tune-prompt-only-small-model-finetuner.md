@@ -1,0 +1,33 @@
+# Vibe Tune: A Self-Hostable Prompt-Plus-Examples Fine-Tuning Tool for Small Local Models
+
+There's a specific kind of person who runs a small local model today for a narrow job — tagging support tickets, pulling fields out of invoices, rewriting copy into one house tone — and knows, deep down, that fine-tuning would make it better. They just don't have an ML team, don't have hundreds of labeled examples lying around, and have no appetite for writing a training script. Right now, the only place that gap gets closed is a single commercial vendor's hosted product. Everyone else is stuck between "write real training code" and "give up and hand-tune your prompts forever."
+
+## The Gap
+
+distil labs' own documentation describes exactly this workflow: fine-tune a small model "with just a prompt and a few dozen training examples," explicitly pitched at teams without ML staff. Meta's distillation guide independently validates the underlying idea — a teacher model generates completions, a student model trains on them, and an 8B model can be made to match a 17B model on a narrow task. Two separate threads converging on the same shape of solution is a real signal, not a coincidence. But look for who actually ships it, and the field thins out fast: distil labs is commercial and hosted. LlamaFactory is a well-maintained, popular no-code interface — but it still expects you to show up with an assembled training dataset, which is precisely the thing the target user doesn't have. `distillops` and Arcee's DistillKit are open source, but they're built for curated datasets in the hundreds of thousands of rows, not ten to a hundred examples typed up on a Tuesday afternoon. Radal, a Product Hunt listing, is the only other close match, and it's not a maintained general-purpose OSS tool either. Nobody has built the self-hostable version of "I have a prompt and a few dozen examples, give me a fine-tuned model" — the gap sits right where the actual target user lives.
+
+## The Project
+
+Vibe Tune is a self-hostable CLI/library that takes a plain-language task description plus 10-100 real input/output example pairs and hands back a fine-tuned small local model (Qwen2.5-1.5B/3B-class, the kind of model people are already running), without the user ever touching training code. The pipeline does the unglamorous parts for them: a teacher model (local or API) reads the task description and the handful of real examples, then expands them into a larger synthetic training set that stays consistent with the stated task. A QLoRA fine-tune runs against the chosen small base model. Then — and this is the part that keeps it honest — a held-out slice of the user's *own original* examples is used to score the result before anything is handed back, so the output is a checkpoint with a pass/fail signal attached to it, not a black box you have to go test yourself.
+
+The pieces: a synthetic-data expander seeded from real user examples and driven by a teacher model; a QLoRA training runner targeting Ollama/llama.cpp-compatible base models; held-out evaluation against the user's own real examples (never purely synthetic ones); and a packaged output — GGUF plus a Modelfile — that drops straight into a local-model runtime someone is already running.
+
+## Tangible Impact
+
+**Population**: Non-ML-expert developers and small teams at companies without dedicated ML staff who want a narrow task (a classification rule, a tone-matching rewrite, a structured-extraction format) handled by a cheap local model instead of a recurring cloud API call, but currently either pay for distil labs' hosted service, give up and hand-write brittle prompt rules, or never attempt fine-tuning at all because assembling a "real" training dataset feels out of reach. Ollama alone reports roughly 8.9 million monthly active developers (TechCrunch, 2026); a meaningful share run exactly the kind of narrow, repeated classification/extraction task this workflow targets.
+**Mechanism**: Removes the two blockers that keep this population from fine-tuning today — writing training code, and needing hundreds of labeled examples — by only asking for what a non-ML person already has (a description of the task and a handful of real examples), and handling data expansion and training invisibly. This converts "we'd need an ML engineer for that" into a task a backend developer can run in an afternoon.
+**Measure**: (1) accuracy on the user's own held-out examples after fine-tuning vs. the un-tuned base model's zero-shot accuracy on the same set; (2) end-to-end time from "prompt + examples" to a usable checkpoint, target under 2 hours on consumer hardware; (3) share of pilot users who ship the resulting model into a real workflow rather than discarding it.
+
+## Try It
+
+A companion skill, `vibe-tune-prompt-only-small-model-finetuner`, is already built: ["Before running any fine-tuning job, judges whether a narrow repeated task ... is actually worth fine-tuning a small local model for — and if so, sizes the synthetic training set and recommends a base model size tier."](../skills/vibe-tune-prompt-only-small-model-finetuner/SKILL.md) It's the pre-training advisory judgment, not the pipeline itself — it won't train a model, but it will tell you whether you should even try, catch contradictory examples before you waste GPU time on them, and flag if your problem is actually a knowledge gap that fine-tuning can't fix (that's a RAG problem, not a training problem).
+
+To use it: paste the contents of `skills/vibe-tune-prompt-only-small-model-finetuner/README.md` into any AI chat tool along with your task description and example pairs, or — if you're on Claude Code — drop the whole `skills/vibe-tune-prompt-only-small-model-finetuner/` folder into `~/.claude/skills/` and invoke it directly.
+
+## Risks worth sitting with
+
+Synthetic-data expansion from only a handful of seed examples can drift from the user's real intent if the teacher model over-generalizes the task description — this needs a sanity-check step, not blind trust. distil labs could open-source or sharply discount their own offering tomorrow and close this exact gap from the vendor side. QLoRA fine-tuning still needs a GPU with real VRAM headroom, so "no ML expertise needed" doesn't mean "no hardware needed" — that alone may gate adoption for part of the target population. And a few dozen examples may simply be too few for some tasks no matter how good the synthetic expansion is; the tool needs an honest "this probably won't work" signal rather than always handing back a checkpoint that looks finished but isn't.
+
+---
+
+Surfaced from `research/2026-11-14-small-local-models.md`, pattern `P3`.
