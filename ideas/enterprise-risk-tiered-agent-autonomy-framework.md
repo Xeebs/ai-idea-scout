@@ -1,6 +1,6 @@
 # Autonomy Ladder: A Graduated, Task-Risk-Tiered Policy Framework Replacing the All-or-Nothing Agent Ban
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-17
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-17-agentic-ai-autonomous-agents.md · P4
