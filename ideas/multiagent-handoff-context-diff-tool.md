@@ -1,6 +1,6 @@
 # Boundary Diff: Context-Loss Diffing at Agent-to-Agent Handoffs
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-14
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-14-multi-agent-architectures.md · P1
