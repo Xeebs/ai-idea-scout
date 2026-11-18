@@ -1,6 +1,6 @@
 # Fit Check: A Corpus-Aware Retrieval Strategy Selector for RAG
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-12
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-12-rag-techniques.md · P2
