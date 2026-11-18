@@ -1,6 +1,6 @@
 # Contract Layer: A Declarative Orchestration Spec and Static Validator for Multi-Agent Pipelines
 
-- **Status**: EXPLORING (promoted 2026-11-13 cycle 42: evidence density — ≥2 independent threads, talvinder.com, ice-ice-bear.github.io, and dev.to all independently naming the same missing-contract-layer gap, corroborated by OpenAI's Symphony as a narrow but real shipped precedent)
+- **Status**: PUBLISHED (promoted 2026-11-13 cycle 42: evidence density — ≥2 independent threads, talvinder.com, ice-ice-bear.github.io, and dev.to all independently naming the same missing-contract-layer gap, corroborated by OpenAI's Symphony as a narrow but real shipped precedent; published cycle 155)
 - **Date**: 2026-11-13
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-13-agentic-ai-autonomous-agents.md · P7
