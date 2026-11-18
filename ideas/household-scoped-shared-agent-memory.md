@@ -1,6 +1,6 @@
 # House Rules: An Owner-Scoped, Role-Based Shared Memory Architecture for Household AI Agents
 
-- **Status**: EXPLORING (promoted 2026-11-14 cycle 75: evidence density — 4 independent sources in the digest — Cogitator, zackproser write-up, ZimaSpace blog, ActingWeb Show HN post — all independently converging on the same owner-scoped household-memory gap)
+- **Status**: PUBLISHED (promoted 2026-11-14 cycle 75: evidence density — 4 independent sources in the digest — Cogitator, zackproser write-up, ZimaSpace blog, ActingWeb Show HN post — all independently converging on the same owner-scoped household-memory gap; published 2026-11-18)
 - **Date**: 2026-11-14
 - **Topic**: Context engineering & memory
 - **Source**: research/2026-11-14-context-engineering-and-memory.md · P4
