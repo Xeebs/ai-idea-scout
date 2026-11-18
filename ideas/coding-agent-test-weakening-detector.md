@@ -1,6 +1,6 @@
 # TestGuard: A CI-Integrated Test-Weakening and Reward-Hacking Detector for Coding Agents
 
-- **Status**: EXPLORING (promoted 2026-11-14 cycle 72: evidence density — ≥2 independent threads, multiple independent builders (agent-roast, rewardhackwatch, gauntlet-cheatcatcher, cheat-oracle) converging on the same test-weakening detector within weeks, none adopted)
+- **Status**: PUBLISHED (promoted 2026-11-14 cycle 72: evidence density — ≥2 independent threads, multiple independent builders (agent-roast, rewardhackwatch, gauntlet-cheatcatcher, cheat-oracle) converging on the same test-weakening detector within weeks, none adopted)
 - **Date**: 2026-11-14
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-14-agentic-ai-autonomous-agents.md · P6
