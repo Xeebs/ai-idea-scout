@@ -1,6 +1,6 @@
 # Last Good State: Checkpoint-and-Rollback Recovery for Mid-Run Multi-Agent Failures
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-14
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-14-multi-agent-architectures.md · P2
