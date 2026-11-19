@@ -1,6 +1,6 @@
 # Gatekeep: A Pre-Publish Quality & Design-Review Gate for Narrow MCP Servers
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-19
 - **Topic**: Tool use & MCP ecosystem
 - **Source**: research/2026-11-19-tool-use-mcp-ecosystem.md · P6
