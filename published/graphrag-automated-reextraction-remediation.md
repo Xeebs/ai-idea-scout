@@ -1,0 +1,33 @@
+# Graph Mend: closing the GraphRAG maintenance gap nobody automated
+
+GraphRAG promises something vector search can't: a knowledge graph that understands how entities relate, not just how their embeddings sit near each other. But every graph decays the moment the documents behind it change — and right now, keeping a production GraphRAG deployment current means either running a manual command on a schedule and eating the full cost of a wholesale recompute, or not bothering at all. Teams are choosing the second option, and they're saying so in public.
+
+## The Gap
+
+A Reddit thread in r/Rag (dated Aug 2025 per the mirror snapshot that surfaced it, 80 upvotes and 36 comments) tells a familiar story: a team concluded GraphRAG "wasn't mature enough" for production, found it scaled poorly, and gave up — not because the retrieval quality was bad, but because keeping the graph correct over time was too much manual work. A second post, "The GraphRAG Trap: Why I Uninstalled Neo4j for My Personal Assistant," is even more direct about the cause: a "maintenance tax" that made the whole approach not worth it.
+
+What makes this interesting isn't that GraphRAG has no update tooling at all — it's that the tooling which exists stops short of actually solving the problem. Microsoft's own GraphRAG ships an `update` CLI that preserves existing entities and relationships when new documents arrive, but someone has to remember to run it, and the index/tool versions have to match. nano-GraphRAG hashes incoming chunks so it can tell what's new, but then recomputes community detection across the entire graph anyway, new content or not. Research efforts aimed squarely at the update-cost problem — EraRAG (arXiv 2506.20963) and Temporal GraphRAG (arXiv 2510.13590) — exist too, but neither has been turned into something a team can install and forget about. The gap between "has an update command" and "doesn't need babysitting" is real, and it's the specific reason practitioners are walking away instead of automating around it.
+
+## The Project
+
+Graph Mend is a sidecar service that watches a team's source documents and, when something changes, automatically re-extracts entities and relationships for just the affected spans — then re-summarizes only the graph communities those entities actually belong to. Never a full-corpus recompute, and never a human invoking a CLI command.
+
+The loop is five steps: diff the incoming document against the last-processed version to localize exactly what changed; run entity/relationship extraction on only the changed spans; walk the graph to find which existing communities contain the touched entities; re-run community summarization scoped to just those communities; commit the patch to the live graph store with a changelog entry. It's deliberately the remediation half of the problem, not the detection half — it assumes a staleness signal exists (or sits downstream of one) and closes the loop automatically, rather than leaving a dashboard of flagged-stale regions for an engineer to act on by hand, which is as far as existing staleness-detection tooling in this space currently goes.
+
+The two building blocks that make this newly tractable — chunk-hashing for change detection and versioned incremental-update primitives — already exist and work individually (nano-GraphRAG and Microsoft's `update` CLI, respectively). What's missing is the event-driven automation layer that wires them together and scopes re-summarization down to just the touched communities, which is now realistic because graph-database client libraries expose mature enough node/edge/community query APIs to localize a change's blast radius without forking a GraphRAG framework.
+
+## Tangible Impact
+
+**Population**: engineering teams running production GraphRAG deployments past the pilot stage — knowledge-ops, internal-knowledge-base, and support-copilot teams maintaining a continuously-updated document corpus — the same practitioner population the r/Rag and "GraphRAG Trap" posts describe abandoning GraphRAG over, or who currently run Microsoft's manual `update` CLI on a schedule and absorb the recompute cost anyway.
+**Mechanism**: converts graph maintenance from a manually-invoked, all-or-nothing recompute (or an abandoned deployment) into an automatic, change-scoped patch, so a team's graph stays correct without an engineer remembering to run an update command or paying full community-detection cost on every change.
+**Measure**: median time between a source document changing and the corresponding graph region reflecting that change (target: minutes-to-hours, automated, vs. manual/scheduled or never in the baseline evidence); community-detection recompute cost (CPU-time or token spend) per update versus a full-corpus-recompute baseline; retention — number of pilot teams still running GraphRAG in production 6 months post-adoption versus the abandonment pattern named in the evidence.
+
+## Try It
+
+A companion skill, **GraphRAG Maintenance Exposure Check** (`skills/graphrag-automated-reextraction-remediation/`), already exists for the decision that comes *before* building Graph Mend: "Estimates a GraphRAG deployment's current staleness exposure and the recompute-cost tradeoff of building an automated, community-scoped re-extraction sidecar versus staying on a manual/scheduled update process — a one-shot feasibility read before committing to the always-on build."
+
+To use it: either paste the skill's `README.md` into any AI chat tool and hand it your corpus size, document change rate, current graph size, and update process, or drop the whole `skills/graphrag-automated-reextraction-remediation/` folder into `~/.claude/skills/` if you're running Claude Code — it'll query a live graph-store connection for real numbers when one is available, and fall back to asking you for the figures (clearly labeled "user-supplied") when it isn't.
+
+Worth knowing before you build: this isn't guaranteed to stay a clean win. Community-detection algorithms like Leiden or Louvain don't always localize cleanly — a small entity change can shift community boundaries wide enough to force a bigger recompute than hoped, which would undercut the core cost-saving pitch. And Microsoft or LlamaIndex could ship this kind of scoped-update automation natively before anyone else does, which would turn this project into a thin wrapper rather than a meaningful build. The underlying abandonment evidence is also blog/forum-level rather than a single fresh, dated thread — worth a quick practitioner-validation pass before committing real engineering time.
+
+Surfaced from `research/2026-11-19-rag-techniques.md`, pattern `P5`.
