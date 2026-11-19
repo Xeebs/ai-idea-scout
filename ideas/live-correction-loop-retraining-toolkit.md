@@ -1,6 +1,6 @@
 # Correction Loop: A Live-Feedback Retraining Toolkit for Low-Resource-Language Interpretation Services
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-19
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-19-applied-ai-for-underserved-domains.md · P3
