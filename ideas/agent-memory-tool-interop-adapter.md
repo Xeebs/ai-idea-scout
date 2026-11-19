@@ -1,6 +1,6 @@
 # Memory Mesh: A Universal Adapter Layer Across Fragmented Agent Memory Tools
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-13
 - **Topic**: Context engineering & memory
 - **Source**: research/2026-11-13-context-engineering-and-memory.md · P2
