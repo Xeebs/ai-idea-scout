@@ -1,6 +1,6 @@
 # Long Haul: A Long-Horizon Failure-Mode Test Harness for Production Agent Deployments
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-18
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-18-agentic-ai-autonomous-agents.md · P4
