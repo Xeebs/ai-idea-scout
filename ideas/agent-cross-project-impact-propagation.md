@@ -1,6 +1,6 @@
 # Ripple: A Cross-Task Impact-Propagation Layer for Freelancers Running Concurrent Coding-Agent Engagements
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-18
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-18-agentic-ai-autonomous-agents.md · P1
