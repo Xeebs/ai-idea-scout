@@ -1,6 +1,6 @@
 # Harness Check: An Adoptable Harness-Normalization Layer for Agent Benchmark Comparisons
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-18
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-18-agentic-ai-autonomous-agents.md · P3
