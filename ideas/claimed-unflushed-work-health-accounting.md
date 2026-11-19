@@ -1,0 +1,37 @@
+# Claimed, Not Flushed: Accurate Backlog Accounting for Async Pipeline Health Checks
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-19
+- **Topic**: LLM evaluation & observability
+- **Source**: research/2026-11-19-llm-evaluation-observability.md · P7
+- **Maturity verdict**: OPEN — GitHub + web search found nothing specific to this bug class, only generic liveness-vs-readiness separation guidance (NVIDIA Dynamo docs, Pomerium blog) and LiteLLM's proxy backlog endpoint, which reports in-flight requests but does not distinguish "claimed by a drain/worker but not yet persisted" from genuinely-pending work. No library or documented pattern models "claimed-but-unflushed work" as its own observability-accounting bug class; only one project's one-off internal fix addresses it.
+- **Format**: BOTH
+- **Data Sources**: CONNECTED — the Project reads directly from the team's own existing queue/worker infrastructure: the in-memory buffer count, the drain/worker claim state, and the persistence-confirmation signal, all of which already exist inside whatever async pipeline (Postgres queue, Redis, Kafka consumer, custom buffer-drain system) a team is running. No new external data source is introduced; it reconciles accounting the pipeline already tracks but currently reports incompletely. The Skill Angle is MANUAL — the user pastes their health/liveness endpoint's code for a one-shot blind-spot audit.
+
+## The Gap
+joshuaswarren/remnic PR #3445, "fix(core): report claimed drain backlog in /health extraction liveness" (2026-11-16, 2 reactions/7 comments), describes the bug precisely: "`/engram/v1/health` `extraction.pendingTurnCount` counted only the in-memory buffer... so every session handed to a `buffer drain` claim vanished from health, doctor and stats. ... health reported 10,512 pending [vs. a higher real backlog]." A health endpoint that only counts the in-memory buffer makes a system look healthier than it is the moment work transitions from "sitting in memory" to "claimed by a drain worker but not yet durably persisted" — exactly the state any async LLM-eval or trace-ingestion pipeline passes through constantly. This was fixed once, locally, inside one project, with no generalized pattern or library addressing the bug class.
+
+## The Project
+A small accounting library and integration pattern for async pipelines (queues, drain workers, ingestion buffers) that explicitly tracks three states for every unit of work — `buffered` (in-memory, unclaimed), `claimed` (handed to a worker/drain process, not yet confirmed persisted), and `persisted` (durably written) — and exposes a health/liveness metric that reports the true combined backlog (`buffered + claimed`) rather than silently dropping the `claimed` bucket the moment work leaves the in-memory structure. Ships as a drop-in wrapper around common queue/worker patterns (a claim-then-ack model) plus a reference Prometheus/OTel metric exporter, so a team adopting it gets the corrected `pending_total` metric without re-architecting their existing drain logic.
+
+Components: the three-state accounting wrapper; a claim-timeout/orphan-detection check (a claim that never confirms persistence within a bound is itself a distinct alertable state); a reference metrics exporter; a migration guide for retrofitting an existing health endpoint.
+
+## Tangible Impact
+**Population**: Engineers operating any async ingestion or drain-based processing pipeline relevant to LLM eval/observability — eval-result ingestion queues, trace-ingestion pipelines, and any buffer-drain architecture generally — who rely on a `/health`, `/doctor`, or `/stats` endpoint to make on-call decisions about real system backlog. The evidenced bug shows this clustered as a real production incident (a measured, materially understated pending count) inside one live system; the same buffer-then-claim-then-persist shape is common to any queue-backed ingestion pipeline, not unique to one product.
+**Mechanism**: Today, an on-call engineer or an automated alert trusts a health endpoint that structurally cannot see work claimed-but-not-yet-persisted, so a growing real backlog looks invisible right up until it surfaces as a user-visible failure (delayed eval results, lost traces, a stats dashboard that silently undercounts). The three-state accounting pattern makes the hidden bucket visible as a first-class, alertable number instead of a blind spot discovered only after an incident.
+**Measure**: Difference between a pipeline's reported `pending` metric before vs after adopting the pattern on a real claimed-backlog scenario (target: the corrected number matches the actual total, as in remnic's measured 10,512-vs-higher-real-number gap); time from a real backlog growth event to alert-firing, before (never, since it's invisible) vs after; number of orphaned claims (claimed but never persisted within a timeout) surfaced that were previously silent data loss.
+
+## Why Now
+Async ingestion pipelines for LLM eval results and traces grew in both volume and architectural complexity through 2026 — more systems now route through a buffer-then-claim-then-persist handoff rather than a simple synchronous write — which is exactly the shape that makes this blind spot newly common, as evidenced by a real production incident surfacing it this cycle; the fix pattern itself (explicit state tracking) requires no new technology, just a reusable library nobody has packaged yet.
+
+## Skill Angle
+Trigger: a team is designing or auditing a health/liveness endpoint for an async ingestion or drain-based pipeline and wants to know if it has this blind spot. Inputs: the current health-endpoint code or its metric-computation logic, pasted verbatim. Output: a flag identifying which backlog states the current endpoint accounts for (buffered/claimed/persisted) and which it silently drops, plus a recommended minimal patch to add the missing state. This is a one-shot audit; the project is the adopted accounting library running continuously inside the pipeline.
+
+## MVP Sketch
+2 weeks, 1 person: build the three-state wrapper around a simple claim-then-ack queue abstraction (start with a Postgres-backed queue, the most common shape), a reference metrics exporter, and a reproduction of remnic's exact bug scenario (claim work, delay persistence, check whether the health metric reflects the true total). Validate by confirming the wrapped health metric matches the real pending count throughout the claim-to-persist window, while an unwrapped baseline undercounts exactly as described in the evidenced PR.
+
+## Risks & Open Questions
+- This is a narrow, technical accounting pattern — its impact depends entirely on how often teams actually hit this blind spot in practice; worth validating with a second independent incident report before committing beyond the MVP.
+- Retrofitting onto an existing production pipeline with ad hoc claim semantics may require per-pipeline glue code, limiting how "drop-in" the wrapper really is.
+- Orphan-claim detection (a claim that never confirms persistence) needs careful timeout tuning per pipeline or it produces its own false alerts, inverting the problem it's meant to solve.
+- Could be judged solved-enough by teams that simply instrument persistence-confirmation events directly into their existing metrics stack without needing a dedicated library — worth checking whether that lighter-weight workaround already covers most real cases.

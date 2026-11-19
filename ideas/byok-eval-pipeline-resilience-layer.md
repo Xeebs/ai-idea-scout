@@ -1,6 +1,6 @@
 # Key Guard: A Resilience Layer for BYOK LLM-Judge Eval Pipelines
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-12
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-12-llm-evaluation-observability.md · P3
