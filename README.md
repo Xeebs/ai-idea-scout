@@ -31,8 +31,16 @@ idea-synthesizer agent   ← turns OPEN and PARTIAL patterns into project
   (promotion check)      ← orchestrator bumps PROPOSED → EXPLORING on
         │                  recurrence or strong evidence density
         ▼
+idea-refiner agent       ← for the oldest EXPLORING/PROTOTYPING idea with
+        │                  unconsumed human feedback, edits the idea (and
+        │                  its skill, if any) to match the direction given
+        │                  (at most 1/cycle; logged to pipeline/refinements.md)
+        ▼
 skill-synthesizer agent  ← for SKILL/BOTH ideas without one yet, writes a
-        │                  dual-format skill to skills/ (at most 1/cycle)
+        │                  dual-format skill to skills/ — gated on a daily
+        │                  quota shared with the MARKETPLACE track (at most
+        │                  1 new skill/day system-wide, see scripts/
+        │                  claim-skill-quota.sh)
         ▼
 publisher agent          ← for the oldest EXPLORING idea without one yet,
         │                  writes a polished writeup to published/,
@@ -59,6 +67,7 @@ pipeline/           INFRA-track only — the MARKETPLACE track has its own equiv
   queue.md          Topic queue (rotation + ad-hoc additions)
   changelog.md      One line per completed cycle
   published.md      Log of everything promoted to published/
+  refinements.md    Log of idea-refiner runs (which feedback bullet was last incorporated per idea)
   sessions/         Per-cycle orchestrator notes
 research/
   YYYY-MM-DD-<topic>.md   Raw research digests from trend-scout (INFRA only)
@@ -82,12 +91,14 @@ scripts/
   heartbeat.sh      One firing — dispatches both tracks as parallel subagents, exits
   loop.sh           Continuous driver — fires heartbeat.sh back-to-back forever
                      (run as the ai-idea-scout-loop systemd service)
+  claim-skill-quota.sh  Atomically claims the shared 1-skill/day quota (flock-protected;
+                     see .skill-quota.json at repo root, gitignored)
 .claude/
-  agents/           trend-scout, gap-analyst, idea-synthesizer, skill-synthesizer,
-                     publisher, and their marketplace-track siblings
+  agents/           trend-scout, gap-analyst, idea-synthesizer, idea-refiner,
+                     skill-synthesizer, publisher, and their marketplace-track siblings
                      (marketplace-trend-scout, marketplace-gap-analyst,
-                     marketplace-idea-synthesizer, marketplace-skill-synthesizer,
-                     marketplace-packager)
+                     marketplace-idea-synthesizer, marketplace-idea-refiner,
+                     marketplace-skill-synthesizer, marketplace-packager)
   rules/            idea-format.md, skill-format.md, research-quality.md
 ```
 

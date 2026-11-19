@@ -74,15 +74,29 @@ The synthesizer writes one file per idea to `ideas/` following `.claude/rules/id
 
 **Promotion check (orchestrator, no subagent)**: for each new idea, and for each pattern the synthesizer reported as a skipped duplicate, check whether the gap now meets the promotion bar in `docs/METHODOLOGY.md` (recurrence across cycles, or evidence density ≥50 combined points or ≥2 independent threads). If so, edit that idea's status in `ideas/INDEX.md` directly from `PROPOSED` to `EXPLORING`, with a one-line reason noted later. Never touch a status a human has already changed manually.
 
+Write `state.json` with `current_phase: REFINEMENT`.
+
+### Phase 3.5 — Idea refinement (delegate: idea-refiner, conditional)
+
+Best-effort, not part of the resume state machine — if the cycle dies before reaching here, any idea that qualified just gets picked up again next cycle like any other it-didn't-run case.
+
+Scan `ideas/INDEX.md` for ideas with status `EXPLORING` or `PROTOTYPING` (human-approved, past the proposal stage). For each, read its `## Human Feedback` section (if any) and compare the newest bullet's timestamp against `pipeline/refinements.md`'s last-recorded entry for that slug (no entry = never refined, so any feedback qualifies; no `## Human Feedback` section at all = doesn't qualify). Take the single oldest qualifying idea and spawn:
+
+> You are the idea-refiner agent. Read `/home/xhasan/my-projects/ai-idea-scout/.claude/agents/idea-refiner.md` and follow it exactly. Target idea: `ideas/<file>`. Last refined through: `<timestamp from pipeline/refinements.md, or "never">`. Human direction to apply: "<every Human Feedback bullet newer than that timestamp, verbatim>".
+
+On return (unless `NOTHING_TO_DO`), append one line to `pipeline/refinements.md`: `- <date> · <slug> · refined per feedback dated <feedback timestamp> · <the refiner's one-line summary>`. At most one refinement per cycle — if more than one idea qualifies, the rest wait for a later cycle.
+
 Write `state.json` with `current_phase: SKILL_SYNTHESIS`.
 
 ### Phase 4 — Skill synthesis (delegate: skill-synthesizer, conditional)
 
-Scan `ideas/INDEX.md` for any idea (from this cycle or the backlog) tagged `Format: SKILL` or `Format: BOTH` that has no `skills/<slug>/` directory yet. Take up to the **oldest 3** qualifying ideas (fewer if fewer exist) and spawn one skill-synthesizer subagent per idea, in parallel (they write to disjoint `skills/<slug>/` directories, so there's nothing to race over):
+Scan `ideas/INDEX.md` for any idea (from this cycle or the backlog) tagged `Format: SKILL` or `Format: BOTH` that has no `skills/<slug>/` directory yet. If none qualify, skip this phase.
+
+Otherwise, before spawning anything, claim the shared daily skill quota — **one slot per calendar day, shared with the MARKETPLACE track**: run `scripts/claim-skill-quota.sh`. If it exits non-zero, the day's single skill slot was already claimed (by this track, by MARKETPLACE, or by an earlier cycle today) — skip this phase and note it in the session file. If it exits 0, spawn exactly one skill-synthesizer subagent for the single oldest qualifying idea:
 
 > You are the skill-synthesizer agent. Read `/home/xhasan/my-projects/ai-idea-scout/.claude/agents/skill-synthesizer.md` and follow it exactly. Target idea: `ideas/<file>`.
 
-Raised from the old 1-per-cycle cap to 3 — the backlog of skill-shaped ideas was growing faster than it drained. For each that returns `NOVELTY_FAIL`, edit that idea's `Format` field to `PROJECT` and append a one-line note citing what was found. `NO_CANDIDATES` overall → skip silently.
+Capped at 1 shared skill per day across both tracks combined (reduced from the old per-cycle caps — this pipeline runs far more cycles per day than skills should ever be written) — the backlog can wait; this keeps output volume sane. If it returns `NOVELTY_FAIL`, edit that idea's `Format` field to `PROJECT` and append a one-line note citing what was found — the day's quota slot stays spent either way, since the attempt is what's being rate-limited, not the success.
 
 Write `state.json` with `current_phase: PUBLISH`.
 
@@ -157,15 +171,29 @@ Writes one idea file per surviving pattern to `marketplace-content/ideas/`, each
 
 **Promotion check (orchestrator, no subagent)**: same bar as INFRA (recurrence, or evidence density), applied to `marketplace-content/INDEX.md` entries. Never touch a status a human has already changed manually.
 
+Write `marketplace-content/state.json` with `current_phase: REFINEMENT`.
+
+### Phase 3.5 — Idea refinement (delegate: marketplace-idea-refiner, conditional)
+
+Best-effort, not part of the resume state machine — same reasoning as INFRA's Phase 3.5.
+
+Scan `marketplace-content/INDEX.md` for ideas with status `EXPLORING` or `PROTOTYPING`. For each, read its `## Human Feedback` section and compare the newest bullet's timestamp against `marketplace-content/refinements.md`'s last-recorded entry for that slug. Take the single oldest qualifying idea and spawn:
+
+> You are the marketplace-idea-refiner agent. Read `/home/xhasan/my-projects/ai-idea-scout/.claude/agents/marketplace-idea-refiner.md` and follow it exactly. Target idea: `marketplace-content/ideas/<file>`. Last refined through: `<timestamp from marketplace-content/refinements.md, or "never">`. Human direction to apply: "<every Human Feedback bullet newer than that timestamp, verbatim>".
+
+On return (unless `NOTHING_TO_DO`), append one line to `marketplace-content/refinements.md`: `- <date> · <slug> · refined per feedback dated <feedback timestamp> · <the refiner's one-line summary>`. At most one refinement per cycle.
+
 Write `marketplace-content/state.json` with `current_phase: SKILL_SYNTHESIS`.
 
 ### Phase 4 — Skill synthesis (delegate: marketplace-skill-synthesizer, conditional)
 
-Scan `marketplace-content/INDEX.md` for any idea tagged `Format: SKILL`/`BOTH` with no `marketplace-content/skills/<slug>/` yet. Take up to the **oldest 3** qualifying ideas and spawn one marketplace-skill-synthesizer subagent per idea, in parallel (disjoint output directories):
+Scan `marketplace-content/INDEX.md` for any idea tagged `Format: SKILL`/`BOTH` with no `marketplace-content/skills/<slug>/` yet. If none qualify, skip this phase.
+
+Otherwise, before spawning anything, claim the shared daily skill quota — **one slot per calendar day, shared with the INFRA track**: run `/home/xhasan/my-projects/ai-idea-scout/scripts/claim-skill-quota.sh`. If it exits non-zero, the day's single skill slot was already claimed — skip this phase and note it in the session file. If it exits 0, spawn exactly one marketplace-skill-synthesizer subagent for the single oldest qualifying idea:
 
 > You are the marketplace-skill-synthesizer agent. Read `/home/xhasan/my-projects/ai-idea-scout/.claude/agents/marketplace-skill-synthesizer.md` and follow it exactly. Target idea: `marketplace-content/ideas/<file>`.
 
-Raised from the old 1-per-cycle cap to 3, same reasoning as INFRA's Phase 4. For each `NOVELTY_FAIL` → edit `Format` to `PROJECT` with a one-line note. `NO_CANDIDATES` overall → skip silently.
+Capped at 1 shared skill per day across both tracks combined (reduced from the old per-cycle caps). For each `NOVELTY_FAIL` → edit `Format` to `PROJECT` with a one-line note; the day's quota slot stays spent regardless. `NO_CANDIDATES` overall → skip silently.
 
 Write `marketplace-content/state.json` with `current_phase: PACKAGING`.
 
