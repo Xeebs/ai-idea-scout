@@ -1,6 +1,6 @@
 # Fit Tune: A Device-Aware Fine-Tuning Method and Quantization Recipe Selector
 
-- **Status**: EXPLORING (promoted 2026-11-18 cycle 148: evidence density — ≥2 independent threads within the digest, the 2026 MobiUK paper's healthcare-fraud validation and the separate late-2026 manufacturing preprint, each independently building the same device-aware fine-tune-method-plus-quantization pipeline on a different domain)
+- **Status**: PUBLISHED (promoted 2026-11-18 cycle 148: evidence density — ≥2 independent threads within the digest, the 2026 MobiUK paper's healthcare-fraud validation and the separate late-2026 manufacturing preprint, each independently building the same device-aware fine-tune-method-plus-quantization pipeline on a different domain)
 - **Date**: 2026-11-18
 - **Topic**: Small & local models
 - **Source**: research/2026-11-18-small-and-local-models.md · P7
