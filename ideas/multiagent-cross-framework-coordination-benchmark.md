@@ -1,6 +1,6 @@
 # Common Ground: A Converged, Cross-Framework Multi-Agent Coordination Benchmark Suite
 
-- **Status**: EXPLORING (promoted 2026-11-19 cycle 211: evidence density — ≥2 independent threads within the digest, Show HN "KradleBench" and bespokelabs.ai's "Multi Agent Coordination Benchmark" both posted the same week naming the same no-converged-standard gap, corroborated by 5 distinct non-converged academic benchmarks found in the gap-analyst's verdict)
+- **Status**: PUBLISHED (promoted 2026-11-19 cycle 211: evidence density — ≥2 independent threads within the digest, Show HN "KradleBench" and bespokelabs.ai's "Multi Agent Coordination Benchmark" both posted the same week naming the same no-converged-standard gap, corroborated by 5 distinct non-converged academic benchmarks found in the gap-analyst's verdict; published 2026-11-19 cycle 214)
 - **Date**: 2026-11-19
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-19-multi-agent-architectures.md · P3
