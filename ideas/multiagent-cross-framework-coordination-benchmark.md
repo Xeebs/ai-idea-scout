@@ -1,0 +1,37 @@
+# Common Ground: A Converged, Cross-Framework Multi-Agent Coordination Benchmark Suite
+
+- **Status**: EXPLORING (promoted 2026-11-19 cycle 211: evidence density — ≥2 independent threads within the digest, Show HN "KradleBench" and bespokelabs.ai's "Multi Agent Coordination Benchmark" both posted the same week naming the same no-converged-standard gap, corroborated by 5 distinct non-converged academic benchmarks found in the gap-analyst's verdict)
+- **Date**: 2026-11-19
+- **Topic**: Multi-agent architectures
+- **Source**: research/2026-11-19-multi-agent-architectures.md · P3
+- **Maturity verdict**: PARTIAL — at least five non-converged 2026 academic benchmarks (MASBENCH, ALEM/arXiv 2606.08340, CooperBench, OrchBench, DPBench) plus multiple GitHub one-offs (Somikbansal21/Multi-Agent-Coordination-Benchmark, najmulhasan-code/dpmarl) and two independent Show HN launches in the same week (KradleBench, bespokelabs.ai's benchmark) all attack coordination evaluation separately; none has converged into a maintained, cross-framework standard.
+- **Format**: BOTH — the benchmark harness, scenario corpus, and adapters are persistent PROJECT infrastructure; recommending which scenarios to run for a specific architecture question is a one-shot advisory task. See Skill Angle.
+- **Data Sources**: CONNECTED — executes its standardized task suite directly against a team's own running multi-agent stack via native framework hooks (LangGraph's graph invocation API, CrewAI's `Crew.kickoff()`, AutoGen's `GroupChat` run loop — all mature, documented today), and pulls scenario definitions from the public source-benchmark repos (MASBENCH/CooperBench/OrchBench GitHub datasets, already public) instead of asking a user to hand-build a test harness.
+
+## The Gap
+Two independent Show HN launches appeared in the same week in November 2026 — KradleBench (multi-agent evals in Minecraft, 9pts/7cmt) and bespokelabs.ai's "Multi Agent Coordination Benchmark" (16pts/1cmt) — each a single team's narrow, one-off harness. A wider search confirms this isn't a one-time coincidence: at least five distinct academic benchmarks (MASBENCH, ALEM, CooperBench, OrchBench, DPBench) and multiple solo GitHub repos already exist in 2026 alone, none cross-referencing or building on each other. Teams keep re-answering "is our multi-agent coordination actually working" from scratch because nothing converged.
+
+## The Project
+A benchmark suite and harness that runs identically against a team's live AutoGen, CrewAI, or LangGraph stack, scoring coordination quality (task success, communication overhead, redundant/wasted turns, failure-recovery rate) on a shared scenario corpus ported from the existing fragmented sources rather than inventing yet another one-off set. The centerpiece is the adapter layer: the same scenario, run through three different frameworks' native orchestration APIs, producing a comparable score — so a team can ask "did switching from mesh to hierarchical actually help coordination" and get an answer without building a throwaway harness, which is exactly what both November launches did independently in the same week.
+
+Components: a scenario corpus assembled from MASBENCH/CooperBench/OrchBench/DPBench task definitions normalized to one schema; three framework adapters (LangGraph, CrewAI, AutoGen) that translate the harness's task-and-scoring protocol into each framework's native run loop; a coordination-quality scorecard (task success, message count, redundant-turn rate, recovery-after-failure rate); a public leaderboard for the default topology each framework ships, so teams have a baseline to compare their own custom architecture against.
+
+## Tangible Impact
+**Population**: Engineering teams building production multi-agent systems on AutoGen, CrewAI, or LangGraph who need to validate a coordination-architecture decision (adding a specialist agent, switching topology) before shipping it — the same population already building ad hoc coordination benchmarks from scratch, evidenced by at least seven independent, non-converged efforts in 2026 alone (two same-week Show HN launches plus five academic benchmarks).
+**Mechanism**: Today, validating whether an architecture change actually improved coordination means either trusting an academic benchmark not built for your framework, or spending days building a throwaway harness — as both November 2026 launches did independently, in the same week, unaware of each other. A shared, cross-framework suite turns that into a reproducible before/after score run against the team's actual live stack.
+**Measure**: (1) Time from "did this architecture change help?" to a comparable before/after coordination score — target: hours via the shared harness vs. the multi-day bespoke-build time each of the two concurrent launches required. (2) Cross-framework consistency — rank-order agreement on a held-out scenario set when the same topology pattern is run through different framework adapters. (3) Number of teams that retire a bespoke in-house coordination harness in favor of the shared suite within a pilot window.
+
+## Why Now
+Two independent teams launched narrow coordination benchmarks in the same November 2026 week with no shared standard between them, on top of five already-fragmented 2026 academic efforts — the convergence moment is ripe precisely because duplication is visibly accelerating. AutoGen, CrewAI, and LangGraph's orchestration APIs have also stabilized enough in 2026 that one adapter layer spanning all three is newly practical, which wasn't reliably true a year earlier when each framework's run-loop internals changed more often.
+
+## Skill Angle
+Given a description of a team's multi-agent architecture (framework, topology, task domain) and the specific change they're considering (adding an agent, restructuring to hierarchical, splitting a monolithic agent), recommend which subset of the converged suite's scenarios most directly tests that change and how to interpret the resulting score delta — a one-shot advisory task useful before a team commits to running the full harness.
+
+## MVP Sketch
+3–4 weeks, 1–2 people: build adapters for two frameworks (LangGraph and CrewAI), port a subset of the MASBENCH/CooperBench scenario corpus under one normalized scoring schema, and run each framework's default multi-agent topology against the same scenarios. Validate: confirm the harness's rank-ordering of coordination quality across topologies matches each source benchmark's own published findings — proof that convergence doesn't lose the signal the original fragmented benchmarks captured.
+
+## Risks & Open Questions
+- Each of the five existing academic benchmarks measures a genuinely different construct (Minecraft-sandbox cooperation vs. abstract message-passing tasks); forcing them into one scoring schema risks flattening what made each benchmark meaningful.
+- A well-resourced framework vendor (LangGraph or CrewAI) could ship its own first-party coordination benchmark and fragment the space further instead of adopting a neutral suite.
+- Coordination quality may be too task/domain-specific for one converged score to generalize; teams might still need custom scenario extensions, limiting out-of-the-box value.
+- Current signal is two same-week Show HN posts at modest engagement (9 and 16 points) — real appetite for convergence, versus continued tolerance of fragmentation, isn't yet proven.

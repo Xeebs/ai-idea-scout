@@ -1,6 +1,6 @@
 # Claim Ledger: A Signed Attestation and Trust-Scoring Layer for Inter-Agent Claims
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING (promoted 2026-11-19 cycle 211: recurrence — same inter-agent trust/claim-verification gap (P2) surfaced independently in research/2026-11-19-multi-agent-architectures.md, a second cycle naming the same gap)
 - **Date**: 2026-11-17
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-17-multi-agent-architectures.md · P2
