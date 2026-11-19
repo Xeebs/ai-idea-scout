@@ -1,0 +1,37 @@
+# Containment Envelope: A Blast-Radius Budget Enforcement Layer for Agent Tool Access
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-19
+- **Topic**: AI safety & guardrails in production
+- **Source**: research/2026-11-19-ai-safety-guardrails-in-production.md · P7
+- **Maturity verdict**: PARTIAL — a PyCon DE 2026 talk and Prefactor's guide both present least-privilege/isolated-credentials/containment as discipline a team builds for itself, not a product. WebSearch found real point-solutions covering single dimensions (Runloop/microVM sandboxing, Aviatrix egress "blast radius" controls, hoop.dev's access gateway, Cequence's short-lived per-agent credentials, CrowdStrike's seccomp/AppArmor harness) but no pre-packaged product assembling least privilege, approval gates, spend/action budgets, and termination into one declared, enforced, measured envelope. GitHub search (`agent least privilege framework`, `agent sandboxing framework`, `agent credential isolation blast radius`) returned no matches.
+- **Format**: BOTH
+- **Data Sources**: CONNECTED — the envelope wires into the agent's real execution surface: short-lived credential issuance (AWS STS / GCP workload identity / Vault dynamic secrets — all mature APIs), the sandbox/container runtime already running the agent (Docker, gVisor, Firecracker — mature), and an interception point on outbound tool calls (an MCP gateway or direct SDK middleware). No single connector unifies these for "agent containment" today, so building the thin per-surface adapters is part of this idea, not a from-scratch integration project. The companion skill's audit mode is MANUAL — a team pastes a description or config of its agent's current tool/credential/approval setup for a one-time blast-radius score.
+
+## The Gap
+Both sources found this cycle present containment as the honest fallback once a team accepts jailbreak prevention "usually can't be eliminated" (Prefactor) — but both frame it as a checklist a builder works through themselves, not something installed. Meanwhile the digest's own evidence shows the building blocks (per-agent credentials, sandbox runtimes, egress controls, access gateways) already exist individually across five-plus different vendors with no shared surface. A team adopting containment today is integrating five vendors' worth of point tools by hand, or skipping it and hoping prevention holds.
+
+## The Project
+A declarative policy layer that sits between an agent and its tool-call surface and lets a team declare, per task type, a capability budget: file/path write scope, dollar spend cap, network egress allowlist, number of destructive-action calls permitted, and a session time-to-live. The envelope issues short-lived credentials scoped exactly to the declared budget (via STS/Vault/workload-identity adapters), routes any call exceeding a declared threshold to a human approval queue instead of hard-blocking, and terminates the session the instant a budget is exceeded rather than relying on the model to behave. The centerpiece is a computed, numeric **blast-radius score** per running session — not another prevention classifier — so "how bad could this session go" becomes a number a team sets and watches, not a guess made at design time and never revisited.
+
+Components: a budget-declaration schema (per task type); credential-issuance adapters (STS/Vault/workload-identity); a tool-call interception point (MCP gateway or SDK middleware); an approval-queue escalation path; a live blast-radius scorer and dashboard.
+
+## Tangible Impact
+**Population**: engineering teams running autonomous coding, ops, or customer-facing agents with real tool access (file systems, cloud APIs, payment or messaging systems) at companies below the scale of a dedicated AI-security team — the same population the digest's P1/P9 evidence shows hand-rolling partial versions of this (a lone `safety.py` guardrail module, scattered single-dimension point tools) rather than adopting a shared containment layer.
+**Mechanism**: today a successful jailbreak or injection against these teams' agents has an unbounded, undeclared blast radius — the agent can act with whatever privilege it was handed, discovered only after the fact. The envelope forces a declared budget before a session runs, enforces it with real short-lived credentials rather than a prompt instruction, and terminates on breach — converting an unbounded incident into a budget-capped one, and converting "how contained is our agent" from a design-time guess into a live, auditable number.
+**Measure**: (1) measured blast radius (files touched, dollars spent, destructive calls made) during a red-team jailbreak drill run through the envelope vs. the same drill run uncontained; (2) percentage of production sessions operating within their declared budget without a manual override; (3) time for a new team to adopt a working containment default (target: hours of config against the schema, not weeks of bespoke design the PyCon talk and Prefactor's guide both describe).
+
+## Why Now
+The individual building blocks this needs — short-lived cloud credential issuance, mature sandbox runtimes, MCP-native tool-call interception — are all commodity-mature in 2026; the gap this cycle's evidence names is explicitly the *integration and packaging*, not a missing primitive, and the PyCon DE 2026 talk shows builders are actively looking for exactly this right now.
+
+## Skill Angle
+Trigger: a team hands over a description (or config/code snippet) of their agent's current tool access, credential scope, and any approval logic already in place. The skill reviews it against the four containment dimensions (least privilege, credential isolation, approval gates, termination/budget caps), computes a rough blast-radius estimate for the declared setup, and flags the weakest dimension — a one-time audit a team can run before committing to installing the always-on envelope. The project is the live, enforcing runtime; the skill is the "how exposed are you right now" diagnostic that motivates adopting it.
+
+## MVP Sketch
+A small middleware library sitting in front of an MCP server or agent SDK's tool-call dispatch: a YAML budget schema (path scope, spend cap, egress allowlist, destructive-call count, TTL), one credential adapter (AWS STS), one sandbox adapter (Docker), and a terminal-session-kill trigger on breach. Single experiment: run a scripted prompt-injection red-team scenario against an agent with real but limited tool access, with and without the envelope, and measure the actual blast radius (files touched, calls made) in each condition. 3–4 weeks, 1–2 people.
+
+## Risks & Open Questions
+- The hardest part may be getting teams to accurately declare a budget in the first place — an under-scoped budget breaks legitimate work, an over-scoped one defeats the point, mirroring the same problem containment is meant to solve.
+- A cloud-security vendor (CrowdStrike, Cequence, hoop.dev) already owns one dimension and could extend into the others, absorbing this as a feature rather than leaving it a standalone integration gap.
+- Community-demand signal here is one talk and one vendor guide, not a discussion thread — validating real pull means checking whether teams actually declare and tune budgets, not just read the framing.
+- Approval-queue escalation adds latency and a human bottleneck; the MVP needs to prove this doesn't just become "disable approvals to ship faster," silently reverting to unbounded risk.
