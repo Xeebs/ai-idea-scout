@@ -1,6 +1,6 @@
 # Reset Point: A Deliberate Plateau-Detection and Reset-with-Memo Primitive for Long-Horizon Agents
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-19
 - **Topic**: Context engineering & memory
 - **Source**: research/2026-11-19-context-engineering-memory.md · P3

@@ -1,0 +1,33 @@
+# Reset Point: A Deliberate Plateau-Detection and Reset-with-Memo Primitive for Long-Horizon Agents
+
+A coding agent given a multi-hour task doesn't usually fail by running out of context. It fails by getting stuck — retrying the same patch, circling the same dead-end hypothesis, burning turns and tokens on an approach it already disproved an hour ago. Bigger context windows don't fix this, because the problem was never information loss. It's reasoning momentum: the agent remembers everything and is still fixated on the wrong idea.
+
+## The Gap
+
+Drew Breunig's HN front-page essay "The State of Context Engineering" (275 points, 67 comments, 2026-10-25) gave this failure mode a name: "context inertia." His framing traces a clean line from prompt engineering (2023) through context engineering (2025) to what he calls harness engineering (2026) — and context inertia is squarely a harness-engineering problem. His proposed fix is deliberately simple: instead of letting an agent silently self-compact its own history (which just summarizes the fixation forward), periodically force a hard reset, handed off through an explicit memo instead of a stale transcript.
+
+That idea is, right now, entirely conceptual. Two live, open Claude Code feature-request issues ask for exactly this — a self-checkpoint-and-reset capability, and a way to handle self-managed context degradation — confirming real, current, unshipped demand rather than a solved problem nobody needs. A search for anything that actually implements the pattern turns up only scattered, narrow pieces: `simen/mcp-memento`, a "Context Travel MCP" offering checkpoint/reset tools for Claude agents with its real-world scale unconfirmed; `ctxio`, a PyPI CLI that writes a token-capped handoff snapshot file; and `marcj/handover`, a status-line nudge that tells you when a handover is probably due. None of them watches a running session, detects that it has plateaued, and forces the reset-with-memo cycle as a single built-in primitive. Every mention of the full pattern, everywhere, is still a description of what should exist — not a thing that does.
+
+## The Project
+
+The proposal is a harness-level primitive that sits on top of a long-horizon agent session and watches for plateau signals: repeated near-identical tool-call sequences, N consecutive turns with no net test or diff progress, or an explicit stuck-loop marker. When one trips, it doesn't just nudge — it pauses the session and forces the agent to author a structured memo: restated goal, hard constraints, every approach already tried and why each one failed, and the current best hypothesis. Then it hard-resets: a brand-new context seeded with nothing but that memo, with the stale transcript thrown away entirely.
+
+That discard is the whole bet, not an afterthought bolted onto compaction. The hypothesis is that fixation survives full information preservation — an agent that still has every token of its failed attempts available to it can still be stuck, because the problem isn't missing facts, it's reasoning momentum carried forward by the shape of the context itself. A compaction summary inherits that shape. A forced reset-with-memo is designed to break it.
+
+Concretely, the components are: a pluggable plateau-detection module (diff/test-progress flatline, tool-call-sequence repetition, elapsed-turns-since-last-improvement); a fixed memo template paired with a forced "write your reset memo" prompt; a reseed step that throws away the prior transcript rather than summarizing it; and a log of every reset event — trigger reason, memo contents, whether the new session actually converged faster — so the detector itself can be tuned over time instead of staying a fixed guess.
+
+## Tangible Impact
+
+**Population**: Developers running autonomous or semi-autonomous coding-agent sessions on multi-hour or multi-day tasks — large refactors, flaky/hard-to-reproduce bug hunts, exploratory debugging and research loops — a subset of the hundreds-of-thousands-scale Claude Code/Codex/Cursor user base reported in 2026 vendor disclosures, specifically those whose tasks are open-ended enough to risk hypothesis fixation rather than a quick single-file edit.
+
+**Mechanism**: Today, a fixated agent either burns tokens and wall-clock time repeating the same failed approach until a human notices and manually kills the session, or an automatic lossy compaction event fires and carries the same stale framing forward since it summarizes the existing fixation rather than breaking it. A deliberate, triggered reset-with-memo converts "someone eventually notices and intervenes" into an automatic, logged event, and strips the stale reasoning momentum on purpose while keeping only the facts (goal, constraints, what's been tried) that matter.
+
+**Measure**: (1) Turns/tokens spent re-attempting the same dead-end approach before escaping, with vs. without the reset trigger, on a reproduced "stuck agent" scenario set. (2) Task completion rate and wall-clock time on long-horizon tasks, reset-primitive vs. standard-compaction vs. no-intervention baselines. (3) Rate of human-initiated manual session kills (a proxy for the detector missing or over-firing), before vs. after adoption.
+
+## Try It
+
+This one doesn't have a companion skill (yet) — a skill-synthesis pass specifically tried the one-shot version of this idea (paste a stuck session's transcript tail, get back a structured recovery memo) and killed it: public Claude Code skill registries already carry 6+ structurally identical handoff/recovery skills, syndicated across a dozen-plus marketplaces. That angle is saturated. What's still open is the thing this writeup is actually about — an always-on runtime that detects the plateau itself and forces the reset automatically, which nobody has shipped as a harness primitive yet. That's a build, not a prompt, which is why there's no README to paste anywhere today.
+
+Worth being honest about the risk here too: the whole idea rests on one essay's claim that fixation survives even full information preservation and needs an active intervention, not just better compaction. That's unproven — nobody has run the comparison. It also overlaps conceptually with two sibling ideas in this same research line (one that preserves tried-approach info through compaction instead of discarding it, another that keeps everything versioned rather than pruning anything) — this project is the one betting that discarding, not preserving, is the fix. If that bet is wrong, the simplest explanation is that those compaction-first approaches were right all along.
+
+Surfaced from `research/2026-11-19-context-engineering-memory.md`, pattern `P3`.
