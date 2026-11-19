@@ -1,6 +1,6 @@
 # Orchestration Face-Off: A Bring-Your-Own-Tasks Benchmark Harness for DAG Planner-Replanner vs. Message-Passing Multi-Agent Architectures
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-18
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-18-multi-agent-architectures.md · P2
