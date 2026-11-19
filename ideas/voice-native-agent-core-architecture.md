@@ -1,6 +1,6 @@
 # Voice-Native Core: A Reference Agent Architecture That Treats Speech as the Primary Interaction Mode, Not a Bolted-On Output Layer
 
-- **Status**: EXPLORING (promoted 2026-11-19: evidence-density criterion — 2 independent practitioner essays within the source digest independently name the same gap)
+- **Status**: PUBLISHED (promoted 2026-11-19: evidence-density criterion — 2 independent practitioner essays within the source digest independently name the same gap)
 - **Date**: 2026-11-19
 - **Topic**: Voice & multimodal agents
 - **Source**: research/2026-11-19-voice-multimodal-agents.md · P7
