@@ -1,6 +1,6 @@
 # Decision Thread: A Cross-Tool Schema and Correlation Layer for Guardrail Verdict Events
 
-- **Status**: EXPLORING (promoted 2026-11-18 cycle 149: evidence density — ≥2 independent threads, NeMo Guardrails' OTel GenAI exporter, Langfuse/ClickHouse's score-as-trace pattern, and Arize's scoring endpoint each independently wiring up incompatible guardrail-verdict schemas)
+- **Status**: PUBLISHED (promoted 2026-11-18 cycle 149: evidence density — ≥2 independent threads, NeMo Guardrails' OTel GenAI exporter, Langfuse/ClickHouse's score-as-trace pattern, and Arize's scoring endpoint each independently wiring up incompatible guardrail-verdict schemas)
 - **Date**: 2026-11-18
 - **Topic**: AI safety & guardrails in production
 - **Source**: research/2026-11-18-ai-safety-guardrails-in-production.md · P6
