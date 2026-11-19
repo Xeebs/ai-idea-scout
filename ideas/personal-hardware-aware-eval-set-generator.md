@@ -1,6 +1,6 @@
 # Personal Bench: A Hardware-Aware Eval Set Generator Built From Your Own Task Samples
 
-- **Status**: EXPLORING (promoted 2026-11-18 cycle 148: evidence density — ≥2 independent threads within the digest, bmdpat.com's "your benchmark is probably lying to you" and dev.to/llm_ops's separate "I wrote my own small benchmark" piece, corroborated further by an Ask HN thread and a local-llm.net roundup)
+- **Status**: PUBLISHED (promoted 2026-11-18 cycle 148: evidence density — ≥2 independent threads within the digest, bmdpat.com's "your benchmark is probably lying to you" and dev.to/llm_ops's separate "I wrote my own small benchmark" piece, corroborated further by an Ask HN thread and a local-llm.net roundup)
 - **Date**: 2026-11-18
 - **Topic**: Small & local models
 - **Source**: research/2026-11-18-small-and-local-models.md · P3
