@@ -1,6 +1,6 @@
 # Critique Mode: A Benchmarked, Reusable Adversarial Producer-Critic Pattern Library
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED (promoted 2026-11-19 cycle 211: recurrence — same generator/critic adversarial-review packaging gap (P5) surfaced independently in research/2026-11-19-multi-agent-architectures.md, a second cycle naming the same gap; published 2026-11-19)
 - **Date**: 2026-11-12
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-12-multi-agent-architectures.md · P3
