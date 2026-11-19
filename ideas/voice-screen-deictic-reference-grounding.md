@@ -1,6 +1,6 @@
 # Point To It: A Deictic Reference Grounding Layer for Voice+Screen Multimodal Agents
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-18
 - **Topic**: Voice & multimodal agents
 - **Source**: research/2026-11-18-voice-multimodal-agents.md · P4
