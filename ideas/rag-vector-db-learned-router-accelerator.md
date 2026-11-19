@@ -1,6 +1,6 @@
 # Hot Index: A Portable Learned-Router Acceleration Layer for Production Vector-DB Retrieval
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-18
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-18-rag-techniques.md · P1
