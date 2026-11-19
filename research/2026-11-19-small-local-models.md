@@ -1,0 +1,70 @@
+# Small & local models — last 30 days digest
+- **Date**: 2026-11-19
+- **Query used**: `last30days.py "small local LLM models"` (plan-driven, subqueries: primary "small local LLM models", "on-device AI model deployment edge inference", "quantized small model fine-tuning local gguf", "local small model agent tool use"; `--subreddits=LocalLLaMA,LowEndLocalAI,MachineLearning,selfhosted`) — Reddit returned 403 (keyless fallback blocked), so signal came from GitHub + Hacker News only. Rephrased/supplemented with three follow-up WebSearch queries per the thin-signal rule: `small local LLM models discussion complaint "has anyone built" OR "I wish" 2026`, `on-device small model agent tool use limitations reddit 2026`, `small local LLM models 2026 techniques quantization distillation workflow`.
+- **Sources covered**: Hacker News (5 stories), GitHub (3 issues/PRs) via the last30days engine; WebSearch supplements surfaced secondary summaries of Reddit (r/LocalLLaMA) sentiment, vendor/practitioner blogs, and a HuggingFace paper reference. No live Reddit, X, YouTube, TikTok, or Instagram access this run (no auth/API keys configured, Reddit keyless path 403'd).
+
+## Candidate patterns
+
+### P1: In-runtime local inference with no Python dependency chain
+- **What it is**: Embedding small-model inference directly inside an application's native runtime (e.g., pure-Java, in-JVM) instead of shelling out to a Python/llama.cpp stack.
+- **Evidence**: GitHub issue on `embabel/embabel-agent` — "Feature request: Add jinfer (Quixotic) as a local, in-JVM inference provider - the successor to Jlama" (5 reactions, 5 comments, opened 2026-10-28). Requester frames it explicitly as wanting "pure-Java LLM inference that runs entirely inside the JVM - no Python."
+- **Why it looks unbuilt/untested**: It's an open feature request against an existing agent framework, not a shipped integration — the proposed dependency (jinfer) is itself new and unintegrated.
+- **Maturity**: SATURATED
+- **Verdict notes**: The specific embabel-agent integration request is unbuilt, but the broader pattern (no-Python, in-JVM local inference) has multiple actively maintained implementations: `tjake/Jlama` (pure-Java LLM engine, pushed 2026-11-18), `Qxotic jinfer` itself (shipped, Spring AI/Quarkus integrations documented, GGUF support, Java 25/FFM API), Beehive Lab's `jitLLM`/`GPULlama3.java` (TornadoVM-backed JIT GPU compilation), and `mukel/gptoss.java`, `mukel/llama3.java`. GitHub search confirms Jlama and jinfer are real, live, documented projects, not vaporware.
+
+### P2: Client-side LLM inference via WebGPU embedded in interactive apps/games
+- **What it is**: Running a small local LLM entirely in-browser via WebGPU to power an interactive experience (no server round-trip, no API key).
+- **Evidence**: Hacker News "Show HN: Harness Corp – An incremental game powered by a local LLM using WebGPU" (4 points, 2026-10-28).
+- **Why it looks unbuilt/untested**: A single hobbyist Show HN post with minimal traction — no broader tooling/framework surfaced for "LLM-in-browser-game" beyond this one demo.
+- **Maturity**: SATURATED
+- **Verdict notes**: This specific demo is one-off, but the underlying pattern (in-browser WebGPU LLM powering an interactive experience) is covered by a mature, maintained framework — `mlc-ai/web-llm` (arXiv paper, 163 prebuilt model builds, OpenAI-style API) — plus multiple shipped examples: a GDevelop WebLLM extension for NPC dialogue, a dev.to "AI Game Master" running entirely in-browser, a published roguelike with an LLM dungeon master, and a DOM-manipulating SLM "cheating" air-hockey game. GitHub search also surfaced several independent WebGPU-LLM-inference repos (token-hawk, ember, webgpu-llm-inference).
+
+### P3: Deliberately non-LLM local memory layer for coding agents
+- **What it is**: A local, daemon-free memory/context store for coding agents that explicitly avoids using an LLM (or any background process) to manage that memory.
+- **Evidence**: Hacker News "Show HN: Anathem – local memory for coding agents, no LLM and no daemon" (3 points, 2026-11-11).
+- **Why it looks unbuilt/untested**: Framed by its own author as a reaction against the default pattern (LLM- or daemon-backed memory); a single early Show HN launch, not an established approach.
+- **Maturity**: SATURATED
+- **Verdict notes**: Could not confirm "Anathem" by name, but the exact pattern it describes (local-first, no-LLM, no-daemon memory for coding agents) already has multiple independently shipped artifacts: `albedoweb/agmem` (explicitly "no API calls," Claude Code/Codex/Cursor, pushed 2026-10-26), `JuliusBrussee/cavemem` → superseded by `caveman` (still maintained, has a Nix package as of 2026-11-11), and Talamus (ProductHunt launch, Markdown+SQLite/FTS5, no LLM on the core write path). A HuggingFace paper (PROJECTMEM, 2606.12329) also formalizes the same local-first event-sourced memory concept. Multiple live, maintained projects already close this gap.
+
+### P4: Continual/online-learning local model that "gets stronger the more you work" — admittedly not yet user-reachable
+- **What it is**: A browser-resident model with a scheduler/routing seam designed to update itself from the user's ongoing work, improving over time without retraining from scratch.
+- **Evidence**: GitHub PR on `alehar9320/agentic-odi` — "feat(studio): a browser model that gets stronger the more you work" (3 reactions, 11 comments, opened 2026-11-01). Author's own review note: "the feature is *not* reachable by a person yet — nothing calls `setConsent`, and `scheduler.ts:90` returns early when no t[one]..."
+- **Why it looks unbuilt/untested**: The author explicitly states the mechanism (engine, ladder, routing seam, scheduler) is built but not wired up to anything a real user can trigger — a self-reported incomplete/untested state.
+- **Maturity**: PARTIAL
+- **Verdict notes**: No shipped consumer product does this, but it's an active research direction: NeurIPS 2026 papers "Continual On-Device Personalization of Small Language Models from Hindsight" and "Synapse" (low-rank adapters for recurring user conventions) report working demos with persistence across app restarts, and a November 2025 arXiv paper on prototype-based error correction ships an Android demo avoiding backpropagation. These are research-stage demos, not production/user-facing tools — the specific gap (a real user being able to trigger self-improvement) remains unaddressed outside the lab, matching PARTIAL (demo-grade, unevaluated at scale).
+
+### P5: Large hand-built eval sets that find "the model wasn't what mattered"
+- **What it is**: Practitioners building large (thousand-plus question) domain-specific eval sets to benchmark many small models, then concluding model choice was less decisive than other factors (prompting, retrieval, context).
+- **Evidence**: Hacker News "I tested 12 small AI models on 2,500 design-system questions" (3 points, 2026-10-27) — headline finding stated as "the model wasn't what mattered."
+- **Why it looks unbuilt/untested**: A one-off manual eval effort by a single practitioner; no reusable/standardized small-model eval harness surfaced that generalizes this finding beyond one domain.
+- **Maturity**: PARTIAL
+- **Verdict notes**: General eval infrastructure exists (EleutherAI's `lm-evaluation-harness` for academic benchmarks, a local RAG eval harness with retrieval-only metrics, an "evaluation-driven iteration" framework/paper for structured-extraction/RAG-citation checks) and could be adapted, but no surfaced tool packages the specific reusable methodology this pattern describes — building a large domain-specific eval set across many small models to isolate "model choice vs. prompting/retrieval" as a generalizable, cross-domain finding. The building blocks are mature; the specific product is not, so this is narrow/unevaluated-at-scale rather than closed.
+
+### P6: Hybrid local/cloud routing as an informal workaround, not a packaged tool
+- **What it is**: Using a small local model (often ~1B params) for cheap steps — intent classification, simple tool calls, context summarization — and routing only the hard requests to a larger cloud model.
+- **Evidence**: WebSearch synthesis of multiple 2026 vendor/practitioner write-ups (query: "on-device small model agent tool use limitations reddit 2026") — "Several sources recommend a small local model for simple steps and a cloud model for hard ones. One suggests the 1B model handle intent classification, simple tool calls, summarisation of recent context, with harder requests routed to a bigger model."
+- **Why it looks unbuilt/untested**: Described repeatedly as advice/a pattern to adopt, not as a named, open-sourced routing library — no concrete repo surfaced in this run's engine or search evidence.
+- **Maturity**: SATURATED
+- **Verdict notes**: Concrete, maintained, named tools already implement exactly this: `BerriAI/litellm` (63,538 stars, pushed 2026-11-19 — today — supports classifier/heuristic routing with fallback from local Ollama to cloud on failure/timeout/overflow) and `lm-sys/RouteLLM` (5,719 stars, Apache-2.0, four router implementations including BERT classifier and LLM-as-judge, local+remote model support). Additional smaller tools (Wayfinder Router, `dexmac221/AiSociety`, `llm-router` on PyPI) corroborate this is a well-populated space, not an informal workaround only.
+
+### P7: No audit layer for whether an "on-device" agent is actually leaking data via its own tools
+- **What it is**: A verification/audit mechanism confirming that a locally-run agent isn't silently exfiltrating data through the tools it calls (web search, email, telemetry, remote MCP servers) even though the model weights themselves run on-device.
+- **Evidence**: WebSearch synthesis (same query as P6) — "'On-device' doesn't mean offline. The same source warns that an agent can still transmit data through web search, email, telemetry, remote MCP servers, or other tools."
+- **Why it looks unbuilt/untested**: Framed as a warning/caveat in vendor guides, not as an existing checking tool — the gap between "model is local" and "agent is private" is named but not addressed by any surfaced product.
+- **Maturity**: SATURATED
+- **Verdict notes**: Multiple maintained tools/products already audit exactly this surface (agent tool-calls/MCP traffic for data exfiltration), independent of whether the underlying model is local: Gryph (local audit trail hooking Claude Code/Cursor/Gemini CLI, logs all MCP tool calls to local SQLite, no cloud telemetry), MCP Audit (static exfiltration-risk scanner for MCP configs), MCP Guardian (runtime response scanning for sensitive-data leaks and tool rug-pulls), and Nightfall (enterprise vendor presenting at Black Hat 2026 with OpenTelemetry-based session capture across Cursor/Claude Code/VS Code). None brands itself specifically as "on-device privacy audit," but functionally these close the named gap.
+
+### P8: Local-runtime fragmentation and "dependency-fix burden" pushing users away from cloud-drifting tools like Ollama
+- **What it is**: Community frustration that local-LLM tooling (e.g., Ollama) is both fragmented across inference engines and increasingly adding cloud-hosted model options, which users read as a privacy regression from the original "fully local" promise.
+- **Evidence**: WebSearch synthesis of an aggregated r/LocalLLaMA summary (query: `small local LLM models discussion complaint "has anyone built" OR "I wish" 2026`) — "users praise owning their model files and avoiding usage logs, but often complain about hours lost to dependency fixes and hardware tweaks," plus multiple distinct 2026 blog posts specifically criticizing "Ollama's recently introduced cloud-hosted models, raising privacy concerns about data routing and third-party access to user prompts."
+- **Why it looks unbuilt/untested**: Complaint-shaped signal (direct "I wish"-style framing per the aggregator) pointing at an unmet need for a dependency-light, privacy-committed local runtime — the criticism is of the current market leader, not a competing solution being adopted at scale.
+- **Maturity**: SATURATED
+- **Verdict notes**: The complaint is real but the alternatives already exist and are actively recommended in the exact same 2026 commentary that raises the complaint: `llama.cpp`/`llama-server` direct (no hosted upsell), Jan (fully local, cross-platform), GPT4All, LM Studio, and vLLM are all named, maintained, shipped alternatives to Ollama. This is a market-leader-dissatisfaction story, not an unaddressed gap — multiple well-established competing runtimes already exist for users who want to switch.
+
+### P9: Targeted micro-test cases for catching silent correctness errors in small edge vision models
+- **What it is**: A proposed small, specific test (not a general benchmark) designed to catch a particular class of silent failure — near/far depth-ordering errors — in a small vision model running on edge NPU hardware.
+- **Evidence**: GitHub issue on `qualcomm/ai-hub-models` — "Evaluate near/far ordering with Depth Anything V2 on Snapdragon" (2 reactions, 4 comments, opened 2026-11-14): "A depth map can look convincing even when two objects have swapped order. I'd like to contribute a small example that catches that error."
+- **Why it looks unbuilt/untested**: Explicitly an open, unimplemented proposal ("I'd like to contribute") against an official model-hub repo — the validation technique doesn't exist yet even in the repo it's proposed for.
+- **Maturity**: OPEN
+- **Verdict notes**: GitHub search for "depth ordering test vision model" returned nothing, and web search on Depth Anything + Snapdragon NPU deployment (Qualcomm AI Hub listings, a Hackster.io community deployment write-up) surfaced only general latency/accuracy benchmarks — no pairwise near/far depth-ordering correctness test or harness. Qualcomm's own model cards note relative-vs-metric depth output as a relevant nuance but don't provide this check. Genuine multi-channel search found only the discussion/proposal itself, consistent with the issue author's own framing.
+

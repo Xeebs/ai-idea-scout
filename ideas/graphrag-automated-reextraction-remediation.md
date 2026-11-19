@@ -1,6 +1,6 @@
 # Graph Mend: An Automated Re-Extraction and Re-Summarization Pipeline for GraphRAG Document Changes
 
-- **Status**: EXPLORING (promoted 2026-11-19 cycle 212: evidence density — ≥2 independent sources within the digest)
+- **Status**: PUBLISHED (promoted 2026-11-19 cycle 212: evidence density — ≥2 independent sources within the digest; published cycle 216)
 - **Date**: 2026-11-19
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-19-rag-techniques.md · P5
