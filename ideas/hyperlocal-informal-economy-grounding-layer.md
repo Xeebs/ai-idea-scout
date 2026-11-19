@@ -1,6 +1,6 @@
 # GroundLine: A Crowd-Sourced Informal-Economy Grounding Layer for Extreme-Poverty AI Advisors
 
-- **Status**: EXPLORING (promoted cycle 151 — evidence density: GiveDirectly/Rwanda WhatsApp pilot and Gramhal/India Bolbhav Plus are 2 independent threads, different orgs/countries, both naming the same local-grounding/data-freshness gap)
+- **Status**: PUBLISHED (promoted cycle 151 — evidence density: GiveDirectly/Rwanda WhatsApp pilot and Gramhal/India Bolbhav Plus are 2 independent threads, different orgs/countries, both naming the same local-grounding/data-freshness gap)
 - **Date**: 2026-11-18
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-18-applied-ai-for-underserved-domains.md · P1
