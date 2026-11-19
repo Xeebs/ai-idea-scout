@@ -1,6 +1,6 @@
 # TriageBench Builder: A Reusable Cross-Region Clinical-Safety Benchmark Toolkit for Low-Resource LLM Deployment
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-19
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-19-applied-ai-for-underserved-domains.md · P2
