@@ -1,6 +1,6 @@
 # Continuity Desk: A Manager-Agent + Shared Notes Store So Per-Client Agent Context Survives Resets
 
-- **Status**: EXPLORING (promoted cycle 210: evidence density — ≥2 independent threads)
+- **Status**: PUBLISHED (promoted cycle 210: evidence density — ≥2 independent threads; published as `published/manager-agent-shared-notes-continuity-store.md`)
 - **Date**: 2026-11-19
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-19-agentic-ai-autonomous-agents.md · P1
