@@ -1,6 +1,6 @@
 # SegmentWise: A Per-Message-Cost-Aware Response Compressor for SMS-Based AI Access
 
-- **Status**: EXPLORING (promoted cycle 151 — evidence density: teks/tech.eu and ChatMtaani/Citizen Digital are 2 independently-reported SMS-AI deployments, both left unsolved on the per-message cost problem per separate CGD/NextBillion analysis)
+- **Status**: PUBLISHED (promoted cycle 151 — evidence density: teks/tech.eu and ChatMtaani/Citizen Digital are 2 independently-reported SMS-AI deployments, both left unsolved on the per-message cost problem per separate CGD/NextBillion analysis)
 - **Date**: 2026-11-18
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-18-applied-ai-for-underserved-domains.md · P3
