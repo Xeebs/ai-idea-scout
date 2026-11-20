@@ -1,6 +1,6 @@
 # Loop Guard: A Battle-Tested Control-Loop Library for Agentic RAG
 
-- **Status**: EXPLORING (promoted 2026-11-20 cycle 286: recurrence)
+- **Status**: PUBLISHED (promoted 2026-11-20 cycle 286: recurrence; published cycle 289, synced cycle 308)
 - **Date**: 2026-11-12
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-12-rag-techniques.md · P1

@@ -1,6 +1,6 @@
 # Fix Once: A Persistent Correction-Memory Layer for RAG Retrieval Mistakes
 
-- **Status**: EXPLORING (promoted 2026-11-20 cycle 286: evidence density — ≥2 independent threads)
+- **Status**: PUBLISHED (promoted 2026-11-20 cycle 286: evidence density — ≥2 independent threads; published, synced cycle 308)
 - **Date**: 2026-11-20
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-20-rag-techniques.md · P9
