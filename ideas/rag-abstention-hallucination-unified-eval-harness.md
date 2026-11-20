@@ -1,6 +1,6 @@
 # Canary Suite: A Unified Abstention-and-Hallucination Eval Harness for RAG
 
-- **Status**: EXPLORING (promoted 2026-11-20 cycle 286: evidence density — ≥2 independent threads)
+- **Status**: PUBLISHED (promoted 2026-11-20 cycle 286: evidence density — ≥2 independent threads)
 - **Date**: 2026-11-20
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-20-rag-techniques.md · P8
