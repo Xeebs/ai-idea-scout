@@ -1,6 +1,6 @@
 # Grader on Trial: A Ground-Truth Validation Harness for MCP Tool-Calling Eval Graders
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-20
 - **Topic**: Tool use & MCP ecosystem
 - **Source**: research/2026-11-20-tool-use-mcp-ecosystem.md · P4
