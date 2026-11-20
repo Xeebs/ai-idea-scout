@@ -1,0 +1,33 @@
+# Who Drifted: A Judge-vs-App Attribution Layer for Golden-Prompt Drift Alerts
+
+Your golden-prompt monitor just fired. The score on a canary check dropped overnight. Is your app broken, or did the thing grading your app change out from under you? Right now, every team running these checks answers that question the slow way: by debugging the application first. One builder's own incident writeup puts it bluntly — he broke a chatbot with a prompt change, got burned investigating the wrong layer, and only then built the tool that would have caught it. That tool still doesn't exist as something you can just install.
+
+## The Gap
+
+Scheduled golden-prompt and canary checks have become common practice for catching silent LLM output drift — OneUptime's November 2026 guide on the topic is explicit that teams should be "recording the returned model identifier and checking whether the evaluator itself changed before blaming the application." That's a direct admission that the two failure modes — the app drifted, versus the judge/evaluator doing the grading drifted — get conflated in practice, and that nobody has fixed it yet. A dev.to incident narrative from a builder known as decimozs tells the same story from the other side: he shipped a prompt change, broke his chatbot, spent time debugging the app, and only afterward hand-built a fix for the real problem — his judge had moved, not his app.
+
+Both pieces of evidence are the same shape: one author's own ad hoc recipe or one-off tool, built after getting burned, not a packaged product anyone else can pick up. The adjacent tooling doesn't close the gap either — PromptLayer's drift-detection glossary and promptfoo's CI-based before/after diffing both track application-level drift, but neither isolates judge/evaluator drift as its own tracked signal. A GitHub search for "judge drift" turns up a dozen-plus small repos, almost all narrow or days old (one, `judge-drift-sentinel`, still has its PyPI upload pending). An arXiv paper, "Who Drifted: the System or the Judge?" (2606.15474), proposes a statistically rigorous attribution method — but as an academic argument, not a shipped tool. No mainstream observability vendor — Galileo, Arize, Evidently, WhyLabs, Langfuse — was found tracking judge-version drift as a distinct signal separate from app-output drift. The gap is real, acknowledged by practitioners, and still unpackaged.
+
+## The Project
+
+The idea isn't to replace your golden-prompt scheduler — it's to attach a thin attribution layer to the one you already have. On every scheduled run, the layer records a judge-identity bundle alongside the score: the judge model's id/version, a hash of the grading prompt or rubric text, and the scoring-logic version. That's metadata your evaluator call already has in hand; nothing new has to be fetched.
+
+The payoff comes when a score movement crosses your scheduler's own alert threshold. Before the alert goes out, the layer diffs the current judge-identity bundle against the prior run's. If the bundle changed, the alert gets retagged — "evaluator-side change, verify before investigating the app" — and names exactly which field moved (a model id bump, a rubric edit, a scoring-code version bump). If the bundle is unchanged, the alert passes through untouched as a genuine app-side signal. A rolling timeline of judge-identity changes sits on top of this, so a flagged alert from last week can be cross-referenced against a known evaluator change later, during an audit.
+
+The four pieces: a judge-identity recorder that hooks into the evaluator call your scheduler already makes; a diff step that runs on each new score against rolling identity history; an attribution tag that decorates your existing alert payload (this is not a new alerting system bolted on top); and a timeline view of judge-identity changes for after-the-fact audits.
+
+## Tangible Impact
+
+**Population**: Engineering teams running scheduled golden-prompt/canary drift checks (OneUptime-style guides, promptfoo-adjacent setups, in-house cron harnesses) whose judge/evaluator is itself an LLM call subject to silent provider-side model bumps or in-house prompt/rubric edits — the practitioner population evidenced directly by the OneUptime guide and the decimozs incident post.
+**Mechanism**: Today, when a golden-prompt score moves, an engineer must manually determine whether the app or the judge changed before investigating — decimozs's own narrative shows debugging the app first and being wrong. Auto-tagging the alert with a judge-identity diff removes that manual triage step and the misdirected investigation time it causes.
+**Measure**: (1) % of golden-prompt drift alerts correctly auto-tagged judge-side vs. app-side, validated against a labeled set of historical incidents; (2) reduction in median time-to-correct-root-cause for a drift alert versus the decimozs-style "debugged the app first" baseline; (3) number of false app-regression investigations avoided per month post-adoption.
+
+## Try It
+
+There's no companion Claude Code skill shipped for this idea yet — this one currently exists only as the project described above. If a `skills/golden-prompt-judge-app-drift-attributor/` directory gets written in a future cycle, it will cover the one-shot triage version of this: paste in the current and prior run's judge-identity fields (model id, grading prompt/rubric text, scoring-code version) and both scores, and get back a fast first-pass verdict on whether to blame the judge or the app before digging further.
+
+## Worth Knowing Before You Build This
+
+The biggest practical hurdle isn't technical, it's logging discipline: many ad hoc in-house golden-prompt schedulers — like the one in decimozs's own story — don't yet log judge-identity metadata consistently, so adopting this requires a few fields already present somewhere in the call path. It's also worth asking whether some teams have already solved this the cheap way, by simply pinning their judge model and prompt version and treating any change as a manual re-baseline event — if that workaround already covers most real-world cases, the attribution layer's value shrinks to the teams who can't or won't pin. And the rigorous version of this problem has already been solved academically: the arXiv "Who Drifted" paper uses a likelihood-based attribution method, considerably more careful than a simple identity-diff. A simple diff risks false "judge changed, ignore it" dismissals on what are actually cosmetic rubric edits — a reason a later version of this might need to borrow the paper's math rather than stay this blunt.
+
+Surfaced from `research/2026-11-20-llm-evaluation-observability-ii.md`, pattern `P2`.
