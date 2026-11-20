@@ -1,6 +1,6 @@
 # True Use: A Multimodal AI Auditor for Real Assistive-Tech Interaction, Not Just WCAG Markup
 
-- **Status**: EXPLORING (promoted 2026-11-20 cycle 283: evidence density — ≥2 independent threads within the digest, WebAIM's 2026 report, the University of Maribor stability critique, and Silktide's 2026 commentary all independently confirming the same open 60-70% automated-accessibility-blind-spot gap)
+- **Status**: PUBLISHED (promoted EXPLORING 2026-11-20 cycle 283: evidence density — ≥2 independent threads within the digest, WebAIM's 2026 report, the University of Maribor stability critique, and Silktide's 2026 commentary all independently confirming the same open 60-70% automated-accessibility-blind-spot gap; published cycle 286 — see `published/assistive-tech-interaction-usability-auditor.md`)
 - **Date**: 2026-11-20
 - **Topic**: Applied AI for underserved domains
 - **Source**: research/2026-11-20-applied-ai-for-underserved-domains.md · P6
