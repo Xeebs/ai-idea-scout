@@ -1,6 +1,6 @@
 # Lesson Board: Mid-Run Peer Learning for Multi-Agent Teams
 
-- **Status**: EXPLORING (promoted 2026-11-12: ≥3 independent threads — HN "Peer Learning Between Agents" submission, LessonL (NeurIPS 2025), PEEPLL (TMLR 2025))
+- **Status**: PUBLISHED (promoted 2026-11-12: ≥3 independent threads — HN "Peer Learning Between Agents" submission, LessonL (NeurIPS 2025), PEEPLL (TMLR 2025); later published — see published/multiagent-runtime-peer-learning-board.md. Synced from INDEX.md cycle 307, matches infra_index_vs_idea_file_status_drift pattern)
 - **Date**: 2026-11-12
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-12-multi-agent-architectures-ii.md · P9

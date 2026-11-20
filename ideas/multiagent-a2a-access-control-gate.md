@@ -1,6 +1,6 @@
 # A2A Gate: Access Control Purpose-Built for Agent-to-Agent Delegation
 
-- **Status**: EXPLORING (promoted 2026-11-12: evidence density — source HN "Launch HN: Alter (YC S25)" post alone carries 69 points/63 comments, exceeding the ≥50-point bar, further corroborated by Okta's independent "Agent-to-Agent Connections" Early Access feature)
+- **Status**: PUBLISHED (promoted 2026-11-12: evidence density — source HN "Launch HN: Alter (YC S25)" post alone carries 69 points/63 comments, exceeding the ≥50-point bar, further corroborated by Okta's independent "Agent-to-Agent Connections" Early Access feature; later published — see published/multiagent-a2a-access-control-gate.md. Synced from INDEX.md cycle 307, matches infra_index_vs_idea_file_status_drift pattern)
 - **Date**: 2026-11-12
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-12-multi-agent-architectures-iii.md · P7

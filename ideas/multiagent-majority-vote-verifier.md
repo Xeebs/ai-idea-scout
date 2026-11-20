@@ -1,6 +1,6 @@
 # Flip the Vote: A Verification Layer That Catches Wrong Majority Votes in Multi-Agent Ensembles
 
-- **Status**: EXPLORING (promoted 2026-11-12: ≥3 independent threads — "Verify, Then Vote" HN paper, "The Consensus Trap" arXiv 2604.17139, debate-or-vote, MA-ToT, altieriumb7's PoC)
+- **Status**: PUBLISHED (promoted 2026-11-12: ≥3 independent threads — "Verify, Then Vote" HN paper, "The Consensus Trap" arXiv 2604.17139, debate-or-vote, MA-ToT, altieriumb7's PoC; later published — see published/multiagent-majority-vote-verifier.md. Synced from INDEX.md cycle 307, matches infra_index_vs_idea_file_status_drift pattern)
 - **Date**: 2026-11-12
 - **Topic**: Multi-agent architectures
 - **Source**: research/2026-11-12-multi-agent-architectures-ii.md · P6
