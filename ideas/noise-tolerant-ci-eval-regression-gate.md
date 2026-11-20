@@ -1,0 +1,37 @@
+# Noise Floor: A Statistically-Calibrated Pass/Fail Layer for CI Prompt-Regression Gates
+
+- **Status**: EXPLORING (promoted 2026-11-20 cycle 290: evidence density — ≥2 independent threads)
+- **Date**: 2026-11-20
+- **Topic**: LLM evaluation & observability
+- **Source**: research/2026-11-20-llm-evaluation-observability-ii.md · P6
+- **Maturity verdict**: PARTIAL — promptfoo and DeepEval both gate CI on a fixed, user-set threshold (DeepEval's `assert_test()`, promptfoo's fail-on-threshold CLI flag); a Langfuse guide explicitly frames baseline-diff-with-tolerance as a custom CI step teams must write themselves, not a built-in feature. One source names the exact unresolved problem: a 0.7 gate scoring 0.71 today and 0.68 tomorrow with no statistical tolerance for judge-score noise. Real, widely-used tools exist but all stop at fixed-threshold/manual-diff.
+- **Format**: BOTH
+- **Data Sources**: CONNECTED — ingests the JSON/structured eval-run output that promptfoo, DeepEval, LangSmith, or Braintrust already produce as CI artifacts (all mature, existing tools today); no manual paste is required beyond pointing the layer at the artifact path already uploaded by the team's existing CI job.
+
+## The Gap
+A Medium walkthrough on promptfoo's GitHub Action shows it running evals on prompt-file changes and handing the reviewer a before/after comparison to read manually. A dev.to comparison piece explicitly names promptfoo, DeepEval, LangSmith, and Braintrust as all "offering varying degrees of regression detection, with some relying on manual diffs or experiment tracking" — naming manual diff-reading as standard practice across multiple tools, not an edge case. Targeted follow-up search confirmed both promptfoo and DeepEval gate on a fixed threshold with no documented feature comparing against a stored baseline with statistical tolerance for run-to-run judge-score noise, and a Langfuse guide frames that tolerance logic as something a team must custom-build.
+
+## The Project
+A calibration layer that sits between an existing CI eval gate (promptfoo, DeepEval, LangSmith, Braintrust) and the merge decision. Instead of comparing a single new score against a fixed threshold, it maintains a rolling distribution of historical baseline reruns per eval case, computes the expected noise band for that case, and classifies each new result as within-noise (auto-pass, no human needed), a likely real regression (flag for review with the computed confidence), or inconclusive (needs more samples before a verdict) — replacing "0.71 today vs 0.68 tomorrow, is that a regression?" with a calibrated answer instead of a guess.
+
+Components: a baseline-rerun sampler (periodically reruns a case with no code change to build its noise distribution); a per-case noise-band estimator (simple statistical interval, not a new model); a classifier wired into the CI gate's pass/fail decision; a report annotation showing the computed confidence behind every flagged regression, so a reviewer sees the statistics, not just a verdict.
+
+## Tangible Impact
+**Population**: engineering teams using promptfoo's, DeepEval's, LangSmith's, or Braintrust's CI eval-gate feature on prompt-touching pull requests — a concrete, named subset of the roughly 51% of companies surveyed in LangChain's 2024 State of AI Agents report that run agents in production, specifically those already past the first step of having any CI eval gate at all (a prerequisite this project doesn't try to solve).
+**Mechanism**: A fixed-threshold gate treats ordinary judge-score noise as indistinguishable from a real regression, so teams either loosen the threshold until it stops catching anything real, or leave it tight and spend reviewer time reading inconclusive diffs on every PR. A calibrated noise-tolerant layer removes the noise-only false alarms automatically, so human attention goes only to diffs the statistics actually flag as likely real — shrinking both wasted review time and the temptation to disable the gate out of fatigue.
+**Measure**: rate of CI-gate failures attributable purely to score noise (measured by rerunning a sample of "failed" PRs with no code change and checking if they'd fail again), before vs. after adoption, targeting near-zero false noise-flags; reviewer time spent per week reading eval diffs that turn out to be noise; time-to-merge for prompt-touching PRs, expected to drop once noise-only blocks stop occurring.
+
+## Why Now
+promptfoo, DeepEval, LangSmith, and Braintrust's CI integrations are mature, widely adopted, and already produce structured per-run score artifacts in 2026 — the statistical layer this idea adds (a rolling baseline distribution and a confidence interval) is a well-understood technique, not a research problem; the gap is that none of the four named tools has wired it into their gating decision yet.
+
+## Skill Angle
+Trigger: a developer is staring at a CI-flagged prompt regression (e.g., a score dropped from 0.71 to 0.68) and needs a quick read on whether that's noise or real before spending review time on it. Inputs: the current run's score, a handful of historical baseline rerun scores for the same eval case (pasted as a list or small CSV — exported from whichever CI tool's run history the team already has), and the gate's configured threshold. Output: a classification (within-noise / likely regression / inconclusive-needs-more-samples) with the computed noise band and a one-line explanation of the statistics behind the call. The skill is a one-shot manual sanity check for a single flagged diff; the project is the continuous calibration layer wired into every CI run automatically.
+
+## MVP Sketch
+2–3 weeks, 1–2 people: build a wrapper around promptfoo's CI output (most mature, well-documented JSON artifact format), implement a rolling baseline-rerun job that reruns unchanged eval cases nightly to build each case's noise distribution, and a simple interval-based classifier replacing the fixed-threshold check in the gate. Validate on one team's real eval history: identify PRs that were previously flagged as failing, rerun them with no code change several times to establish whether they'd fail again, and confirm the calibrated layer correctly reclassifies the noise-driven failures as within-noise.
+
+## Risks & Open Questions
+- A noise band built from too few baseline reruns is itself unreliable; the MVP needs a minimum-sample-size safeguard (the "inconclusive" classification) rather than guessing with thin data.
+- If promptfoo or DeepEval ship a native baseline-tolerance feature in the near term (plausible, since the gap is now explicitly named in public writeups), the standalone layer's value narrows to teams who haven't upgraded yet or use a different tool.
+- Judge-score noise itself can drift over time (if the judge model changes), which could silently widen or narrow the "true" noise band without the layer detecting why — this connects to, but is distinct from, the separate judge-drift-attribution gap already covered elsewhere in this index.
+- Teams with very low PR volume on prompt-touching changes may never accumulate enough baseline reruns to get a useful noise estimate, limiting the addressable population to teams iterating on prompts frequently enough to generate the needed history.
