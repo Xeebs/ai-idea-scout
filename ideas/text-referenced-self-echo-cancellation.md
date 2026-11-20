@@ -1,6 +1,6 @@
 # Hear Myself Not: A Vendor-Agnostic Text-Referenced Self-Echo Filter for Voice Agent STT
 
-- **Status**: PROPOSED
+- **Status**: PUBLISHED
 - **Date**: 2026-11-14
 - **Topic**: Voice & multimodal agents
 - **Source**: research/2026-11-14-voice-multimodal-agents.md · P7
