@@ -1,6 +1,6 @@
 # RAG Freshness Watchdog: Catching Index-vs-Source Drift Before Users Do
 
-- **Status**: EXPLORING (promoted 2026-11-20 cycle 286: recurrence)
+- **Status**: PUBLISHED (promoted 2026-11-20 cycle 286: recurrence)
 - **Date**: 2026-11-11
 - **Topic**: RAG techniques
 - **Source**: research/2026-11-11-rag-techniques.md · P2
