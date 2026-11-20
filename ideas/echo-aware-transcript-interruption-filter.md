@@ -1,6 +1,6 @@
 # Mute Echo: An Open, Stack-Agnostic Self-Voice Transcript Filter for Voice-Agent Barge-In Detection
 
-- **Status**: PROPOSED
+- **Status**: EXPLORING
 - **Date**: 2026-11-17
 - **Topic**: Voice & multimodal agents
 - **Source**: research/2026-11-17-voice-multimodal-agents.md · P7

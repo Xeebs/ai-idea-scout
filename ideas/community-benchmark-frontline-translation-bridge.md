@@ -1,0 +1,35 @@
+# Bench to Field: A Deployed Translation Layer Built Directly on Community-Curated Tribal-Language Benchmarks
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-20
+- **Topic**: Applied AI for underserved domains
+- **Source**: research/2026-11-20-applied-ai-for-underserved-domains.md · P3
+- **Maturity verdict**: PARTIAL — the benchmark-creation half of this pattern is well-covered (AdiBhashaa, arXiv 2512.04765, ~80k Hindi-tribal pairs across 4 languages; BHEPC, 110k Bhili-Hindi-English sentences; the MMLoSo 2025 shared task built on the same data), but every source found describes the "feeds frontline health/education AI tools" half as prospective only — no cited deployment actually consumes any of these benchmarks yet.
+- **Format**: BOTH
+- **Data Sources**: CONNECTED for training/eval data — pulls the published AdiBhashaa and BHEPC datasets directly from their public releases (arXiv/HuggingFace data hosting, both already mature, versioned, and freely downloadable) to fine-tune and continuously re-evaluate a translation model; MANUAL for the feedback loop — frontline CHWs/teachers submit corrected translations through a simple mobile form, since no API exists for "a human caught a bad translation in the field," that signal has to be typed in by the person who caught it.
+
+## The Gap
+AdiBhashaa (IIT Delhi, arXiv 2512.04765) names translation support for frontline health and education workers as a prospective downstream use for its ~80k-pair Hindi-to-tribal-language benchmark, but the paper describes a benchmark only, not a tool. BHEPC (110k Bhili-Hindi-English sentences) and the MMLoSo 2025 shared task built on the same underlying data, confirming the benchmark-curation side is becoming genuinely well-resourced and community-validated. Yet a targeted search found zero cited deployments — academic or NGO — that actually run a model against these benchmarks and put the result in a frontline worker's hands. The community did the hard part (curating ground-truth translation pairs with native speakers) and nobody has closed the loop.
+
+## The Project
+A translation layer, not another benchmark: fine-tune an existing open MT model (e.g., IndicTrans2 or NLLB-200, both already competent on related Indic languages) on BHEPC's 110k Bhili-Hindi-English pairs — Bhili being India's largest tribal language at an estimated 10+ million speakers — continuously score it against AdiBhashaa/BHEPC's held-out test splits, and wrap it in a WhatsApp/SMS bot that a CHW or primary-school teacher can actually use for health instructions or classroom materials. The centerpiece is the closed loop this pattern is missing: every field correction a frontline worker submits becomes a candidate addition back to the community benchmark (reviewed by the same community-curation process AdiBhashaa/BHEPC already use), so the benchmark keeps growing from real deployment use instead of staying a static academic artifact.
+
+## Tangible Impact
+**Population**: Frontline ASHA-style community health workers and primary-school teachers serving Bhili-speaking communities, part of India's roughly 104 million Scheduled Tribe population (2011 Census, the most recent full count), concentrated in Rajasthan, Gujarat, and Madhya Pradesh where Bhili is spoken.
+**Mechanism**: Today, health and education materials for these communities exist only in Hindi or reach people through a human interpreter who may not be available at the point of need; a validated, continuously-improving MT layer sitting directly on the community benchmark lets a frontline worker translate instructions or materials on the spot, with measured accuracy instead of an unverified machine guess, and lets the benchmark's own creators see real field accuracy data instead of only their original test-set numbers.
+**Measure**: (1) translation accuracy (chrF/BLEU plus human-rated adequacy on health/education-domain sentences) against AdiBhashaa/BHEPC's held-out test sets, compared to a generic Hindi-to-tribal-language MT baseline with no fine-tuning; (2) number of field-corrected sentence pairs accepted back into the community benchmark per quarter; (3) number of distinct facilities/classrooms actively using the deployed translation bot after a pilot period.
+
+## Why Now
+Two large, native-speaker-curated benchmarks (AdiBhashaa, BHEPC) and a shared task (MMLoSo 2025) all converged on the same underlying data within the same recent window, giving this project enough ground-truth training/eval data to fine-tune on immediately — the methodology and data risk are already retired; only the deployment-and-feedback-loop piece is missing.
+
+## Skill Angle
+A companion skill: given a target tribal language and a description of the frontline use case (health instructions, school materials), the skill checks whether a community-curated benchmark already covers that language (starting with AdiBhashaa's four languages and Bhili), and if so drafts a tailored fine-tuning/evaluation plan — which base model to start from, what held-out split to score against, and a bundled starter glossary of the 50-100 highest-priority health/education terms. This is the one-time planning task a team runs before committing to a build; the project itself is the persistent, continuously-retrained translation service and its benchmark-feedback loop.
+
+## MVP Sketch
+Scope to one language (Bhili, using BHEPC's 110k pairs, the largest dataset and largest speaker population in scope) and one domain (basic health instructions — the kind an ASHA worker delivers). Fine-tune IndicTrans2 or NLLB-200 on BHEPC, evaluate against its held-out split plus a small hand-authored health-domain test set, and wrap the result in a WhatsApp bot pilot with one willing ASHA-style partner facility. Stack: a fine-tuning job on an open base model, a thin WhatsApp Business API or Twilio-based bot front-end, and a simple correction-submission form feeding a review queue. Validating experiment: does the fine-tuned model's health-domain accuracy measurably beat the generic baseline, and do real field corrections submitted during the pilot get accepted as valid additions by a native-speaker reviewer.
+
+## Risks & Open Questions
+- Dialect variation within "Bhili" itself may mirror the Mixtec/Zapotec fragmentation problem seen elsewhere in this domain — the MVP needs to confirm BHEPC's variant matches the pilot community's actual speech before claiming coverage.
+- AdiBhashaa's or BHEPC's own research teams may already have an unpublished deployment effort underway — worth direct outreach before building, since they are the most likely source of a conflicting parallel effort.
+- Recruiting a frontline pilot partner (an actual CHW program or school) willing to test an unproven tool is a real operational bottleneck, not just an engineering one.
+- A model fine-tuned on benchmark sentence pairs may still fail on out-of-domain real-world phrasing the benchmark didn't anticipate; the field-correction loop is the mitigation, but it only works once the pilot is live, not before.
