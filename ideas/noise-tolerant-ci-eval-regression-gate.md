@@ -1,6 +1,6 @@
 # Noise Floor: A Statistically-Calibrated Pass/Fail Layer for CI Prompt-Regression Gates
 
-- **Status**: EXPLORING (promoted 2026-11-20 cycle 290: evidence density — ≥2 independent threads)
+- **Status**: PUBLISHED (promoted 2026-11-20 cycle 290: evidence density — ≥2 independent threads; published, see `published/noise-tolerant-ci-eval-regression-gate.md`; idea-file Status line synced to INDEX.md cycle 311 — was lagging at EXPLORING)
 - **Date**: 2026-11-20
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-20-llm-evaluation-observability-ii.md · P6
