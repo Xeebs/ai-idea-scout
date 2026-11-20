@@ -1,6 +1,6 @@
 # Red Team the Agent: A Pre-Deployment, Action-Level Attack Simulation Harness for Autonomous Agents
 
-- **Status**: EXPLORING — promoted cycle 284 (orchestrator, evidence density: ≥2 independent threads within research/2026-11-20-agentic-ai-autonomous-agents.md — Intrusive.ai, 3pts, and the Zero-Trust-for-agentic-AI analysis, 3pts, both tooling-shaped posts on the same gap, corroborated by the live "AI Repo Man" exploit write-up, 6pts)
+- **Status**: PUBLISHED — writeup at published/agent-action-level-attack-simulation-harness.md (promoted to EXPLORING cycle 284, orchestrator, evidence density: ≥2 independent threads within research/2026-11-20-agentic-ai-autonomous-agents.md — Intrusive.ai, 3pts, and the Zero-Trust-for-agentic-AI analysis, 3pts, both tooling-shaped posts on the same gap, corroborated by the live "AI Repo Man" exploit write-up, 6pts)
 - **Date**: 2026-11-20
 - **Topic**: Agentic AI & autonomous agents
 - **Source**: research/2026-11-20-agentic-ai-autonomous-agents.md · P8
