@@ -1,6 +1,6 @@
 # Make It Stick: A Cross-Host Consultation-Forcing Layer for MCP Memory Servers
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-20
 - **Topic**: Context engineering & memory
 - **Source**: research/2026-11-20-context-engineering-memory.md · P4
