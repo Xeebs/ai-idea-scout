@@ -1,6 +1,6 @@
 # Mask Don't Summarize: A Deterministic, No-Extra-LLM-Call Context Eviction Library for Long-Horizon Agents
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-20
 - **Topic**: Context engineering & memory
 - **Source**: research/2026-11-20-context-engineering-memory.md · P2
