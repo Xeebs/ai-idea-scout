@@ -1,6 +1,6 @@
 # Trace to Gold: An End-to-End Privacy-Safe Production-Log-to-Eval-Dataset Pipeline
 
-- **Status**: EXPLORING (promoted 2026-11-20 cycle 290: evidence density — ≥2 independent threads)
+- **Status**: PUBLISHED (promoted 2026-11-20 cycle 290: evidence density — ≥2 independent threads) — [writeup](../published/production-log-eval-dataset-pipeline.md)
 - **Date**: 2026-11-20
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-20-llm-evaluation-observability-ii.md · P1
