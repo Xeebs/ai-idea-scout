@@ -1,6 +1,6 @@
 # Budget Triage: A Capacity-Aware Re-Prioritization Layer for Human Annotation Queues
 
-- **Status**: EXPLORING (promoted 2026-11-20 cycle 290: evidence density — ≥2 independent threads)
+- **Status**: PUBLISHED (promoted 2026-11-20 cycle 290: evidence density — ≥2 independent threads)
 - **Date**: 2026-11-20
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-20-llm-evaluation-observability-ii.md · P3
