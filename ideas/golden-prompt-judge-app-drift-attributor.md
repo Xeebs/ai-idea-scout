@@ -1,6 +1,6 @@
 # Who Drifted: A Judge-vs-App Attribution Layer for Golden-Prompt Drift Alerts
 
-- **Status**: EXPLORING (promoted 2026-11-20 cycle 290: evidence density — ≥2 independent threads)
+- **Status**: PUBLISHED (promoted 2026-11-20 cycle 290: evidence density — ≥2 independent threads; published cycle 299)
 - **Date**: 2026-11-20
 - **Topic**: LLM evaluation & observability
 - **Source**: research/2026-11-20-llm-evaluation-observability-ii.md · P2
