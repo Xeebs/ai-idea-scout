@@ -1,6 +1,6 @@
 # Rule Keeper: A Policy-Isolated Memory Layer That Stops Static Rules From Being Treated as Mutable Preferences
 
-- **Status**: EXPLORING
+- **Status**: PUBLISHED
 - **Date**: 2026-11-20
 - **Topic**: Context engineering & memory
 - **Source**: research/2026-11-20-context-engineering-memory.md · P1
