@@ -1,0 +1,34 @@
+# Pocket Council: A Fully On-Device, Subscription-Free Multi-Agent Runtime for Smartphones
+
+- **Status**: PROPOSED
+- **Date**: 2026-11-20
+- **Topic**: Small & local models
+- **Source**: research/2026-11-20-small-local-models.md · P8
+- **Maturity verdict**: PARTIAL — WebSearch found close analogues on each individual axis but nothing satisfying all three at once: "On-Device AI" (iOS) markets multi-agent collaboration and on-device privacy, but gates it behind Pro subscription/lifetime-purchase tiers; "Guappa" is open-source and on-device but single-agent, and needs an ADB/computer bridge; "Team AI: Agents & Local LLMs" does multi-agent group chats but routes through cloud providers. No app combines on-device + multi-agent + no-server + no-subscription simultaneously — the combination itself is genuinely unserved, even though close partial analogues exist on each axis.
+- **Format**: PROJECT — inherently a persistent on-device runtime (model processes, a local message bus, persistent persona/tool state across sessions); there is no meaningful one-shot judgment task to separate out as a skill.
+- **Data Sources**: CONNECTED — reads and acts on the user's own phone data via Android's own system APIs (Accessibility Service API, Notification Listener, Calendar Provider, Intents) so agents can act on the user's apps directly. These APIs are mature today and already used by existing automation apps (Tasker, Automate); no external cloud API is involved, and no data is pasted — everything is read via platform APIs the user explicitly grants permission to.
+
+## The Gap
+A GitHub feature request on `Past-da-king/agent` explicitly asks for "advanced AI agent system... that can fully utilize the processing power and hardware capabilities of modern smartphones, without requiring a computer, external server, or paid subscription," with "custom-named discussion groups where agents collaborate" — framed by its own author as a wish, not a known-to-exist capability. The surrounding ecosystem has solved each piece of this separately (on-device privacy, multi-agent collaboration, no-subscription), but no shipped app combines all three.
+
+## The Project
+A phone-native (Android-first, given the open ecosystem's Accessibility Service/Intent APIs) runtime that runs several small on-device models as distinct named agent personas, each with its own scoped tool surface — one with notification/message access, one with calendar access, one with a "research" web-fetch tool gated to user-approved domains — coordinating through a lightweight local message bus so personas can form a user-named "discussion group" to jointly handle a request (e.g., a Scheduler and a Drafter persona collaborate on "find a time and draft the reply"). Entirely offline-capable: zero server round-trip, zero subscription.
+
+Components: a model-swap-aware local inference layer running 1-3B-class models per persona (sharing weights where possible to fit memory); a persona registry with per-persona tool scoping; a local pub/sub message bus for inter-agent "discussion group" turns; an Android Accessibility Service/Intent adapter giving agents real device-action capability; an airplane-mode test harness proving zero required network calls.
+
+## Tangible Impact
+**Population**: Owners of recent GenAI-capable Android smartphones — Counterpoint Research's Q2 2025 tracker projects GenAI-capable smartphone SoCs will reach 35% of total 2025 smartphone SoC shipments (74% year-over-year growth), implying several hundred million newly-shipped capable devices in 2025 alone — specifically the subset already seeking on-device AI assistant apps, evidenced by existing apps in this exact niche ("On-Device AI," "Guappa," "Team AI"), who are privacy-conscious, unwilling to pay a recurring subscription, or in low/unreliable-connectivity settings where a cloud round-trip isn't an option.
+**Mechanism**: Today this population either pays a recurring subscription for a weaker (single-agent, or cloud-routed) version of the same idea, or runs a single on-device agent with no collaborative multi-step capability. This project gives them a genuinely free, fully offline multi-agent assistant that can execute real multi-step device tasks (schedule-plus-draft, research-plus-summarize) without their data or a dollar ever leaving the device.
+**Measure**: (1) percentage of real multi-step task completions requiring zero network calls, verified via an airplane-mode test suite; (2) ongoing dollar cost to the user (target: $0, vs. the recurring fee competitors charge for the weaker single-agent/cloud-routed equivalent); (3) task success rate on a benchmark of realistic two-persona collaborative tasks vs. a single-agent on-device baseline.
+
+## Why Now
+Sub-3B open models have become capable enough in the last year to run several concurrently within a single flagship-class phone's NPU/RAM budget, and Android's Accessibility Service and Intent APIs — already mature, already used by automation apps like Tasker — give agents a real way to act on the device. The missing piece is wiring named, cooperating personas and a local message bus on top of primitives that already exist, not any new model capability.
+
+## MVP Sketch
+An Android app running two fixed personas — a "Scheduler" with calendar read/write and a "Drafter" with notification/message read plus reply-draft — sharing one small on-device model (e.g., a 3B instruct model via MLC-LLM or llama.cpp's Android bindings) swapped by persona-specific system prompts and tool scopes, coordinating through an in-process event queue for a single demo workflow ("find a free slot and draft the invite reply"). Experiment: run the full workflow in airplane mode on a real mid/high-end device and confirm it completes with zero network calls and acceptable latency/battery draw. 2-4 weeks, 1-2 people.
+
+## Risks & Open Questions
+- Running multiple "personas" concurrently on-device may in practice mean one shared model with swapped system prompts rather than genuinely separate reasoning agents — worth being honest in the build about whether this is real multi-agent behavior or a dressed-up single-agent dispatcher, since that distinction is what makes the idea novel rather than relabeled.
+- Android's Accessibility Service API is powerful but historically Play Store-restricted/flagged for exactly this kind of broad automation use — distribution outside sideloading may be a real constraint.
+- Battery and thermal cost of running several on-device models cooperatively, even small ones, is unverified and could make an "always-on multi-agent" framing impractical on real hardware.
+- The direct evidence is thin (one feature request, 1 reaction/1 comment); the stronger signal is indirect (close analogues existing commercially on each individual axis), which is good novelty signal but weak demand validation — worth a cheap demand check (a landing page/waitlist) before committing to the full 2-4 week build.
